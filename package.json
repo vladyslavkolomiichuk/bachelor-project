@@ -1,0 +1,19 @@
+{
+  "name": "bachelor-project",
+  "version": "1.0.0",
+  "description": "My bachelor's thesis, which developed a web application for managing reading and note-taking of books.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vladyslavkolomiichuk/bachelor-project.git"
+  },
+  "author": "Vladyslav Kolomiichuk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vladyslavkolomiichuk/bachelor-project/issues"
+  },
+  "homepage": "https://github.com/vladyslavkolomiichuk/bachelor-project#readme"
+}
