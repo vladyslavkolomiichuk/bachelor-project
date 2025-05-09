@@ -1,0 +1,16 @@
+.descriptionSection {
+  width: 575px;
+  font-family: 'Hind', sans-serif;
+}
+
+.descriptionSection h3 {
+  margin: 0;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.descriptionSection p {
+  margin: 0;
+  margin-bottom: 20px;
+  font-size: var(--font-size-medium);
+}

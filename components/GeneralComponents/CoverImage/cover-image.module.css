@@ -1,0 +1,12 @@
+.coverImage {
+  position: relative;
+  width: fit-content;
+}
+
+.coverImage img {
+  position:absolute;
+}
+
+.hardcover {
+  z-index: 1;
+}

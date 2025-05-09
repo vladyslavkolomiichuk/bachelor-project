@@ -1,0 +1,180 @@
+.bookPanel {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 50px;
+  gap: 100px;
+}
+
+/* .bookImage {
+  box-shadow: 
+    rgba(240, 46, 170, 0.9) -10px 10px,
+    rgba(240, 46, 170, 0.8) -15px 15px,
+    rgba(240, 46, 170, 0.7) -20px 20px, 
+    rgba(240, 46, 170, 0.6) -25px 25px,
+    rgba(240, 46, 170, 0.5) -30px 30px,
+    rgba(240, 46, 170, 0.4) -35px 35px,
+    rgba(240, 46, 170, 0.3) -40px 40px,
+    rgba(240, 46, 170, 0.2) -45px 45px,
+    rgba(240, 46, 170, 0.1) -50px 50px;
+} */
+
+.bookImage {
+  width: 575px;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+}
+
+.bookImage div {
+  box-shadow: -50px 50px 30px rgba(0, 0, 0, 0.5);
+}
+
+.bookInfo {
+  height: 420px;
+  flex: 1;
+  min-width: 575px;
+  max-width: 675px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.bookInfoTitle {
+  height: 300px;
+  color: var(--primary-color);
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.bookInfoTitle h2 {
+  font-size: var(--font-size-xxlarge);
+  font-weight: bold;
+  margin: 0;
+}
+
+.bookInfoTitle p {
+  font-family: "Hind", sans-serif;
+  font-size: var(--font-size-large);
+  margin: 0;
+}
+
+.rating {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+}
+
+.rating p {
+  font-size: 17px;
+  color: var(--primary-color);
+}
+
+.bookInfoButtons {
+  height: calc(100% - 300px);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.addButton,
+.buyButton,
+.shareButton {
+  cursor: pointer;
+}
+
+.addButton {
+  position: relative;
+  overflow: hidden;
+  width: 160px;
+  height: 40px;
+  color: var(--primary-color);
+  background-color: var(--button-color1);
+  border: none;
+  border-radius: 50px;
+  font-family: "Hind", sans-serif;
+  font-size: var(--font-size-small);
+  z-index: 1;
+}
+
+.actionButtons {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.buyButton,
+.shareButton {
+  color: var(--primary-color);
+  background-color: var(--button-color2);
+  border: none;
+  border-radius: 50px;
+  font-family: "Hind", sans-serif;
+  font-size: var(--font-size-small);
+  transition: background-color 0.2s ease;
+}
+
+.buyButton {
+  text-decoration: none;
+  pointer-events: auto; 
+  padding: 7px 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.buyButton svg {
+  width: 15px;
+  height: 15px;
+}
+
+.shareButton {
+  padding: 7px 9px 7px 7px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.shareButton svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--primary-color);
+}
+
+.bookInfo hr {
+  all: unset;
+  width: 100%;
+  height: 3px;
+  margin: 0;
+}
+
+.buyButton:hover,
+.shareButton:hover {
+  background-color: var(--button-color1);
+}
+
+.addButton span {
+  z-index: 3;
+}
+
+.addButton:after {
+  background: #fff;
+  content: "";
+  height: 155px;
+  left: -75px;
+  opacity: 0.2;
+  position: absolute;
+  top: -50px;
+  transform: rotate(35deg);
+  transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  width: 50px;
+  z-index: 2;
+}
+
+.addButton:hover::after {
+  left: 120%;
+}

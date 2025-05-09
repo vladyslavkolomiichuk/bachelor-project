@@ -1,0 +1,84 @@
+.form {
+  width: 350px;
+  padding: 50px;
+  background-color: var(--primary-color);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 30px;
+  box-shadow: 10px 10px 30px var(--button-color1);
+}
+
+.nameWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+}
+
+.submitBlock,
+.forgotBlock {
+  width: 100%;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+}
+
+.submitBlock {
+  gap: 10px;
+}
+
+.submitButton {
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 100px;
+  height: 40px;
+  color: var(--primary-color);
+  background-color: var(--button-color1);
+  border: none;
+  border-radius: 50px;
+  font-family: "Hind", sans-serif;
+  font-size: var(--font-size-medium);
+  z-index: 1;
+}
+
+.submitButton span {
+  z-index: 3;
+}
+
+.submitButton:after {
+  background: #fff;
+  content: "";
+  height: 155px;
+  left: -75px;
+  opacity: 0.2;
+  position: absolute;
+  top: -50px;
+  transform: rotate(35deg);
+  transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  width: 50px;
+  z-index: 2;
+}
+
+.submitButton:hover::after {
+  left: 120%;
+}
+
+.form a {
+  all: unset;
+  position: relative;
+  cursor: pointer;
+  font-size: var(--font-size-medium);
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+.helpText a {
+  color: var(--button-color1);
+}
+
+.forgotBlock a {
+  color: var(--secondary-color);
+}

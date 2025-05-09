@@ -1,0 +1,25 @@
+.transparentBookBlock a {
+  position: relative;
+  height: 150px;
+  width: 300px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+
+.transparentBookBlock a::after {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 0;
+  left: 100px;
+  background-color: var(--secondary-color);
+  opacity: 0.5;
+  z-index: -1;
+  transition: width 0.2s ease-in-out;
+}
+
+.transparentBookBlock a:hover::after {
+  width: 200px;
+}

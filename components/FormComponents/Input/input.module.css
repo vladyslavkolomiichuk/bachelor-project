@@ -1,0 +1,38 @@
+.input {
+  width: 100%;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Montserrat", sans-serif;
+  font-size: var(--font-size-medium);
+}
+
+.input label {
+  display: none;
+}
+
+.input input {
+  all: unset;
+  height: 35px;
+  width: 100%;
+  text-align: center;
+  color: var(--secondary-color);
+}
+
+.input::after {
+  content: "";
+  width: 100%;
+  height: 3px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background-color: var(--secondary-color);
+}
+
+.input input::placeholder {
+  text-align: center;
+  color: var(--secondary-color);
+  font-family: "Montserrat", sans-serif;
+  font-size: var(--font-size-medium);
+}

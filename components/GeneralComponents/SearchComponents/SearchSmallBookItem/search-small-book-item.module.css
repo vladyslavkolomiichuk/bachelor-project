@@ -1,0 +1,64 @@
+.searchBookItem {
+  all: unset;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 20px;
+  cursor: pointer;
+  color: var(--button-color1);
+}
+
+.searchBookItem::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  right: 50%;
+  height: 2px;
+  width: 100%;
+  transform: translateX(50%);
+  background-color: var(--button-color2);
+}
+
+.searchBookItem img {
+  margin: 20px 0;
+  margin-right: 0;
+}
+
+.infoContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 20px 0;
+  margin-left: 0;
+}
+
+.searchBookItem h3 {
+  margin: 0;
+  font-size: var(--font-size-large);
+  -webkit-line-clamp: 1;
+}
+
+.year,
+.synopsis {
+  margin: 0;
+  font-size: var(--font-size-small);
+}
+
+.searchBookItem h3,
+.synopsis {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.synopsis {
+  -webkit-line-clamp: 2;
+}
+
+/* .searchBookItem:hover {
+  background: var(--primary-color);
+  color: var(--second-color);
+} */

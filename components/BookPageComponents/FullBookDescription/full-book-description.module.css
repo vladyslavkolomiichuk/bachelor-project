@@ -1,0 +1,19 @@
+.fullBookDescription, .reviewContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-content: start;
+  gap: 100px;
+}
+
+.mainPart {
+  flex: 1;
+}
+
+.secondPart {
+  flex: 1;
+}
+
+.secondPart > section:first-child {
+  color: var(--primary-color);
+}

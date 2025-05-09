@@ -1,0 +1,66 @@
+.sliderButtons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+}
+
+.arrows, .circle {
+  font-family: inherit;
+  font-size: inherit;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: var(--primary-color);
+}
+
+.arrows {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle {
+  margin: 0 5px;
+  width: 12px;
+  height: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.arrows svg {
+  width: 25px;
+  height: 25px;
+}
+
+.circle svg {
+  width: 12px;
+  height: 12px;
+}
+
+.arrows svg, .circle svg {
+  transition: color 0.2s ease, fill 0.2s ease;
+}
+
+.arrows svg:hover, .circle svg:hover {
+  color: var(--secondary-color);
+}
+
+.active {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.active svg:hover {
+  fill: var(--secondary-color);
+}
+
+.active svg {
+  fill: var(--primary-color);
+}

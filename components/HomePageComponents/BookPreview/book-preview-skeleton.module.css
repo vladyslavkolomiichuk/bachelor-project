@@ -1,0 +1,68 @@
+.bookPreviewSkeleton {
+  position: relative;
+  height: 150px;
+  width: 300px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  overflow: hidden;
+}
+
+.skeletonCover {
+  width: 100px;
+  height: 150px;
+}
+
+.skeletonInfo {
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.skeletonTitle {
+  width: 80%;
+  height: 20px;
+}
+
+.skeletonAuthor {
+  width: 60%;
+  height: 16px;
+}
+
+.skeletonRating {
+  width: 50%;
+  height: 16px;
+}
+
+.skeletonDescription {
+  width: 100%;
+  height: 40px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeletonTitle,
+.skeletonAuthor,
+.skeletonRating,
+.skeletonDescription,
+.skeletonCover {
+  background: linear-gradient(
+    90deg,
+    var(--primary-color) 20%,
+    var(--secondary-color) 60%,
+    var(--primary-color) 75%
+  );
+  background-size: 200% 100%;
+  background-repeat: repeat-x;
+  animation: shimmer 2s linear infinite;
+}

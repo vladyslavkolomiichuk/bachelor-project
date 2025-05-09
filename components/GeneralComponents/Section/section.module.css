@@ -1,0 +1,94 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  gap: 30px;
+  margin-bottom: 50px;
+  margin-right: 54px;
+}
+
+.sectionNameContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 50px;
+  color: var(--primary-color);
+}
+
+.activeSectionName::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  transform: translateX(-50%);
+  background-color: var(--secondary-color);
+  animation: lengthening 0.2s ease forwards;
+}
+
+.sectionName,
+.sectionNames {
+  position: relative;
+  font-size: var(--font-size-xlarge);
+  font-weight: bold;
+  margin: 0;
+}
+
+.sectionNames {
+  cursor: pointer;
+}
+
+.sectionNames:hover {
+  color: var(--secondary-color);
+}
+
+.sectionNames.activeSectionName:hover {
+  color: inherit;
+}
+
+.flexContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+}
+
+.multiContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, auto);
+}
+
+.sectionPanel {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.animation {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes lengthening {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}

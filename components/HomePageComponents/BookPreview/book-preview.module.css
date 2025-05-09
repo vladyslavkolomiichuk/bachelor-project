@@ -1,0 +1,26 @@
+.info {
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--primary-color);
+}
+
+.info h3, .info p {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info h3 {
+  font-size: var(--font-size-large);
+  font-weight: bold;
+}
+
+.info p {
+  font-family: "Hind", sans-serif;
+  font-size: var(--font-size-small);
+}

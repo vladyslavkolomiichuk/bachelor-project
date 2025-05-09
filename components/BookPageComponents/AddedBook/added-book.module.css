@@ -1,0 +1,64 @@
+.addedBook {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: start;
+  margin-right: 54px;
+  margin-bottom: 100px;
+}
+
+.bookAndNote {
+  /* flex: 1; */
+  position: relative;
+  margin-right: 54px;
+  margin-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+}
+
+.bookAndNote div {
+  position: relative;
+}
+
+.bookAndNote > div:first-child > div:first-child::after {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  background-color: var(--secondary-color);
+  transform: translateX(-50%) translateY(-50%);
+  z-index: -1;
+}
+
+.bookAndNote > div:first-child > div:nth-child(2)::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  padding: 30px;
+  /* border-radius: 50%; */
+  background-color: var(--secondary-color);
+  transform: translateX(-50%) translateY(-50%);
+  z-index: -1;
+}
+
+.bookAndNote section {
+  margin: 0;
+  color: var(--primary-color);
+}
+/* 
+.addedBook section > div:nth-child(2) {
+  align-self: center;
+} */
+
+.notesContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  column-gap: 60px;
+  row-gap: 30px;
+}

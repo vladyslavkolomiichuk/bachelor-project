@@ -1,0 +1,10 @@
+.coloredBookBlockSkeleton {
+  background-color: var(--secondary-color);
+  height: 200px;
+  width: 300px;
+  padding: 0 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 30px;
+}

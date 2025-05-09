@@ -1,0 +1,20 @@
+.coloredBookBlock {
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.2s ease;
+  /* box-shadow: inset 0 0 0 30px rgba(255, 255, 255, 0.2); */
+}
+
+.coloredBookBlock a {
+  height: 200px;
+  width: 300px;
+  padding: 0 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 30px;
+}
+
+.coloredBookBlock:hover {
+  transform: scale(1.01);
+}

@@ -1,0 +1,22 @@
+.unaddedBook {
+  position: relative;
+  margin-right: 54px;
+  margin-bottom: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.unaddedBook::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: calc(100% - 300px);
+  top: 300px;
+  left: 50%;
+  background-color: var(--secondary-color);
+  transform: translateX(-50%);
+  z-index: -1;
+}
