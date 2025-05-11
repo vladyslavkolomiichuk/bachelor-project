@@ -37,3 +37,25 @@
   font-weight: bold;
   color: var(--primary-color);
 }
+
+.flameWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.visitCount {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background-color: var(--error-color);
+  color: var(--primary-color);
+  font-size: var(--font-size-small);
+  font-weight: bold;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}

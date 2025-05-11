@@ -6,17 +6,16 @@ import { getColorsFromImage } from "@/lib/color-finder";
 import styles from "./colored-book-block.module.css";
 
 export default async function ColoredBookBlock({ book }) {
-  const coverImg =
-    book.image || "/default-image.png";
+  const coverImg = book.image || "/default-image.png";
 
   const colors = await getColorsFromImage(coverImg);
 
   const dominantColor = colors[0];
 
   const rgbValues = dominantColor
-  .replace(/[^\d,]/g, '')
-  .split(',')
-  .map(Number);
+    .replace(/[^\d,]/g, "")
+    .split(",")
+    .map(Number);
 
   return (
     <div
@@ -30,7 +29,7 @@ export default async function ColoredBookBlock({ book }) {
               url(${coverImg})`,
       }}
     >
-      <BookLink link={`/book/${book.isbn13}`}>
+      <BookLink link={`/book/${book.isbn13}`} style={styles.coloredBlockLink}>
         <BookPreview book={book} />
       </BookLink>
     </div>

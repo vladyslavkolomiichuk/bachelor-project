@@ -5,28 +5,42 @@ import {
   fetchBookByISBN,
   fetchNewReleasedBooks,
   getGoogleBookLink,
-} from "@/lib/books";
+} from "@/lib/api/books";
 import { getColorsFromImage } from "@/lib/color-finder";
+import { verifyAuth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { isBookInDb } from "@/lib/db/book";
 
 export default async function BookPage({ params }) {
+  const result = await verifyAuth();
+
+  if (!result.user) {
+    return redirect("/login");
+  }
+
   const { bookISBN } = await params;
 
-  //Temporary
-  const buyLink = await getGoogleBookLink(bookISBN);
+  const bookDb = await isBookInDb(bookISBN, result.user.id);
+  let fullBook = null;
 
-  const book = await fetchBookByISBN(bookISBN);
-  const fullBook = { ...book, buyLink: buyLink };
-  // const books = await fetchNewReleasedBooks(7);
+  if (!bookDb && !fullBook) {
+    const bookApi = await fetchBookByISBN(bookISBN);
+    const buyLink = await getGoogleBookLink(bookISBN);
+    fullBook = { ...bookApi, buy_link: buyLink };
+  }
 
-  const coverImg = book.image || "/default-image.png";
-
+  const coverImg =
+    (bookDb ? bookDb.image : fullBook.image) || "/default-image.png";
   const colors = await getColorsFromImage(coverImg);
-
   const dominantColor = colors[3];
 
-  return (
-    <>
-      <AddedBook book={fullBook} bookColor={dominantColor} />
-    </>
+  return bookDb ? (
+    <AddedBook
+      book={bookDb}
+      bookColor={dominantColor}
+      userId={result.user.id}
+    />
+  ) : (
+    <UnaddedBook book={fullBook} bookColor={dominantColor} />
   );
 }

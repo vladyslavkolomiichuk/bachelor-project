@@ -1,6 +1,6 @@
 import Header from "@/components/MainLayoutComponents/Header/header";
 import Panel from "@/components/MainLayoutComponents/Panel/panel";
-import "./globals.css";
+import "./protected-globals.css";
 
 export default function ProtectedLayout({ children }) {
   return (

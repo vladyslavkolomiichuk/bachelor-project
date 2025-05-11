@@ -20,7 +20,7 @@ export default function SignupForm() {
       ...formState.errors,
       [field]: null,
     };
-  };  
+  };
 
   const {
     value: name,
@@ -63,7 +63,11 @@ export default function SignupForm() {
     handleInputBlur: handleConfirmPasswordBlur,
     hasError: confirmPasswordHasError,
     errorMessage: confirmPasswordError,
-  } = useInput("", SignupFormSchema._def.schema.shape.confirmPassword, resetError);
+  } = useInput(
+    "",
+    SignupFormSchema._def.schema.shape.confirmPassword,
+    resetError
+  );
 
   return (
     <form action={formAction} className={styles.form}>
@@ -140,13 +144,9 @@ export default function SignupForm() {
       />
 
       <div className={styles.submitBlock}>
-        <button
-          className={styles.submitButton}
-          type="submit"
-          disabled={formPending}
-        >
-          Sing up
-        </button>
+        <MainButton type="submit" disabled={formPending}>
+          <span>Sing up</span>
+        </MainButton>
         <div className={styles.helpText}>
           <Link href="/login">Log in </Link>
         </div>

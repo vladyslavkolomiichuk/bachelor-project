@@ -2,7 +2,7 @@
 
 import { LoginFormSchema, SignupFormSchema } from "@/lib/definitions";
 import { redirect } from "next/navigation";
-import { createUser, getUserByEmail } from "@/lib/user";
+import { createUser, getUserByEmail } from "@/lib/db/user";
 import { createAuthSession, destroySession } from "@/lib/auth";
 import { hashUserPassword, verifyPassword } from "@/lib/hash";
 
@@ -53,12 +53,19 @@ export async function signupAction(prevState, formData) {
     redirect("/");
   } catch (error) {
     if (error.code === "23505") {
-      return {
-        errors: {
-          email:
-            "It seems like an account for the chosen email already exists.",
-        },
-      };
+      if (error.detail.includes("email")) {
+        return {
+          errors: {
+            email: ["An account with this email already exists."],
+          },
+        };
+      } else if (error.detail.includes("username")) {
+        return {
+          errors: {
+            username: ["An account with this username already exists."],
+          },
+        };
+      }
     }
     throw error;
   }
@@ -90,7 +97,7 @@ export async function loginAction(prevState, formData) {
   if (!existingUser) {
     return {
       errors: {
-        email: "Could not authenticate user, please check your credentials.",
+        email: ["Could not authenticate user, please check your email."],
       },
     };
   }
@@ -103,12 +110,12 @@ export async function loginAction(prevState, formData) {
   if (!isValidPassword) {
     return {
       errors: {
-        password: "Could not authenticate user, please check your credentials.",
+        password: ["Could not authenticate user, please check your password."],
       },
     };
   }
 
-  await createAuthSession(existingUser.user_id);
+  await createAuthSession(existingUser.id);
   redirect("/");
 }
 

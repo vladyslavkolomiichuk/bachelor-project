@@ -1,5 +1,6 @@
 import BookLink from "@/components/GeneralComponents/BookLink/book-link";
 import BookSmallPreview from "../BookSmallPreview/book-small-preview";
+
 import styles from "./my-book-slider.module.css";
 
 export default function MyBookSlider({ books, bookColor }) {
@@ -9,7 +10,7 @@ export default function MyBookSlider({ books, bookColor }) {
         {books.map((book, index) => (
           <BookLink
             key={index}
-            link={`/book/${book.id}`}
+            link={`/book/${book.isbn13}`}
             style={index === 0 ? { borderLeft: `3px solid ${bookColor}` } : {}}
           >
             <BookSmallPreview book={book} />

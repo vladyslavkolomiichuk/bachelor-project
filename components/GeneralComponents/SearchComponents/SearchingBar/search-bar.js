@@ -51,11 +51,6 @@ export default function SearchBar() {
       inputRef.current &&
       !inputRef.current.contains(event.target)
     ) {
-      console.log(dropdownRef.current);
-      console.log(dropdownRef.current.contains(event.target));
-      console.log(inputRef.current);
-      console.log(inputRef.current.contains(event.target));
-
       setIsOpen(false);
     } else setIsOpen(true);
   };
@@ -94,7 +89,7 @@ export default function SearchBar() {
         </button>
         <input
           type="text"
-          className={`${styles.searchInput} ${styles.open}`}
+          className={`${styles.searchInput} ${isOpen ? styles.open : ""}`}
           placeholder="Search book name, author, edition..."
           value={searchQuery}
           onChange={handleSearchOnChange}
@@ -102,7 +97,16 @@ export default function SearchBar() {
         />
       </form>
 
-      <DropdownMenu ref={dropdownRef} isOpen={isOpen} books={!loading && searchFastResults && searchFastResults.length > 0 && searchFastResults}>
+      <DropdownMenu
+        ref={dropdownRef}
+        isOpen={isOpen}
+        books={
+          !loading &&
+          searchFastResults &&
+          searchFastResults.length > 0 &&
+          searchFastResults
+        }
+      >
         {loading && (
           <div className={styles.spinnerContainer}>
             <Loader />

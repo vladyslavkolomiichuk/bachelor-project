@@ -5,10 +5,11 @@ import styles from "./transparent-book-block.module.css";
 
 export default async function TransparentBookBlock({ book }) {
   return (
-    <div className={styles.transparentBookBlock}>
-      <BookLink link={`/book/${book.isbn13}`}>
-        <BookPreview book={book} />
-      </BookLink>
-    </div>
+    <BookLink
+      link={`/book/${book.isbn13}`}
+      style={styles.transparentBookBlock}
+    >
+      <BookPreview book={book} />
+    </BookLink>
   );
 }

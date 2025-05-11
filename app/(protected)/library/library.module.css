@@ -5,13 +5,15 @@
   row-gap: 30px;
 }
 
-.booksContainer a {
+.bookItem {
+  all: unset;
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
 }
 
 .booksContainer a::after {

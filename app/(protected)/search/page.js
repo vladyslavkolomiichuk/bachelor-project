@@ -1,11 +1,18 @@
-'use client';
+"use client";
 
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { verifyAuth } from "@/lib/auth";
+import { redirect, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export default function SearchPage() {
+export default async function SearchPage() {
+  const result = await verifyAuth();
+
+  if (!result.user) {
+    return redirect("/login");
+  }
+
   const searchParams = useSearchParams();
-  const query = searchParams.get('q');
+  const query = searchParams.get("q");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -15,11 +22,13 @@ export default function SearchPage() {
     const fetchResults = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const response = await fetch(
+          `/api/search?q=${encodeURIComponent(query)}`
+        );
         const data = await response.json();
         setResults(data.books || []);
       } catch (error) {
-        console.error('Failed to fetch search results:', error);
+        console.error("Failed to fetch search results:", error);
         setResults([]);
       } finally {
         setLoading(false);

@@ -10,6 +10,7 @@
 }
 
 .bookSlider a {
+  all: unset;
   width: 215px;
   height: 220px;
   display: flex;

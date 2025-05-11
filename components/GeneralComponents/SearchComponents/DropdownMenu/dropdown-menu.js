@@ -9,7 +9,7 @@ const DropdownMenu = forwardRef(
     return (
       <div
         ref={ref} // Тепер ref передається тут ${isOpen ? styles.open : ""}
-        className={`${styles.dropdownMenu} ${styles.open}`}
+        className={`${styles.dropdownMenu} ${isOpen ? styles.open : ""}`}
       >
         <Section sectionName={["Books", "Authors", "Notes"]} multi>
           <div>

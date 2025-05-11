@@ -6,19 +6,19 @@ export default function Input({ id, error, ...props }) {
   return (
     <div className={styles.input}>
       <input id={id} {...props} />
-      {error && (
+      {error?.length > 0 && (
         <FormError>
-          {error && Object.keys(error).length > 1 ? (
+          {error.length > 1 ? (
             <div>
               <p>Password must:</p>
               <ul>
-                {Object.keys(error).map((key) => (
-                  <li key={key}>- {error[key]}</li>
+                {error.map((msg, index) => (
+                  <li key={index}>- {msg}</li>
                 ))}
               </ul>
             </div>
           ) : (
-            <p>{error}</p>
+            <p>{error[0]}</p>
           )}
         </FormError>
       )}

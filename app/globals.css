@@ -3,6 +3,10 @@
 :root {
   --primary-color: #f2f2f3;
   --secondary-color: #797d82;
+  --error-color: #bb2124;
+  --success-color: #22bb33;
+  --info-color: #5bc0de;
+  --warning-color: #f0ad4e;
   --background-color1: #46494f;
   --background-color2: #222328;
   --button-color1: #2e3136;
@@ -39,28 +43,5 @@ body {
   );
   background-attachment: fixed;
   height: 100vh;
-  width: 100%;
-  display: grid;
-  grid-template-columns: 123px 1fr;
-  grid-template-rows: 80px 1fr;
-  gap: 54px;
-}
-
-div#panel {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-main {
-  grid-column: 2;
-  grid-row: 2;
-}
-
-.double-section {
-  display: flex;
-  flex-direction: row;
-}
-
-.double-section > *:first-child {
   width: 100%;
 }

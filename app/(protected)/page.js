@@ -3,15 +3,23 @@ import ColoredBookBlock from "@/components/HomePageComponents/ColoredBooksBlock/
 import ColoredBookBlockSkeleton from "@/components/HomePageComponents/ColoredBooksBlock/colored-book-block-skeleton";
 import TransparentBookBlock from "@/components/HomePageComponents/TransparentBookBlock/transparent-book-block";
 import TransparentBookBlockSkeleton from "@/components/HomePageComponents/TransparentBookBlock/transparent-book-block-skeleton";
+import { verifyAuth } from "@/lib/auth";
 
 import {
   fetchNewSubjectBooks,
   fetchRecommendedBooksByRandom,
   fetchNewLanguageBooks,
-} from "@/lib/books";
+} from "@/lib/api/books";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 export default async function HomePage() {
+  const result = await verifyAuth();
+
+  if (!result.user) {
+    return redirect("/login");
+  }
+
   const { subject: newSubject, books: newSubjectBooks } =
     await fetchNewSubjectBooks(12);
   const recommendedBooksBySubject = await fetchRecommendedBooksByRandom(
@@ -61,7 +69,11 @@ export default async function HomePage() {
         </Section>
         <Section sectionName="Our Lovely Genres"></Section>
       </div>
-      <Section sectionName={`Your Lovely Authors' books`} gridSlider slidesToShow={10} >
+      <Section
+        sectionName={`Your Lovely Authors' books`}
+        gridSlider
+        slidesToShow={10}
+      >
         {recommendedBooksByAuthor.map((book) => (
           <Suspense
             key={book.isbn13}

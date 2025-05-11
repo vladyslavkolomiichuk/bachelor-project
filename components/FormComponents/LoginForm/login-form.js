@@ -8,6 +8,7 @@ import { useInput } from "@/hooks/useInput";
 import { LoginFormSchema } from "@/lib/definitions";
 
 import styles from "../auth.module.css";
+import MainButton from "@/components/GeneralComponents/MainButton/main-button";
 
 export default function LoginForm() {
   const [formState, formAction, formPending] = useActionState(loginAction, {
@@ -61,13 +62,9 @@ export default function LoginForm() {
       />
 
       <div className={styles.submitBlock}>
-        <button
-          className={styles.submitButton}
-          type="submit"
-          disabled={formPending}
-        >
-          Log in
-        </button>
+        <MainButton type="submit" disabled={formPending}>
+          <span>Log in</span>
+        </MainButton>
         <div className={styles.helpText}>
           <Link href="/signup">Sing up</Link>
         </div>

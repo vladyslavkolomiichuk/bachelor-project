@@ -9,6 +9,7 @@ export default function UnaddedBook({ book, bookColor }) {
         book={book}
         buttonText="Add To My Books"
         bookColor={bookColor}
+        mode="unadded"
       />
       <FullBookDescription book={book} />
     </div>
