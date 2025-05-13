@@ -1,0 +1,6 @@
+.lastOpenNotesBar {
+  background-color: var(--button-color1);
+  padding: 20px;
+  max-width: 200px;
+  min-width: 100px;
+}

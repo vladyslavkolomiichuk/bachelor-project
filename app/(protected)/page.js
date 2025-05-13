@@ -52,7 +52,7 @@ export default async function HomePage() {
       <Section sectionName={`Try Something New - ${newSubject}`} inlineSlider>
         {newSubjectBooks.map((book) => (
           <Suspense key={book.isbn13} fallback={<ColoredBookBlockSkeleton />}>
-            <ColoredBookBlock key={book.isbn13} book={book} />
+            <ColoredBookBlock book={book} />
           </Suspense>
         ))}
       </Section>
@@ -63,7 +63,7 @@ export default async function HomePage() {
               key={book.isbn13}
               fallback={<TransparentBookBlockSkeleton />}
             >
-              <TransparentBookBlock key={book.isbn13} book={book} />
+              <TransparentBookBlock book={book} />
             </Suspense>
           ))}
         </Section>
@@ -79,7 +79,7 @@ export default async function HomePage() {
             key={book.isbn13}
             fallback={<TransparentBookBlockSkeleton />}
           >
-            <TransparentBookBlock key={book.isbn13} book={book} />
+            <TransparentBookBlock book={book} />
           </Suspense>
         ))}
       </Section>

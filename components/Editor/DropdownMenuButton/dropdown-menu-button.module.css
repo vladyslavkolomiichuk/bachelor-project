@@ -1,0 +1,51 @@
+.dropdownMenuContainer {
+  position: relative;
+}
+
+.mainButton {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 40px;
+}
+
+.mainButton > svg:nth-child(2) {
+  width: 10px;
+  height: 10px;
+}
+
+/* .dropdownMenu {
+  position: absolute;
+  background-color: var(--button-color1);
+  display: none;
+  padding: 5px;
+  opacity: 0;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  transition: opacity 0.2s ease;
+}
+
+.open {
+  display: flex;
+  opacity: 1;
+} */
+
+.dropdownMenu {
+  position: absolute;
+  background-color: var(--editor-dropdownmenu-color);
+  padding: 5px;
+  opacity: 0;
+  visibility: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  transition: opacity 0.2s ease, visibility 0s 0.2s;
+}
+
+.open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.2s ease;
+}

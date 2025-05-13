@@ -11,7 +11,9 @@ export default function MyBookSlider({ books, bookColor }) {
           <BookLink
             key={index}
             link={`/book/${book.isbn13}`}
-            style={index === 0 ? { borderLeft: `3px solid ${bookColor}` } : {}}
+            secondaryStyle={
+              index === 0 ? { borderLeft: `3px solid ${bookColor}` } : {}
+            }
           >
             <BookSmallPreview book={book} />
           </BookLink>

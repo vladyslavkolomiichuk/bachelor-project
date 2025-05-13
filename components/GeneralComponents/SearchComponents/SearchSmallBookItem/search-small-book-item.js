@@ -1,12 +1,19 @@
 import Image from "next/image";
 import BookLink from "../../BookLink/book-link";
+import CoverImage from "../../CoverImage/cover-image";
 
 import styles from "./search-small-book-item.module.css";
 
 export default function SearchSmallBookItem({ book }) {
   return (
     <BookLink link={`/book/${book.isbn13}`} style={styles.searchBookItem}>
-      <Image src={book.image} alt={book.title} height={90} width={60} />
+      <CoverImage
+        // style={styles.cover}
+        coverImg={book.image}
+        altText={book.title}
+        width={60}
+        height={90}
+      />
       <div className={styles.infoContainer}>
         <div>
           <h3>{book.title}</h3>

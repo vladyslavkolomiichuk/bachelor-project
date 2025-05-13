@@ -16,6 +16,10 @@
   cursor: pointer;
 }
 
+.bookItem div {
+  box-shadow: -5px 5px 10px var(--button-color1);
+}
+
 .booksContainer a::after {
   content: "";
   position: absolute;

@@ -1,7 +1,7 @@
 .bookSliderContainer {
   overflow: hidden;
   overflow-y: auto;
-  height: calc(100vh - 26px - 54px - 54px );
+  height: calc(100vh - 26px - 54px - 54px);
 }
 
 .bookSlider {
@@ -17,7 +17,12 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.2s ease;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.bookSlider a div {
+  box-shadow: -5px 5px 10px var(--button-color1);
 }
 
 .bookSlider > a:first-child {
@@ -27,6 +32,10 @@
 
 .bookSlider > a:first-child p {
   color: var(--secondary-color);
+}
+
+.bookSlider > a:first-child:hover p {
+  color: var(--primary-color);
 }
 
 .bookSlider a:hover {

@@ -1,0 +1,15 @@
+.contentWrapper {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.editorContent {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.content ::selection {
+  background-color: var(--editor-selection-color);
+}

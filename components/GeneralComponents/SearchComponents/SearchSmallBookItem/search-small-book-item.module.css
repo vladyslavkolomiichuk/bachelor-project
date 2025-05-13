@@ -21,9 +21,10 @@
   background-color: var(--button-color2);
 }
 
-.searchBookItem img {
+.searchBookItem > div:first-child {
   margin: 20px 0;
   margin-right: 0;
+  box-shadow: -5px 5px 10px var(--button-color1);
 }
 
 .infoContainer {

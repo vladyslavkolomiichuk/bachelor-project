@@ -1,0 +1,19 @@
+.characterCount {
+  position: absolute;
+  bottom: 50px;
+  left: 75px;
+  color: var(--button-color2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 50px;
+  padding: 0 10px;
+  background-color: var(--editor-selection-color);
+  border-radius: 20px;
+}
+
+.characterCount svg {
+  width: 25px;
+  height: 25px;
+  margin-bottom: 5px;
+}

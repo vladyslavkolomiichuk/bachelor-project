@@ -28,9 +28,9 @@ export async function GET(request) {
         },
       });
     } else if (subject) {
-      randomPage = Math.floor(Math.random() * 10) + 1;
+      randomPage = Math.floor(Math.random() * 200) + 1;
 
-      response = await fetch(`${baseUrl}/subject/${subject}?pageSize=1000&page=${randomPage}`, {
+      response = await fetch(`${baseUrl}/subject/${subject}?pageSize=50&page=${randomPage}`, {
         method: 'GET',
         headers: {
           'Authorization': apiKey,

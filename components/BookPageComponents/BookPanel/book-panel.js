@@ -14,6 +14,7 @@ import styles from "./book-panel.module.css";
 import { ArrowUpRight } from "lucide-react";
 import { Share2 } from "lucide-react";
 import { Trash } from "lucide-react";
+import Tiptap from "@/components/Editor/Tiptap";
 
 export default function BookPanel({
   book,
@@ -23,7 +24,6 @@ export default function BookPanel({
 }) {
   const router = useRouter();
 
-  const [bookTitle, setBookTitle] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const { showToast } = useToast();
 

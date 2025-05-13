@@ -5,7 +5,7 @@ export default function BookSmallPreview({ book }) {
   return (
     <>
       <CoverImage
-        className={styles.cover}
+        // className={styles.cover}
         coverImg={book.image}
         altText={book.title}
         width={100}

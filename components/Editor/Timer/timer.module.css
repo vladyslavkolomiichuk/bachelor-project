@@ -1,0 +1,23 @@
+.timerContainer {
+  color: var(--primary-color);
+  width: 75px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pause {
+  color: var(--error-color);
+}
+
+.pause:disabled {
+  color: var(--background-color1);
+}
+
+.start {
+  color: var(--success-color);
+}
+
+.startDisabled {
+  color: var(--background-color1);
+}
