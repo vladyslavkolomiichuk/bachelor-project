@@ -18,7 +18,6 @@ export default function SearchSmallBookItem({ book }) {
         <div>
           <h3>{book.title}</h3>
           <p className={styles.year}>
-            {" "}
             {book.date_published
               ? book.date_published.substring(0, 4)
               : "Unknown year"}

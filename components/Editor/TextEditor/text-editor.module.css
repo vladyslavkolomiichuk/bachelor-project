@@ -1,3 +1,9 @@
+.textEditorContainer {
+  flex: 1;
+  position: relative;
+  width: 100%;
+}
+
 .contentWrapper {
   height: 100%;
   width: 100%;

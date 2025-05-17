@@ -8,6 +8,7 @@ export default function ConfirmModal({
   onCancel,
   title = "Delete",
   message = "Are you sure? The deletion cannot be undone.",
+  buttonName = 'Delete'
 }) {
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -31,7 +32,7 @@ export default function ConfirmModal({
     <div className={styles.backdrop}>
       <div className={styles.modal}>
         <div className={styles.message}>
-          <h1>{title}</h1>
+          <h2>{title}</h2>
           <p>{message}</p>
         </div>
         <div className={styles.buttons}>
@@ -39,7 +40,7 @@ export default function ConfirmModal({
             Cancel
           </button>
           <button className={styles.confirm} onClick={onConfirm}>
-            Delete
+            {buttonName}
           </button>
         </div>
       </div>

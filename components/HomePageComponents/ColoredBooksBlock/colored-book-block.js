@@ -29,7 +29,7 @@ export default async function ColoredBookBlock({ book }) {
               url(${coverImg})`,
       }}
     >
-      <BookLink link={`/book/${book.isbn13}`} style={styles.coloredBlockLink}>
+      <BookLink href={`/book/${book.isbn13}`} style={styles.coloredBlockLink}>
         <BookPreview book={book} />
       </BookLink>
     </div>

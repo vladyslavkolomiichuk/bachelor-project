@@ -25,7 +25,7 @@ export async function GET(request) {
         },
       });
     } else if(q) {
-      response = await fetch(`${baseUrl}/books/${q}?pageSize=5&shouldMatchAll=1`, {
+      response = await fetch(`${baseUrl}/books/${q}?pageSize=10&shouldMatchAll=1`, {
         method: 'GET',
         headers: {
           'Authorization': apiKey,
@@ -46,7 +46,7 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error('Error fetching from ISBNdb:', error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch book data' }), {
+    return new Response(JSON.stringify({ error: 'Failed to fetch book data'}), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

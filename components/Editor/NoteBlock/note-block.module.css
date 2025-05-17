@@ -1,0 +1,99 @@
+.noteContainer {
+  height: 140px;
+  width: 300px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  /* gap: 30px; */
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  color: var(--primary-color);
+}
+
+.noteContainer:hover {
+  transform: scale(1.01);
+}
+
+.mainInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mainInfo h2,
+.mainInfo p,
+.secondInfo p {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mainInfo h2 {
+  font-size: var(--font-size-large);
+}
+
+.noteContainer p {
+  font-size: var(--font-size-medium);
+}
+
+.secondInfo {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.menuBtn {
+  border: none;
+  padding: 0;
+  background-color: transparent;
+}
+
+.menuBtn svg {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  color: var(--primary-color);
+  transition: all 0.2s ease;
+}
+
+.menuBtn svg:hover {
+  color: var(--background-color1);
+}
+
+.menuWrapper {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  top: 10px;
+  right: -100px;
+  width: 100px;
+}
+
+.menuItem {
+  width: 100%;
+  height: 30px;
+  border: none;
+  cursor: pointer;
+  font-family: "Montserrat", sans-serif;
+  font-size: var(--font-size-medium);
+  font-weight: 600;
+  color: var(--primary-color);
+  background-color: var(--error-color);
+  transition: all 0.2s ease;
+}
+
+.menuItem:hover {
+  color: var(--error-color);
+  background-color: var(--primary-color);
+}

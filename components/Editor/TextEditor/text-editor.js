@@ -4,9 +4,6 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import MenuBar from "../MenuBar/menu-bar";
 import CharacterCount from "@tiptap/extension-character-count";
-
-import styles from "./text-editor.module.css";
-import "./tiptap.css";
 import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import { useTimer } from "@/context/TimerContext";
@@ -23,7 +20,10 @@ import TableHeader from "@tiptap/extension-table-header";
 import TableCell from "@tiptap/extension-table-cell";
 import CharacterCountContainer from "../CharacterCounter/character-counter";
 
-const limit = 5000;
+import styles from "./text-editor.module.css";
+import "./tiptap.css";
+
+// const CHARACTER_LIMIT = 10000;
 
 export default function TextEditor({ content, setContent }) {
   const editor = useEditor({
@@ -33,9 +33,10 @@ export default function TextEditor({ content, setContent }) {
       Highlight.configure({
         multicolor: true,
       }),
-      CharacterCount.configure({
-        limit,
-      }),
+      // CharacterCount.configure({
+      //   CHARACTER_LIMIT,
+      // }),
+      CharacterCount,
       Image,
       Underline,
       Typography,
@@ -49,11 +50,11 @@ export default function TextEditor({ content, setContent }) {
       TableCell,
     ],
     content: content,
+    immediatelyRender: false,
     editorProps: {
       attributes: {
         class: styles.content,
       },
-      immediatelyRender: false,
       handleDrop: (view, event, slice, moved) => {},
     },
     onUpdate: ({ editor }) => {
@@ -76,13 +77,14 @@ export default function TextEditor({ content, setContent }) {
   }
 
   return (
-    <>
+    <div className={styles.textEditorContainer}>
       <MenuBar editor={editor} />
       <BubbleMenuBar editor={editor} />
       <div id="contentWrapper" className={styles.contentWrapper}>
         <EditorContent editor={editor} className={styles.editorContent} />
       </div>
-      <CharacterCountContainer editor={editor} limit={limit} />
-    </>
+      {/* <CharacterCountContainer editor={editor} limit={CHARACTER_LIMIT} /> */}
+      <CharacterCountContainer editor={editor} />
+    </div>
   );
 }

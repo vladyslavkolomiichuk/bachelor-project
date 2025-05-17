@@ -6,7 +6,7 @@ import styles from "./transparent-book-block.module.css";
 export default async function TransparentBookBlock({ book }) {
   return (
     <BookLink
-      link={`/book/${book.isbn13}`}
+      href={`/book/${book.isbn13}`}
       style={styles.transparentBookBlock}
     >
       <BookPreview book={book} />

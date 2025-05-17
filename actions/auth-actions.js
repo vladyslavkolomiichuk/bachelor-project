@@ -121,5 +121,5 @@ export async function loginAction(prevState, formData) {
 
 export async function logoutAction() {
   await destroySession();
-  redirect("/auth");
+  redirect("/login");
 }

@@ -10,7 +10,7 @@ export default function MyBookSlider({ books, bookColor }) {
         {books.map((book, index) => (
           <BookLink
             key={index}
-            link={`/book/${book.isbn13}`}
+            href={`/book/${book.isbn13}`}
             secondaryStyle={
               index === 0 ? { borderLeft: `3px solid ${bookColor}` } : {}
             }

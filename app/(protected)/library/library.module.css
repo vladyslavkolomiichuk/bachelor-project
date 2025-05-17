@@ -5,6 +5,13 @@
   row-gap: 30px;
 }
 
+.notesContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  column-gap: 60px;
+  row-gap: 30px;
+}
+
 .bookItem {
   all: unset;
   position: relative;
@@ -16,7 +23,7 @@
   cursor: pointer;
 }
 
-.bookItem div {
+.bookItem > div:first-child {
   box-shadow: -5px 5px 10px var(--button-color1);
 }
 

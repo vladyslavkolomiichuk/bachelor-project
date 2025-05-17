@@ -32,7 +32,7 @@
   left: -10px; /* Змістіть трикутник до правого краю */
   width: 0;
   height: 0;
-  border-right: 10px solid red; /* Трикутник справа */
+  border-right: 10px solid var(--error-color); /* Трикутник справа */
   border-top: 7px solid transparent;
   border-bottom: 7px solid transparent;
   transform: translateY(-50%);

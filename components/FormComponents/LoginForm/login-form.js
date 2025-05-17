@@ -7,7 +7,7 @@ import Input from "../Input/Input";
 import { useInput } from "@/hooks/useInput";
 import { LoginFormSchema } from "@/lib/definitions";
 
-import styles from "../auth.module.css";
+import styles from "../form.module.css";
 import MainButton from "@/components/GeneralComponents/MainButton/main-button";
 
 export default function LoginForm() {

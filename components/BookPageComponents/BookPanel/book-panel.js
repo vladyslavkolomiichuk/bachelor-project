@@ -3,7 +3,7 @@
 import CoverImage from "@/components/GeneralComponents/CoverImage/cover-image";
 import Rating from "@/components/GeneralComponents/Rating/rating";
 import { addBookToDb, deleteBookFromDb } from "@/lib/db/book";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MainButton from "@/components/GeneralComponents/MainButton/main-button";
 import { useRouter } from "next/navigation";
 import ConfirmModal from "@/components/GeneralComponents/ConfirmModal/confirm-modal";
@@ -14,7 +14,8 @@ import styles from "./book-panel.module.css";
 import { ArrowUpRight } from "lucide-react";
 import { Share2 } from "lucide-react";
 import { Trash } from "lucide-react";
-import Tiptap from "@/components/Editor/Tiptap";
+import TemplateModal from "@/components/Editor/TemplateSelection/template-selection";
+import EditorWindow from "@/components/Editor/EditorWindow/editor-window";
 
 export default function BookPanel({
   book,
@@ -24,22 +25,23 @@ export default function BookPanel({
 }) {
   const router = useRouter();
 
-  const [modalOpen, setModalOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [templatesModalOpen, setTemplatesModalOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+
   const { showToast } = useToast();
 
-  const { image, title, authors, rating = 0, buy_link: buyLink } = book;
+  const { id, image, title, authors, rating = 0, buy_link: buyLink } = book;
 
   const handleAddBook = async () => {
-    setBookTitle(await addBookToDb(book));
+    await addBookToDb(book);
     showToast("Book added successfully!", "success");
     router.refresh();
   };
 
-  const handleStartSession = () => {};
-
   const handleDeleteBook = async () => {
     deleteBookFromDb(book.isbn13);
-    setModalOpen(false);
+    setConfirmModalOpen(false);
     showToast("Book deleted successfully!", "success");
     router.refresh();
   };
@@ -63,7 +65,13 @@ export default function BookPanel({
 
         <div className={styles.bookInfoButtons}>
           <MainButton
-            onClick={mode === "unadded" ? handleAddBook : handleStartSession}
+            onClick={
+              mode === "unadded"
+                ? handleAddBook
+                : () => {
+                    setTemplatesModalOpen(true);
+                  }
+            }
           >
             <span>{buttonText}</span>
           </MainButton>
@@ -78,7 +86,7 @@ export default function BookPanel({
             {mode === "added" && (
               <button
                 type="button"
-                onClick={() => setModalOpen(true)}
+                onClick={() => setConfirmModalOpen(true)}
                 className={styles.deleteButton}
               >
                 <Trash />
@@ -90,12 +98,24 @@ export default function BookPanel({
         <hr style={{ backgroundColor: bookColor }} />
       </div>
 
+      <EditorWindow
+        isOpen={selectedTemplate}
+        onCancel={() => setSelectedTemplate(null)}
+        content={selectedTemplate?.content}
+        bookId={id}
+      />
+
       <ConfirmModal
-        isOpen={modalOpen}
+        isOpen={confirmModalOpen}
         onConfirm={handleDeleteBook}
-        onCancel={() => setModalOpen(false)}
+        onCancel={() => setConfirmModalOpen(false)}
         title="You're about to delete this book from your library"
         message="This action will remove the book from your library but will leave the notes associated with it."
+      />
+      <TemplateModal
+        setTemplate={setSelectedTemplate}
+        isOpen={templatesModalOpen}
+        onCancel={() => setTemplatesModalOpen(false)}
       />
     </div>
   );

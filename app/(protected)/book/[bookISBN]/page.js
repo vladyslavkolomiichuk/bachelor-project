@@ -1,11 +1,6 @@
 import UnaddedBook from "@/components/BookPageComponents/UnaddedBook/unadded-book";
 import AddedBook from "@/components/BookPageComponents/AddedBook/added-book";
-
-import {
-  fetchBookByISBN,
-  fetchNewReleasedBooks,
-  getGoogleBookLink,
-} from "@/lib/api/books";
+import { fetchBookByISBN, getGoogleBookLink } from "@/lib/api/books";
 import { getColorsFromImage } from "@/lib/color-finder";
 import { verifyAuth } from "@/lib/auth";
 import { redirect } from "next/navigation";

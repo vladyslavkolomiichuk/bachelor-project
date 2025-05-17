@@ -1,0 +1,245 @@
+.form {
+  width: 350px;
+  padding: 50px;
+  background-color: var(--primary-color);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 30px;
+  box-shadow: 10px 10px 30px var(--button-color1);
+}
+
+.nameWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+}
+
+.submitBlock,
+.forgotBlock {
+  width: 100%;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+}
+
+.submitBlock {
+  gap: 10px;
+}
+
+.form a {
+  all: unset;
+  position: relative;
+  cursor: pointer;
+  font-size: var(--font-size-medium);
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+.helpText a {
+  color: var(--button-color1);
+}
+
+.forgotBlock a {
+  color: var(--secondary-color);
+}
+
+/* USER INFO FORM STYLES */
+
+.userFormContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 50px;
+}
+
+.imageContainer {
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.logOutForm {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logOutBtn {
+  width: 75%;
+  height: 35px;
+  font-family: "Montserrat", sans-serif;
+  font-size: var(--font-size-medium);
+  font-weight: 600;
+  color: var(--primary-color);
+  border: none;
+  border-radius: 10px;
+  background-color: var(--error-color);
+  transition: all 0.2s ease;
+}
+
+.logOutBtn:hover {
+  color: var(--error-color);
+  background-color: var(--primary-color);
+}
+
+.userImageForm {
+  position: relative;
+}
+
+.userImageForm img {
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.helpMask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.userImageLabel {
+  position: absolute;
+  cursor: pointer;
+  background-color: var(--table-color1);
+  bottom: 0;
+  left: 50%;
+  height: 75px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
+  transition: all 0.2s ease;
+}
+
+.userImageLabel:hover {
+  background-color: var(--editor-selection-color);
+}
+
+.userImageLabel svg {
+  width: 40px;
+  height: 40px;
+  color: var(--button-color1);
+}
+
+.userImageInput {
+  display: none;
+}
+
+.userInfoContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.userInfoContainer h2 {
+  margin: 0;
+  color: var(--primary-color);
+  font-size: var(--font-size-large);
+}
+
+.useeInfoForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.useeInfoForm div:not(.nameWrapper) {
+  width: 300px;
+}
+
+.submitUserInfo {
+  border: none;
+  width: fit-content;
+  background-color: var(--success-color);
+  font-family: "Montserrat", sans-serif;
+  font-size: var(--font-size-medium);
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 10px;
+  color: var(--button-color1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submitUserInfo:hover {
+  background-color: var(--button-color1);
+  color: var(--success-color);
+}
+
+/* NOTE FORM STYLES */
+
+.backdrop {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.textEditorFormContainer {
+  background-color: var(--primary-color);
+  width: 400px;
+  height: 350px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--button-color1);
+}
+
+.messageContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.messageContainer h2,
+.messageContainer p {
+  margin: 0;
+}
+
+.noteForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.pages {
+  display: flex;
+  gap: 20px;
+}
+
+.cancel {
+  border: none;
+  font-family: "Montserrat", sans-serif;
+  font-size: var(--font-size-medium);
+  font-weight: 600px;
+  background-color: transparent;
+  color: var(--error-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel:hover {
+  color: var(--button-color1);
+}

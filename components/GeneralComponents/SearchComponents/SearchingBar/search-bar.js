@@ -10,7 +10,7 @@ import styles from "./search-bar.module.css";
 
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchFastResults, setSearchFastResults] = useState(null);
+  const [searchResults, setSearchResults] = useState(null);
   const [timer, setTimer] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -21,7 +21,7 @@ export default function SearchBar() {
     const value = event.target.value;
     setSearchQuery(value);
     if (!value) {
-      searchFastResults(null);
+      searchResults(null);
     }
     if (timer) {
       clearTimeout(timer);
@@ -35,11 +35,13 @@ export default function SearchBar() {
           const response = await fetch(`/api/search?q=${value}`);
           if (response.ok) {
             const data = await response.json();
-            setSearchFastResults(data.books);
+            setSearchResults(data.books);
+          } else {
+            setSearchResults([]);
           }
 
           setLoading(false);
-        } catch (error) {}
+        } catch {}
       }, 1000)
     );
   };
@@ -64,21 +66,6 @@ export default function SearchBar() {
 
   return (
     <div className={styles.searchWrapper} ref={inputRef}>
-      {/* <div className={styles.searchBar}>
-        <button type="submit" className={styles.searchButton}>
-          <Search strokeWidth={3} />
-        </button>
-        <input
-          className={styles.input}
-          type="text"
-          placeholder="Search book name, author, edition..."
-          value={searchQuery}
-          onChange={handleSearchOnChange}
-          // ref={inputRef}
-          onBlur={() => setTimeout(() => setSearchFastResults([]), 150)}
-        />
-      </div> */}
-
       <form className={styles.searchBox}>
         <button
           className={styles.searchButton}
@@ -90,32 +77,29 @@ export default function SearchBar() {
         <input
           type="text"
           className={`${styles.searchInput} ${isOpen ? styles.open : ""}`}
-          placeholder="Search book name, author, edition..."
+          placeholder="Search book by name..."
           value={searchQuery}
           onChange={handleSearchOnChange}
           onFocus={() => setIsOpen(true)}
         />
       </form>
 
-      <DropdownMenu
-        ref={dropdownRef}
-        isOpen={isOpen}
-        books={
-          !loading &&
-          searchFastResults &&
-          searchFastResults.length > 0 &&
-          searchFastResults
-        }
-      >
+      <DropdownMenu isOpen={isOpen} ref={dropdownRef}>
         {loading && (
           <div className={styles.spinnerContainer}>
             <Loader />
           </div>
         )}
-        {!loading && !searchFastResults && <p>Enter your search</p>}
-        {!loading && searchFastResults && searchFastResults.length === 0 && (
+        {!loading && !searchResults && <p>Enter your search</p>}
+        {!loading && searchResults && searchResults.length === 0 && (
           <p>No results</p>
         )}
+        {!loading &&
+          searchResults &&
+          searchResults.length > 0 &&
+          searchResults.map((book) => (
+            <SearchSmallBookItem key={book.isbn13} book={book} />
+          ))}
       </DropdownMenu>
     </div>
   );

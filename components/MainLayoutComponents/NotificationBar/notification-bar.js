@@ -3,13 +3,12 @@
 import { useToast } from "@/context/ToastContext";
 import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
-
-import styles from "./notification-bar.module.css";
-
 import { UserRoundX } from "lucide-react";
 import { UserRoundCheck } from "lucide-react";
 import { Bell } from "lucide-react";
 import { Flame } from "lucide-react";
+
+import styles from "./notification-bar.module.css";
 
 export default function NotificationBar() {
   const [username, setUsername] = useState(null);
@@ -20,19 +19,20 @@ export default function NotificationBar() {
     const fetchUserInfo = async () => {
       try {
         const res = await fetch("/api/user-info");
-        if (res.ok) {
-          const data = await res.json();
-          setUsername(data.username);
-          setUserVisitScore(data.userVisitScore);
-        } else {
-          console.error("Failed to fetch user info");
-        }
+        if (!res.ok) throw new Error("Fetch failed");
+        const data = await res.json();
+        setUsername(data.username);
+        setUserVisitScore(data.userVisitScore);
       } catch (error) {
         console.error("Error fetching user info:", error);
       }
     };
 
     fetchUserInfo();
+
+    const intervalId = setInterval(fetchUserInfo, 2 * 60 * 60 * 1000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {

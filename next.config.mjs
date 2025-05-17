@@ -8,6 +8,11 @@ const nextConfig = {
       { hostname: "images.isbndb.com" },
     ],
   },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',  
+    },
+  },
 };
 
 export default nextConfig;

@@ -47,13 +47,14 @@
 .visitCount {
   position: absolute;
   top: -6px;
-  right: -8px;
+  right: -11px;
   background-color: var(--error-color);
   color: var(--primary-color);
   font-size: var(--font-size-small);
   font-weight: bold;
-  width: 16px;
-  height: 16px;
+  width: fit-content;
+  height: 18px;
+  padding: 0 5px;
   display: flex;
   justify-content: center;
   align-items: center;

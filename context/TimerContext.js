@@ -4,8 +4,8 @@ import { createContext, useState, useContext, useEffect } from "react";
 
 const TimerContext = createContext();
 
-export const TimerProvider = ({ children }) => {
-  const [timer, setTimer] = useState(0);
+export const TimerProvider = ({ children, initialTime = 0 }) => {
+  const [timer, setTimer] = useState(initialTime);
   const [isRunning, setIsRunning] = useState(false);
 
   const startTimer = () => {

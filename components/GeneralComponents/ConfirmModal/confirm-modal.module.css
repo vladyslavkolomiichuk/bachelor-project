@@ -12,7 +12,7 @@
 }
 
 .modal {
-  width: 450px;
+  width: 500px;
   height: 225px;
   display: flex;
   flex-direction: column;
@@ -29,12 +29,12 @@
   gap: 10px;
 }
 
-.message h1,
+.message h2,
 .message p {
   margin: 0;
 }
 
-.message h1 {
+.message h2 {
   font-size: var(--font-size-medium);
   color: var(--button-color1);
 }
@@ -73,12 +73,17 @@
 .confirm {
   margin-right: 20px;
   padding: 5px 20px;
-  color: var(--primary-color);
+  color: var(--button-color1);
   border-radius: 5px;
   background-color: var(--error-color);
+  font-weight: 600;
 }
 
-.cancel:hover,
-.confirm:hover {
+.cancel:hover {
   color: var(--button-color1);
+}
+
+.confirm:hover {
+  color: var(--error-color);
+  background-color: var(--button-color1);
 }

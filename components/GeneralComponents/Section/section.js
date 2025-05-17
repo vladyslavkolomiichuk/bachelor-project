@@ -95,7 +95,7 @@ export default function Section({
         <div className={styles.sectionNameContainer}>
           {multi ? (
             sectionName.map((name, index) => (
-              <h2
+              <h1
                 key={index}
                 className={`${styles.sectionNames} ${
                   activeSection === index ? styles.activeSectionName : ""
@@ -105,12 +105,12 @@ export default function Section({
                 }}
               >
                 {name}
-              </h2>
+              </h1>
             ))
           ) : (
-            <h2 className={styles.sectionName}>
+            <h1 className={styles.sectionName}>
               {isArraySectionName ? sectionName[0] : sectionName}
-            </h2>
+            </h1>
           )}
         </div>
         {(multi

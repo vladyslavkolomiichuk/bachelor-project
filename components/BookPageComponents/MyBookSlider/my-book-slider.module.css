@@ -21,7 +21,7 @@
   transition: all 0.2s ease;
 }
 
-.bookSlider a div {
+.bookSlider a > div:first-child {
   box-shadow: -5px 5px 10px var(--button-color1);
 }
 

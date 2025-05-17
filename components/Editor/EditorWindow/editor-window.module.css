@@ -1,24 +1,41 @@
 .editorWindow {
-  /* width: calc(100vw - 250px * 2); */
+  position: relative;
   width: 100vw;
   height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
   margin: 0;
-  /* padding: 0 250px; */
   background-color: var(--background-color2);
   display: flex;
   flex-direction: row;
+  z-index: 111;
+}
+
+.editorWindow > button:first-child {
+  position: absolute;
+  border: none;
+  background-color: transparent;
+  padding: 0;
+  top: 30px;
+  right: 30px;
+  color: var(--primary-color);
+  cursor: pointer;
+  z-index: 888;
+}
+
+.editorWindow > button:first-child svg {
+  width: 35px;
+  height: 35px;
+  transition: all 0.2s ease;
+  transform: rotateZ(45deg);
+  cursor: pointer;
+}
+
+.editorWindow > button:first-child svg:hover {
+  color: var(--button-color2);
 }
 
 .editorWindow nav {
   flex: 1;
-}
-
-.editorForm{
-  flex: 2;
-  position: relative;
-  /* display: flex;
-  justify-content: center; */
 }
