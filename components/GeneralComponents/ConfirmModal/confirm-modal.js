@@ -6,9 +6,9 @@ export default function ConfirmModal({
   isOpen,
   onConfirm,
   onCancel,
-  title = "Delete",
-  message = "Are you sure? The deletion cannot be undone.",
-  buttonName = 'Delete'
+  title,
+  message,
+  buttonName,
 }) {
   useEffect(() => {
     const handleKeyDown = (e) => {

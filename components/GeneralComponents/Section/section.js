@@ -13,17 +13,21 @@ export default function Section({
   gridSlider = false,
   slidesToShow = 4,
 }) {
+  const childrenArray = Children.toArray(children);
+  const isArraySectionName = Array.isArray(sectionName);
+
   const [isAnimating, setIsAnimating] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
-  const [currentSlideIndexes, setCurrentSlideIndexes] = useState(
-    multi ? children.map(() => 0) : [0]
-  );
-  const childrenArray = Children.toArray(children);
 
-  const isArraySectionName = Array.isArray(sectionName);
-  const totalChildren = multi
-    ? children.map((child) => Children.count(child.props?.children || []))
-    : Children.count(children);
+  const [currentSlideIndexes, setCurrentSlideIndexes] = useState(
+    multi ? childrenArray.map(() => 0) : [0]
+  );
+
+  const [activeCategories, setActiveCategories] = useState(
+    multi
+      ? childrenArray.map((child) => child.props.categories?.[0]?.key || null)
+      : [childrenArray[0]?.props.categories?.[0]?.key || null]
+  );
 
   const updateCurrentSlideIndex = (sectionIndex, newIndex) => {
     setCurrentSlideIndexes((prev) => {
@@ -33,16 +37,37 @@ export default function Section({
     });
   };
 
+  const updateActiveCategory = (sectionIndex, newCategory) => {
+    setActiveCategories((prev) => {
+      const updated = [...prev];
+      updated[sectionIndex] = newCategory;
+      return updated;
+    });
+  };
+
   const getSectionChildren = () => {
     if (multi) {
       const child = childrenArray[activeSection];
-      const useInlineSlider = child.props.inlineSlider;
-      const useGridSlider = child.props.gridSlider;
-      const sectionSlidesToShow = child.props.slidesToShow || slidesToShow;
       const sectionChildren = Children.toArray(child.props.children);
+      const sectionCategories = child.props.categories;
+      const sectionInlineSlider = child.props.inlineSlider;
+      const sectionGridSlider = child.props.gridSlider;
+      const sectionSlidesToShow = child.props.slidesToShow || slidesToShow;
       const currentSlideIndex = currentSlideIndexes[activeSection];
+      const currentCategory = activeCategories[activeSection];
 
-      if (useInlineSlider || useGridSlider) {
+      if (sectionCategories) {
+        const filtered =
+          currentCategory === "all"
+            ? sectionChildren
+            : sectionChildren.filter(
+                (c) => c.props.category === currentCategory
+              );
+
+        return <div {...child.props}>{filtered}</div>;
+      }
+
+      if (sectionInlineSlider || sectionGridSlider) {
         const slicedChildren = sectionChildren.slice(
           currentSlideIndex,
           currentSlideIndex + sectionSlidesToShow
@@ -51,7 +76,7 @@ export default function Section({
         return (
           <div
             className={`${
-              useInlineSlider ? styles.flexContainer : styles.gridContainer
+              sectionInlineSlider ? styles.flexContainer : styles.gridContainer
             } ${isAnimating ? styles.animation : ""}`}
           >
             {slicedChildren}
@@ -59,11 +84,33 @@ export default function Section({
         );
       }
 
-      return <div>{child}</div>;
+      return <>{child}</>;
     }
 
-    if (inlineSlider || gridSlider) {
-      const slicedChildren = Children.toArray(children).slice(
+    // not multi
+    const sectionCategories = childrenArray[0]?.props.categories;
+    const currentCategory = activeCategories[0];
+
+    if (sectionCategories) {
+      const wrapper =
+        currentCategory === "all"
+          ? childrenArray[0]
+          : childrenArray.find(
+              (child) => child.props.category === currentCategory
+            );
+
+      const filtered =
+        currentCategory === "all"
+          ? childrenArray.flatMap((child) =>
+              Children.toArray(child.props.children)
+            )
+          : Children.toArray(wrapper?.props.children || []);
+
+      return <div {...(wrapper?.props || {})}>{filtered}</div>;
+    }
+
+    if ((inlineSlider || gridSlider) && !sectionCategories) {
+      const slicedChildren = childrenArray.slice(
         currentSlideIndexes[0],
         currentSlideIndexes[0] + slidesToShow
       );
@@ -113,10 +160,53 @@ export default function Section({
             </h1>
           )}
         </div>
+
+        {multi &&
+          childrenArray[activeSection]?.props.categories &&
+          childrenArray[activeSection].props.categories.length > 0 && (
+            <div className={styles.categorySelectContainer}>
+              <select
+                value={activeCategories[activeSection]}
+                onChange={(e) =>
+                  updateActiveCategory(activeSection, e.target.value)
+                }
+                className={styles.categorySelect}
+              >
+                {childrenArray[activeSection].props.categories.map(
+                  ({ key, label }) => (
+                    <option key={key} value={key}>
+                      {label}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+          )}
+
+        {!multi &&
+          childrenArray[0]?.props.categories &&
+          childrenArray[0].props.categories.length > 0 && (
+            <div className={styles.categorySelectContainer}>
+              <select
+                value={activeCategories[0]}
+                onChange={(e) => updateActiveCategory(0, e.target.value)}
+                className={styles.categorySelect}
+              >
+                {childrenArray[0].props.categories.map(({ key, label }) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
         {(multi
-          ? childrenArray[activeSection]?.props?.inlineSlider ||
-            childrenArray[activeSection]?.props?.gridSlider
-          : inlineSlider || gridSlider) && (
+          ? !childrenArray[activeSection]?.props?.categories &&
+            (childrenArray[activeSection]?.props?.inlineSlider ||
+              childrenArray[activeSection]?.props?.gridSlider)
+          : !childrenArray[0]?.props?.categories &&
+            (inlineSlider || gridSlider)) && (
           <SliderButtons
             updateCurrentIndex={handleSlideChange}
             currentIndex={
@@ -124,16 +214,22 @@ export default function Section({
                 ? currentSlideIndexes[activeSection]
                 : currentSlideIndexes[0]
             }
-            totalSlides={multi ? totalChildren[activeSection] : totalChildren}
+            totalSlides={
+              multi
+                ? Children.count(childrenArray[activeSection].props.children)
+                : Children.count(children)
+            }
             slidesToShow={
               multi
-                ? children[activeSection].props.slidesToShow || slidesToShow
+                ? childrenArray[activeSection].props.slidesToShow ||
+                  slidesToShow
                 : slidesToShow
             }
             isAnimating={isAnimating}
           />
         )}
       </div>
+
       {getSectionChildren()}
     </section>
   );

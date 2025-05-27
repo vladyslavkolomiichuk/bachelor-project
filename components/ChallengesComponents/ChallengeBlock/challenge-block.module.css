@@ -1,0 +1,70 @@
+.challengeBlock {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  padding: 0 0.5rem;
+  font-size: var(--font-size-medium);
+  color: var(--primary-color);
+}
+
+.challengeBlock:hover {
+  background-color: var(--table-color1);
+}
+
+.info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 2rem;
+}
+
+.message {
+  width: 100%;
+}
+
+.category,
+.time,
+.status {
+  min-width: 150px;
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.actionButton {
+  width: 30px;
+  height: 30px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.actionButton svg {
+  width: 20px;
+  height: 20px;
+  color: var(--primary-color);
+}
+
+.actionButton:hover svg {
+  color: var(--secondary-color);
+}
+
+.challengeBlock.completed {
+  color: var(--success-color);
+}
+
+.challengeBlock.upcoming {
+  color: var(--warning-color);
+}
+
+.challengeBlock.failed {
+  color: var(--error-color);
+}

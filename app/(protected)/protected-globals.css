@@ -1,9 +1,4 @@
 body {
-  background: linear-gradient(
-    135deg,
-    var(--background-color1),
-    var(--background-color2)
-  );
   background-attachment: fixed;
   display: grid;
   grid-template-columns: 123px 1fr;

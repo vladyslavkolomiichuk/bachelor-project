@@ -1,0 +1,21 @@
+.badgeWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.badge {
+  position: absolute;
+  top: -8px;
+  right: -30%;
+  width: fit-content;
+  height: 16px;
+  padding: 1px 6px;
+  background-color: var(--error-color);
+  color: var(--primary-color);
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

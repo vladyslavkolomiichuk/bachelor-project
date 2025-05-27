@@ -1,50 +1,76 @@
 const apiKey = process.env.ISBNDB_API_KEY;
-const baseUrl = 'https://api2.isbndb.com';
+const baseUrl = "https://api2.isbndb.com";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const isbn = searchParams.get('isbn');
-  const subject = searchParams.get('subject');
-  const author = searchParams.get('author');
-  
+  const isbn = searchParams.get("isbn");
+  const subject = searchParams.get("subject");
+  const author = searchParams.get("author");
+  const publisher = searchParams.get("publisher");
+  const limit = searchParams.get("limit");
+  const page = searchParams.get("page");
 
-  if (!isbn && !subject && !author) {
-    return new Response(JSON.stringify({ error: 'Missing isbn or subject or author' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+  if (!isbn && !subject && !author && !publisher) {
+    return new Response(
+      JSON.stringify({
+        error: "Missing isbn or subject or author or publisher",
+      }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 
   try {
     let response;
-    let randomPage;
 
     if (isbn) {
       response = await fetch(`${baseUrl}/book/${isbn}`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Authorization': apiKey,
-          'Content-Type': 'application/json',
+          Authorization: apiKey,
+          "Content-Type": "application/json",
         },
       });
     } else if (subject) {
-      randomPage = Math.floor(Math.random() * 200) + 1;
+      const pageNumber = page || Math.floor(Math.random() * 20) + 1;
+      const pageSize = limit || 30;
 
-      response = await fetch(`${baseUrl}/subject/${subject}?pageSize=50&page=${randomPage}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': apiKey,
-          'Content-Type': 'application/json',
-        },
-      });
+      response = await fetch(
+        `${baseUrl}/subject/${subject}?pageSize=${pageSize}&page=${pageNumber}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: apiKey,
+            "Content-Type": "application/json",
+          },
+        }
+      );
     } else if (author) {
-      response = await fetch(`${baseUrl}/author/${author}`, {
-        method: 'GET',
+      const pageSize = limit || 20;
+
+      response = await fetch(`${baseUrl}/author/${author}?pageSize=${pageSize}`, {
+        method: "GET",
         headers: {
-          'Authorization': apiKey,
-          'Content-Type': 'application/json',
+          Authorization: apiKey,
+          "Content-Type": "application/json",
         },
       });
+    } else if (publisher) {
+      const pageNumber = page || Math.floor(Math.random() * 20) + 1;
+      const pageSize = limit || 50;
+
+      response = await fetch(
+        `${baseUrl}/publisher/${publisher}?pageSize=${pageSize}&page=${pageNumber}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: apiKey,
+            "Content-Type": "application/json",
+          },
+        }
+      );
     }
 
     if (!response.ok) {
@@ -55,13 +81,16 @@ export async function GET(request) {
 
     return new Response(JSON.stringify(data), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error('Error fetching from ISBNdb:', error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch book data' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    console.error("Error fetching from ISBNdb:", error);
+    return new Response(
+      JSON.stringify({ error: "Failed to fetch book data" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 }

@@ -1,67 +1,61 @@
 import Image from "next/image";
 import Link from "next/link";
-
+import logo from "@/public/logo.svg";
+import {
+  House,
+  Swords,
+  BookText,
+  ChartPie,
+  BookA,
+  BookOpenCheck,
+  BookUser,
+} from "lucide-react";
+import { getInProgressCount } from "@/lib/db/challenge";
+import Badge from "@/components/Badge/badge";
+import { verifyAuth } from "@/lib/auth";
 import styles from "./header.module.css";
 
-import logo from "@/public/logo.svg";
-import { House } from "lucide-react";
-import { BookText } from 'lucide-react';
-import { ChartPie } from 'lucide-react';
-import { Bolt } from 'lucide-react';
-import { BookA } from 'lucide-react';
-import { BookOpenCheck } from 'lucide-react';
-import { BookUser } from 'lucide-react';
+const navItems = [
+  { href: "/", icon: House },
+  { href: "/library", icon: BookText },
+  { href: "/stats", icon: ChartPie },
+  {
+    href: "/challenges",
+    icon: Swords,
+    badge: true,
+    getCount: getInProgressCount,
+    type: "challenges",
+  },
+  { href: "/dictionary", icon: BookA },
+  { href: "/test", icon: BookOpenCheck },
+  { href: "/friends", icon: BookUser },
+];
 
-export default function Header() {
+export default async function Header() {
+  const result = await verifyAuth();
+
+  const userId = result?.user?.id;
+
   return (
     <header className={styles.header}>
       <Link href="/">
-        <Image
-          src={logo}
-          // width={100}
-          // height={100}
-          // sizes="10vw"
-          priority
-          alt="Logo"
-        />
+        <Image src={logo} priority alt="Logo" />
       </Link>
       <nav className={styles.nav}>
         <ul>
-          <li>
-            <Link href="/">
-              <House />
-            </Link>
-          </li>
-          <li>
-            <Link href="/library">
-              <BookText />
-            </Link>
-          </li>
-          <li>
-            <Link href="/stats">
-              <ChartPie />
-            </Link>
-          </li>
-          <li>
-            <Link href="/settings">
-              <Bolt />
-            </Link>
-          </li>
-          <li>
-            <Link href="/dictionary">
-              <BookA />
-            </Link>
-          </li>
-          <li>
-            <Link href="/test">
-              <BookOpenCheck />
-            </Link>
-          </li>
-          <li>
-            <Link href="/friends">
-              <BookUser />
-            </Link>
-          </li>
+          {navItems.map(({ href, icon: Icon, badge, getCount, type }) => (
+            <li key={href}>
+              <Link href={href}>
+                {badge ? (
+                  <Badge userId={userId} getCount={getCount} type={type}>
+                    <Icon />
+                  </Badge>
+                ) : (
+                  <Icon />
+                )}
+              </Link>
+            </li>
+          ))}
         </ul>
       </nav>
     </header>

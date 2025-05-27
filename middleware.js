@@ -3,11 +3,14 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-const publicRoutes = ["/login", '/signup'];
+const publicRoutes = ["/login", "/signup", "/", '/book'];
 
 export default async function middleware(req) {
-  const path = req.nextUrl.pathname;
-  const isPublicRoute = publicRoutes.includes(path);
+  const { pathname } = req.nextUrl;
+  
+  const isPublicRoute = publicRoutes.some((route) => {
+    return pathname === route || pathname.startsWith(route);
+  });
 
   if (isPublicRoute) {
     return NextResponse.next();

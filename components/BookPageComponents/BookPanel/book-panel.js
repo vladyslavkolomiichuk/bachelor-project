@@ -3,45 +3,57 @@
 import CoverImage from "@/components/GeneralComponents/CoverImage/cover-image";
 import Rating from "@/components/GeneralComponents/Rating/rating";
 import { addBookToDb, deleteBookFromDb } from "@/lib/db/book";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import MainButton from "@/components/GeneralComponents/MainButton/main-button";
 import { useRouter } from "next/navigation";
-import ConfirmModal from "@/components/GeneralComponents/ConfirmModal/confirm-modal";
 import { useToast } from "@/context/ToastContext";
+import TemplateModal from "@/components/Editor/TemplateSelection/template-selection";
+import EditorWindow from "@/components/Editor/EditorWindow/editor-window";
+import { useConfirm } from "@/context/ConfirmContext";
 
 import styles from "./book-panel.module.css";
 
 import { ArrowUpRight } from "lucide-react";
 import { Share2 } from "lucide-react";
 import { Trash } from "lucide-react";
-import TemplateModal from "@/components/Editor/TemplateSelection/template-selection";
-import EditorWindow from "@/components/Editor/EditorWindow/editor-window";
 
 export default function BookPanel({
   book,
   buttonText = "Add To My Books",
   bookColor,
   mode,
+  isUserLoggedIn = true,
 }) {
   const router = useRouter();
 
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [templatesModalOpen, setTemplatesModalOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
 
   const { showToast } = useToast();
+  const confirm = useConfirm();
 
   const { id, image, title, authors, rating = 0, buy_link: buyLink } = book;
 
   const handleAddBook = async () => {
-    await addBookToDb(book);
-    showToast("Book added successfully!", "success");
-    router.refresh();
+    if (!isUserLoggedIn) {
+      showToast("You need to be logged in to add books.", "error");
+    } else {
+      await addBookToDb(book);
+      showToast("Book added successfully!", "success");
+      router.refresh();
+    }
   };
 
   const handleDeleteBook = async () => {
+    const confirmed = await confirm({
+      title: "You're about to delete this book from your library",
+      message:
+        "This action will remove the book from your library but will leave the notes associated with it.",
+      buttonName: "Delete",
+    });
+    if (!confirmed) return;
+
     deleteBookFromDb(book.isbn13);
-    setConfirmModalOpen(false);
     showToast("Book deleted successfully!", "success");
     router.refresh();
   };
@@ -86,7 +98,7 @@ export default function BookPanel({
             {mode === "added" && (
               <button
                 type="button"
-                onClick={() => setConfirmModalOpen(true)}
+                onClick={handleDeleteBook}
                 className={styles.deleteButton}
               >
                 <Trash />
@@ -105,13 +117,6 @@ export default function BookPanel({
         bookId={id}
       />
 
-      <ConfirmModal
-        isOpen={confirmModalOpen}
-        onConfirm={handleDeleteBook}
-        onCancel={() => setConfirmModalOpen(false)}
-        title="You're about to delete this book from your library"
-        message="This action will remove the book from your library but will leave the notes associated with it."
-      />
       <TemplateModal
         setTemplate={setSelectedTemplate}
         isOpen={templatesModalOpen}

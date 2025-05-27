@@ -1,0 +1,161 @@
+.container {
+  color: var(--primary-color);
+  font-size: var(--font-size-medium);
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.container h2,
+.container h3 {
+  margin: 0;
+}
+
+.description,
+.container p {
+  margin: 0;
+}
+
+.description ol{
+  margin: 0;
+  margin-top: 10px;
+  padding-left: 20px;
+}
+
+.textBox {
+  /* font-size: var(--font-size-large); */
+  white-space: pre-wrap;
+  transition: filter 0.3s ease;
+}
+
+.blurred {
+  filter: blur(5px);
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: var(--success-color);
+  color: var(--primary-color);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: var(--font-size-medium);
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: var(--button-color1);
+}
+
+.button:disabled {
+  background-color: var(--secondary-color);
+  cursor: not-allowed;
+}
+
+.questionText {
+  font-weight: bold;
+}
+
+.answersList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.answerItem{
+  padding: 10px;
+}
+
+.answerLabel, 
+.answerLabel input {
+  cursor: pointer;
+}
+
+.activeRow {
+  background-color: var(--warning-color);
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.resultBlocks {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  width: 100%;
+}
+
+.blockLeft,
+.blockRight {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 30px;
+  align-items: center;
+  width: 100%;
+}
+
+.resultItem {
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.resultValue {
+  font-size: var(--font-size-xxlarge);
+  font-weight: bold;
+  color: var(--info-color);
+}
+
+.blockHeading {
+  width: 100%;
+  text-align: left;
+}
+
+.speedTable {
+  width: 260px;
+  height: 180px;
+  border-collapse: collapse;
+  text-align: left;
+  border: 1px solid var(--table-color);
+}
+
+.speedTable th,
+.speedTable td {
+  padding: 0.75rem 1rem;
+  border: none;
+}
+
+.speedTable tbody tr + tr {
+  border-top: 1px solid var(--table-color);
+}
+
+.tip {
+  font-style: italic;
+  height: 180px;
+  width: 440px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.footer {
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .resultBlocks {
+    flex-direction: column;
+    align-items: center;
+  }
+}

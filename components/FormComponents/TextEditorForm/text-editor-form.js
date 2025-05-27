@@ -1,4 +1,4 @@
-import { startTransition, useActionState, useEffect, useRef } from "react";
+import { startTransition, useActionState, useEffect } from "react";
 import { useInput } from "@/hooks/useInput";
 import { TextEditorFormSchema } from "@/lib/definitions";
 import Input from "../Input/Input";
@@ -48,8 +48,6 @@ export default function TextEditorForm({
   };
 
   useEffect(() => {
-    console.log("formPending:", formPending);
-    console.log("formState:", formState);
     if (!formPending && formState === undefined) {
       onDone();
     }

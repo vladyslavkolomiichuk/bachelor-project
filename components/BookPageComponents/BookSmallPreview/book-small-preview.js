@@ -8,9 +8,15 @@ import { deleteBookFromDb } from "@/lib/db/book";
 
 import styles from "./book-small-preview.module.css";
 import { useRouter } from "next/navigation";
+import { set } from "zod";
 
-export default function BookSmallPreview({ book, withMenu = false }) {
+export default function BookSmallPreview({
+  book,
+  withMenu = false,
+  updateCategory = null,
+}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
 
   const menuRef = useRef(null);
 
@@ -62,7 +68,7 @@ export default function BookSmallPreview({ book, withMenu = false }) {
             {isMenuOpen && (
               <div className={styles.menu}>
                 <button
-                  className={styles.menuItem}
+                  className={`${styles.menuItem} ${styles.deleteBtn}`}
                   onClick={async (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -78,6 +84,63 @@ export default function BookSmallPreview({ book, withMenu = false }) {
                 >
                   Delete
                 </button>
+                {updateCategory && (
+                  <div className={styles.menuWrapper}>
+                    <button
+                      className={styles.menuItem}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsCategoryMenuOpen((prev) => !prev);
+                      }}
+                    >
+                      Change Category
+                    </button>
+                    {isCategoryMenuOpen && (
+                      <div className={styles.categoryMenu}>
+                        <button
+                          className={styles.menuItem}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            updateCategory(book.id, "completed");
+                            setIsMenuOpen(false);
+                            setIsCategoryMenuOpen(false);
+                            router.refresh();
+                          }}
+                        >
+                          Completed
+                        </button>
+                        <button
+                          className={styles.menuItem}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            updateCategory(book.id, "in-progress");
+                            setIsMenuOpen(false);
+                            setIsCategoryMenuOpen(false);
+                            router.refresh();
+                          }}
+                        >
+                          In Progress
+                        </button>
+                        <button
+                          className={styles.menuItem}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            updateCategory(book.id, "not-started");
+                            setIsMenuOpen(false);
+                            setIsCategoryMenuOpen(false);
+                            router.refresh();
+                          }}
+                        >
+                          Not Started
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>

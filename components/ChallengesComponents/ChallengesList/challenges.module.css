@@ -1,0 +1,32 @@
+.container {
+  position: relative;
+}
+
+.challengeGroup > div:not(:last-child, :first-child) {
+  border-bottom: 1px solid var(--primary-color);
+}
+
+.groupTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary-color);
+}
+
+.groupTitle h2 {
+  font-size: var(--font-size-large);
+  cursor: pointer;
+}
+
+.groupTitle svg {
+  cursor: pointer;
+}
+
+.groupTitle span {
+  color: var(--secondary-color);
+}
+
+.noItems {
+  font-size: var(--font-size-medium);
+  color: var(--primary-color);
+}

@@ -3,7 +3,7 @@ import BookPreview from "../BookPreview/book-preview";
 
 import styles from "./transparent-book-block.module.css";
 
-export default async function TransparentBookBlock({ book }) {
+export default function TransparentBookBlock({ book }) {
   return (
     <BookLink
       href={`/book/${book.isbn13}`}

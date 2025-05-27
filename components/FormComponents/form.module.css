@@ -196,11 +196,10 @@
 .textEditorFormContainer {
   background-color: var(--primary-color);
   width: 400px;
-  height: 350px;
   padding: 30px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 3rem;
   align-items: center;
   color: var(--button-color1);
 }
@@ -226,6 +225,7 @@
 
 .pages {
   display: flex;
+  width: 100%;
   gap: 20px;
 }
 

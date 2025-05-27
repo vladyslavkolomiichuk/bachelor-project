@@ -4,48 +4,70 @@ import ColoredBookBlockSkeleton from "@/components/HomePageComponents/ColoredBoo
 import TransparentBookBlock from "@/components/HomePageComponents/TransparentBookBlock/transparent-book-block";
 import TransparentBookBlockSkeleton from "@/components/HomePageComponents/TransparentBookBlock/transparent-book-block-skeleton";
 import { verifyAuth } from "@/lib/auth";
-
 import {
   fetchNewSubjectBooks,
   fetchRecommendedBooksByRandom,
-  fetchNewLanguageBooks,
+  getAllBooks,
 } from "@/lib/api/books";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import BooksList from "@/components/HomePageComponents/BooksList/books-list";
+import { getUserBookAuthors, getUserBookSubjects } from "@/lib/db/book";
+
+const SUBJECTS = [
+  "Young Adult",
+  "Children Fiction",
+  "FICTION Horror",
+  "FICTION Science Fiction",
+  "History",
+];
+
+const AUTHORS = [
+  "Fyodor Dostoevsky",
+  "Charles Dickens",
+  "Virginia Woolf",
+  "William Faulkner",
+  "Leo Tolstoy",
+];
 
 export default async function HomePage() {
+  let subjects = SUBJECTS;
+  let authors = AUTHORS;
+
   const result = await verifyAuth();
 
-  if (!result.user) {
-    return redirect("/login");
+  if (result.user) {
+    const userId = result.user.id;
+
+    const userSubjects = await getUserBookSubjects(userId);
+    const userAuthors = await getUserBookAuthors(userId);
+
+    if (userSubjects && userSubjects.length >= 3) {
+      subjects = userSubjects;
+    }
+
+    if (userAuthors && userAuthors.length >= 3) {
+      authors = userAuthors;
+    }
   }
 
   const { subject: newSubject, books: newSubjectBooks } =
     await fetchNewSubjectBooks(12);
   const recommendedBooksBySubject = await fetchRecommendedBooksByRandom(
     "subject",
-    [
-      "Young Adult",
-      "Children Fiction",
-      "FICTION Horror",
-      "FICTION Science Fiction",
-      "History",
-    ],
+    subjects,
     24
   );
   const recommendedBooksByAuthor = await fetchRecommendedBooksByRandom(
     "author",
-    [
-      "Fyodor Dostoevsky",
-      "Charles Dickens",
-      "Virginia Woolf",
-      "William Faulkner",
-      "Leo Tolstoy",
-    ],
+    authors,
     36
   );
-  // const { language: newLanguage, books: newLanguageBooks } =
-  //   await fetchNewLanguageBooks(12);
+
+  const handleGetAllBooks = async (limit, page) => {
+    "use server";
+    const result = await getAllBooks(limit, page);
+    return result;
+  };
 
   return (
     <>
@@ -70,7 +92,7 @@ export default async function HomePage() {
         <Section sectionName="Our Lovely Genres"></Section>
       </div>
       <Section
-        sectionName={`Your Lovely Authors' books`}
+        sectionName="Your Lovely Authors' books"
         gridSlider
         slidesToShow={10}
       >
@@ -83,13 +105,9 @@ export default async function HomePage() {
           </Suspense>
         ))}
       </Section>
-      {/* <Section sectionName={`Open New Language - ${newLanguage}`} inlineSlider slidesToShow={5}>
-        {newLanguageBooks.map((book) => (
-          <Suspense key={book.isbn13} fallback={<TransparentBookBlockSkeleton />}>
-            <TransparentBookBlock key={book.isbn13} book={book} />
-          </Suspense>
-        ))}
-      </Section> */}
+      <Section sectionName="All Books">
+        <BooksList getBooks={handleGetAllBooks} />
+      </Section>
     </>
   );
 }
