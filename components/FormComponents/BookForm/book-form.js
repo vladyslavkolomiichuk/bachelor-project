@@ -1,11 +1,13 @@
-import { startTransition, useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useInput } from "@/hooks/useInput";
-import { ChallengeFormFields } from "@/lib/definitions";
+import { NewBookFormSchema } from "@/lib/definitions";
 import Input from "../Input/Input";
 import MainButton from "@/components/GeneralComponents/MainButton/main-button";
 import { newBookAddAction } from "@/actions/book-actions";
 
 import styles from "../form.module.css";
+import { fetchBookByISBN } from "@/lib/api/books";
+import Link from "next/link";
 
 export default function BookForm({ isOpen, onCancel, onDone }) {
   const [formState, formAction, formPending] = useActionState(
@@ -16,32 +18,48 @@ export default function BookForm({ isOpen, onCancel, onDone }) {
     }
   );
 
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
-  //   const formData = new FormData(event.currentTarget);
+  const [isbnStatus, setIsbnStatus] = useState(null);
 
-  //   formData.append("actionType", formType);
+  const checkIsbn13 = async () => {
+    if (!isbn13.trim()) return;
 
-  //   formData.append("challengeId", challengeId);
-  //   formData.append("category", "Own");
+    setIsbnStatus("checking");
 
-  //   const today = new Date();
-  //   const start = new Date(formData.get("startDate"));
-  //   const end = new Date(formData.get("endDate"));
+    const book = await fetchBookByISBN(isbn13.trim());
 
-  //   const status = start <= today && end >= today ? "in-progress" : "upcoming";
-  //   formData.append("status", status);
-
-  //   startTransition(() => {
-  //     formAction(formData);
-  //   });
-  // };
+    if (book) {
+      setIsbnStatus("found");
+    } else {
+      setIsbnStatus("not-found");
+    }
+  };
 
   useEffect(() => {
     if (!formPending && formState === undefined) {
       onDone();
     }
   }, [formPending, formState]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setIsbnStatus(null);
+      resetAuthors();
+      resetBinding();
+      resetBuyLink();
+      resetDatePublished();
+      resetDimensions();
+      resetImage();
+      resetIsbn13();
+      resetLanguage();
+      resetLongTitle();
+      resetPages();
+      resetPublisher();
+      resetSubjects();
+      resetSynopsis();
+      resetTitle();
+      formState.errors = null;
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -57,7 +75,7 @@ export default function BookForm({ isOpen, onCancel, onDone }) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen, onCancel]);
+  }, [isOpen, onCancel, formState]);
 
   const resetError = (field) => {
     formState.errors = {
@@ -72,144 +90,346 @@ export default function BookForm({ isOpen, onCancel, onDone }) {
     handleInputBlur: handleIsbn13Blur,
     hasError: isbn13HasError,
     errorMessage: isbn13Error,
-  } = useInput("", ChallengeFormFields.shape.isbn13, resetError);
+    reset: resetIsbn13,
+  } = useInput("", NewBookFormSchema.shape.isbn13, resetError);
   const {
     value: title,
     handleInputChange: handleTitleChange,
     handleInputBlur: handleTitleBlur,
     hasError: titleHasError,
     errorMessage: titleError,
-  } = useInput("", ChallengeFormFields.shape.title, resetError);
+    reset: resetTitle,
+  } = useInput("", NewBookFormSchema.shape.title, resetError);
   const {
     value: image,
     handleInputChange: handleImageChange,
     handleInputBlur: handleImageBlur,
     hasError: imageHasError,
     errorMessage: imageError,
-  } = useInput("", ChallengeFormFields.shape.image, resetError);
+    reset: resetImage,
+  } = useInput("", NewBookFormSchema.shape.image, resetError);
   const {
     value: synopsis,
     handleInputChange: handleSynopsisChange,
     handleInputBlur: handleSynopsisBlur,
     hasError: synopsisHasError,
     errorMessage: synopsisError,
-  } = useInput('', ChallengeFormFields.shape.synopsis, resetError);
+    reset: resetSynopsis,
+  } = useInput("", NewBookFormSchema.shape.synopsis, resetError);
   const {
     value: subjects,
-    handleInputChange: handleSynopsisChange,
-    handleInputBlur: handleSynopsisBlur,
-    hasError: synopsisHasError,
-    errorMessage: synopsisError,
-  } = useInput('', ChallengeFormFields.shape.synopsis, resetError);
+    handleInputChange: handleSubjectsChange,
+    handleInputBlur: handleSubjectsBlur,
+    hasError: subjectsHasError,
+    errorMessage: subjectsError,
+    reset: resetSubjects,
+  } = useInput("", NewBookFormSchema.shape.subjects, resetError);
   const {
-    value: synopsis,
-    handleInputChange: handleSynopsisChange,
-    handleInputBlur: handleSynopsisBlur,
-    hasError: synopsisHasError,
-    errorMessage: synopsisError,
-  } = useInput('', ChallengeFormFields.shape.synopsis, resetError);
+    value: buyLink,
+    handleInputChange: handleBuyLinkChange,
+    handleInputBlur: handleBuyLinkBlur,
+    hasError: buyLinkHasError,
+    errorMessage: buyLinkError,
+    reset: resetBuyLink,
+  } = useInput("", NewBookFormSchema.shape.buyLink, resetError);
   const {
-    value: synopsis,
-    handleInputChange: handleSynopsisChange,
-    handleInputBlur: handleSynopsisBlur,
-    hasError: synopsisHasError,
-    errorMessage: synopsisError,
-  } = useInput('', ChallengeFormFields.shape.synopsis, resetError);
+    value: binding,
+    handleInputChange: handleBindingChange,
+    handleInputBlur: handleBindingBlur,
+    hasError: bindingHasError,
+    errorMessage: bindingError,
+    reset: resetBinding,
+  } = useInput("", NewBookFormSchema.shape.binding, resetError);
   const {
-    value: synopsis,
-    handleInputChange: handleSynopsisChange,
-    handleInputBlur: handleSynopsisBlur,
-    hasError: synopsisHasError,
-    errorMessage: synopsisError,
-  } = useInput('', ChallengeFormFields.shape.synopsis, resetError);
+    value: authors,
+    handleInputChange: handleAuthorsChange,
+    handleInputBlur: handleAuthorsBlur,
+    hasError: authorsHasError,
+    errorMessage: authorsError,
+    reset: resetAuthors,
+  } = useInput("", NewBookFormSchema.shape.authors, resetError);
   const {
-    value: synopsis,
-    handleInputChange: handleSynopsisChange,
-    handleInputBlur: handleSynopsisBlur,
-    hasError: synopsisHasError,
-    errorMessage: synopsisError,
-  } = useInput('', ChallengeFormFields.shape.synopsis, resetError);
+    value: longTitle,
+    handleInputChange: handleLongTitleChange,
+    handleInputBlur: handleLongTitleBlur,
+    hasError: longTitleHasError,
+    errorMessage: longTitleError,
+    reset: resetLongTitle,
+  } = useInput("", NewBookFormSchema.shape.longTitle, resetError);
   const {
-    value: synopsis,
-    handleInputChange: handleSynopsisChange,
-    handleInputBlur: handleSynopsisBlur,
-    hasError: synopsisHasError,
-    errorMessage: synopsisError,
-  } = useInput('', ChallengeFormFields.shape.synopsis, resetError);
+    value: pages,
+    handleInputChange: handlePagesChange,
+    handleInputBlur: handlePagesBlur,
+    hasError: pagesHasError,
+    errorMessage: pagesError,
+    reset: resetPages,
+  } = useInput("", NewBookFormSchema.shape.pages, resetError);
   const {
-    value: synopsis,
-    handleInputChange: handleSynopsisChange,
-    handleInputBlur: handleSynopsisBlur,
-    hasError: synopsisHasError,
-    errorMessage: synopsisError,
-  } = useInput('', ChallengeFormFields.shape.synopsis, resetError);
+    value: dimensions,
+    handleInputChange: handleDimensionsChange,
+    handleInputBlur: handleDimensionsBlur,
+    hasError: dimensionsHasError,
+    errorMessage: dimensionsError,
+    reset: resetDimensions,
+  } = useInput("", NewBookFormSchema.shape.dimensions, resetError);
   const {
-    value: synopsis,
-    handleInputChange: handleSynopsisChange,
-    handleInputBlur: handleSynopsisBlur,
-    hasError: synopsisHasError,
-    errorMessage: synopsisError,
-  } = useInput('', ChallengeFormFields.shape.synopsis, resetError);
+    value: language,
+    handleInputChange: handleLanguageChange,
+    handleInputBlur: handleLanguageBlur,
+    hasError: languageHasError,
+    errorMessage: languageError,
+    reset: resetLanguage,
+  } = useInput("", NewBookFormSchema.shape.language, resetError);
+  const {
+    value: publisher,
+    handleInputChange: handlePublisherChange,
+    handleInputBlur: handlePublisherBlur,
+    hasError: publisherHasError,
+    errorMessage: publisherError,
+    reset: resetPublisher,
+  } = useInput("", NewBookFormSchema.shape.publisher, resetError);
+  const {
+    value: datePublished,
+    handleInputChange: handleDatePublishedChange,
+    handleInputBlur: handleDatePublishedBlur,
+    hasError: datePublishedHasError,
+    errorMessage: datePublishedError,
+    reset: resetDatePublished,
+  } = useInput("", NewBookFormSchema.shape.datePublished, resetError);
 
   if (!isOpen) return null;
 
   return (
     <div className={styles.backdrop}>
-      <div className={styles.textEditorFormContainer}>
+      <div
+        className={styles.textEditorFormContainer}
+        style={{ width: "550px" }}
+      >
         <div className={styles.messageContainer}>
-          <h2>New Challenge</h2>
+          <h2>New Own Book</h2>
           <p>
-            To create or edit a new challenge, you need to fill in the following
-            fields.
+            To add your own book to our application, first make sure that it
+            does not already exist using the ISBN13. If the book does not exist
+            in our database or you do not have an ISBN13, fill in the details
+            below.{" "}
+            <span style={{ fontWeight: 700 }}>
+              Authors and subjects should be separated by commas.
+            </span>
           </p>
+          {isbnStatus === "checking" && <p>Checking ISBN...</p>}
+          {isbnStatus === "found" && (
+            <p style={{ color: "green" }}>
+              Book exists in ISBNdb. <Link href={`/book/${isbn13}`}>View</Link>
+            </p>
+          )}
+          {isbnStatus === "not-found" && (
+            <p style={{ color: "red" }}>
+              Book not found in ISBNdb, you can add book by your own.
+            </p>
+          )}
         </div>
 
         <form action={formAction} className={styles.noteForm}>
           <Input
-            id="message"
-            name="message"
+            id="isbn13"
+            name="isbn13"
             type="text"
-            placeholder="Message"
-            value={message}
-            onChange={handleMessageChange}
-            onBlur={handleMessageBlur}
-            error={messageHasError ? messageError : formState?.errors?.message}
+            placeholder="ISBN13"
+            value={isbn13}
+            onChange={handleIsbn13Change}
+            onBlur={(e) => {
+              handleIsbn13Blur(e);
+              checkIsbn13();
+            }}
+            error={isbn13HasError ? isbn13Error : formState?.errors?.isbn13}
           />
-          <div className={styles.pages}>
-            <Input
-              id="startDate"
-              name="startDate"
-              type="date"
-              placeholder="Start Date"
-              value={startDate}
-              onChange={handleStartDateChange}
-              onBlur={handleStartDateBlur}
-              error={
-                startDateHasError
-                  ? startDateError
-                  : formState?.errors?.startDate
-              }
-            />
-            <Input
-              id="endDate"
-              name="endDate"
-              type="date"
-              placeholder="End Date"
-              value={endDate}
-              onChange={handleEndDateChange}
-              onBlur={handleEndDateBlur}
-              error={
-                endDateHasError ? endDateError : formState?.errors?.endDate
-              }
-            />
-          </div>
+          {isbnStatus === "not-found" && !isbn13HasError && (
+            <>
+              <Input
+                id="image"
+                name="image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                // onBlur={handleImageBlur}
+                error={imageHasError ? imageError : formState?.errors?.image}
+              />
+              <div className={styles.pages}>
+                <Input
+                  id="title"
+                  name="title"
+                  type="text"
+                  placeholder="Title"
+                  value={title}
+                  onChange={handleTitleChange}
+                  onBlur={handleTitleBlur}
+                  error={titleHasError ? titleError : formState?.errors?.title}
+                />
+                <Input
+                  id="longTitle"
+                  name="longTitle"
+                  type="text"
+                  placeholder="Long Title"
+                  value={longTitle}
+                  onChange={handleLongTitleChange}
+                  onBlur={handleLongTitleBlur}
+                  error={
+                    longTitleHasError
+                      ? longTitleError
+                      : formState?.errors?.longTitle
+                  }
+                />
+              </div>
+              <Input
+                id="authors"
+                name="authors"
+                type="text"
+                placeholder="Authors"
+                value={authors}
+                onChange={handleAuthorsChange}
+                onBlur={handleAuthorsBlur}
+                error={
+                  authorsHasError ? authorsError : formState?.errors?.authors
+                }
+              />
+              <Input
+                id="synopsis"
+                name="synopsis"
+                type="text"
+                placeholder="Synopsis"
+                value={synopsis}
+                onChange={handleSynopsisChange}
+                onBlur={handleSynopsisBlur}
+                error={
+                  synopsisHasError ? synopsisError : formState?.errors?.synopsis
+                }
+              />
+              <Input
+                id="subjects"
+                name="subjects"
+                type="text"
+                placeholder="Subjects"
+                value={subjects}
+                onChange={handleSubjectsChange}
+                onBlur={handleSubjectsBlur}
+                error={
+                  subjectsHasError ? subjectsError : formState?.errors?.subjects
+                }
+              />
+              <div className={styles.pages}>
+                <Input
+                  id="language"
+                  name="language"
+                  type="text"
+                  placeholder="Language"
+                  value={language}
+                  onChange={handleLanguageChange}
+                  onBlur={handleLanguageBlur}
+                  error={
+                    languageHasError
+                      ? languageError
+                      : formState?.errors?.language
+                  }
+                />
+                <Input
+                  id="pages"
+                  name="pages"
+                  type="number"
+                  placeholder="Pages"
+                  value={pages}
+                  onChange={handlePagesChange}
+                  onBlur={handlePagesBlur}
+                  error={pagesHasError ? pagesError : formState?.errors?.pages}
+                />
+              </div>
+              <div className={styles.pages}>
+                <Input
+                  id="binding"
+                  name="binding"
+                  type="text"
+                  placeholder="Binding"
+                  value={binding}
+                  onChange={handleBindingChange}
+                  onBlur={handleBindingBlur}
+                  error={
+                    bindingHasError ? bindingError : formState?.errors?.binding
+                  }
+                />
+                <Input
+                  id="dimensions"
+                  name="dimensions"
+                  type="text"
+                  placeholder="Dimensions"
+                  value={dimensions}
+                  onChange={handleDimensionsChange}
+                  onBlur={handleDimensionsBlur}
+                  error={
+                    dimensionsHasError
+                      ? dimensionsError
+                      : formState?.errors?.dimensions
+                  }
+                />
+              </div>
+              <div className={styles.pages}>
+                <Input
+                  id="datePublished"
+                  name="datePublished"
+                  type="date"
+                  placeholder="Published Date"
+                  value={datePublished}
+                  onChange={handleDatePublishedChange}
+                  onBlur={handleDatePublishedBlur}
+                  error={
+                    datePublishedHasError
+                      ? datePublishedError
+                      : formState?.errors?.datePublished
+                  }
+                />
+                <Input
+                  id="publisher"
+                  name="publisher"
+                  type="text"
+                  placeholder="Publisher"
+                  value={publisher}
+                  onChange={handlePublisherChange}
+                  onBlur={handlePublisherBlur}
+                  error={
+                    publisherHasError
+                      ? publisherError
+                      : formState?.errors?.publisher
+                  }
+                />
+              </div>
 
-          <MainButton type="submit" disabled={formPending}>
-            <span>
-              {formType === "create" ? "Create Challenge" : "Update Challenge"}
-            </span>
+              <Input
+                id="buyLink"
+                name="buyLink"
+                type="text"
+                placeholder="Buy Link"
+                value={buyLink}
+                onChange={handleBuyLinkChange}
+                onBlur={handleBuyLinkBlur}
+                error={
+                  buyLinkHasError ? buyLinkError : formState?.errors?.buyLink
+                }
+              />
+            </>
+          )}
+
+          <MainButton
+            type="submit"
+            disabled={
+              formPending || isbnStatus === "found" || isbnStatus === null
+            }
+          >
+            <span>Add Book</span>
           </MainButton>
-          <button className={styles.cancel} onClick={onCancel}>
+          <button
+            className={styles.cancel}
+            onClick={() => {
+              onCancel();
+            }}
+          >
             Cancel
           </button>
         </form>

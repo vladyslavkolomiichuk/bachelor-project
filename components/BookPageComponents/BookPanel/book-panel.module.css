@@ -84,6 +84,7 @@
 .actionButtons {
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 10px;
 }
 
@@ -99,15 +100,13 @@
   font-size: var(--font-size-small);
   transition: background-color 0.2s ease;
   width: fit-content;
-  height: fit-content;
+  height: 34px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .buyButton {
-  text-decoration: none;
-  pointer-events: auto;
   padding: 7px 12px;
 }
 

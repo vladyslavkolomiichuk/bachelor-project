@@ -1,0 +1,68 @@
+.ratingSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.averageRating {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.averageRating p {
+  margin: 0;
+  font-size: var(--font-size-xlarge);
+  font-weight: 700;
+}
+
+.starRatingContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.totalReviews {
+  color: var(--button-color2);
+}
+
+.detailedRating {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ratingRowNum {
+  margin: 0;
+  width: 20px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.percentage {
+  margin: 0;
+  width: 50px;
+  text-align: center;
+  color: var(--button-color2);
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ratingBar {
+  flex: 1;
+  height: 10px;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+  position: relative;
+}
+
+.filledBar {
+  height: 100%;
+  background-color: #efc44d;
+  border-radius: 5px;
+}

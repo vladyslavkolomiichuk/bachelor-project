@@ -52,16 +52,19 @@ export default function ChallengeFormSmall({
   };
 
   useEffect(() => {
-    handleNumberChange({ target: { value: "" } });
-    handleStartDateChange({ target: { value: "" } });
-    handleEndDateChange({ target: { value: "" } });
-  }, [challenge]);
-
-  useEffect(() => {
     if (!formPending && formState === undefined) {
       onDone();
     }
   }, [formPending, formState]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      resetEndDate();
+      resetNumber();
+      resetStartDate();
+      formState.errors = null;
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -92,6 +95,7 @@ export default function ChallengeFormSmall({
     handleInputBlur: handleNumberBlur,
     hasError: numberHasError,
     errorMessage: numberError,
+    reset: resetNumber,
   } = useInput("", ChallengeFormFields.shape.number, resetError);
   const {
     value: startDate,
@@ -99,6 +103,7 @@ export default function ChallengeFormSmall({
     handleInputBlur: handleStartDateBlur,
     hasError: startDateHasError,
     errorMessage: startDateError,
+    reset: resetStartDate,
   } = useInput("", ChallengeFormFields.shape.startDate, resetError);
   const {
     value: endDate,
@@ -106,6 +111,7 @@ export default function ChallengeFormSmall({
     handleInputBlur: handleEndDateBlur,
     hasError: endDateHasError,
     errorMessage: endDateError,
+    reset: resetEndDate,
   } = useInput("", ChallengeFormFields.shape.endDate, resetError);
 
   if (!isOpen) return null;

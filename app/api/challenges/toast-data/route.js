@@ -4,7 +4,7 @@ import {
   updateExpiredChallenges,
 } from "@/lib/db/challenge";
 
-export async function POST(request) {
+export async function PATCH(request) {
   const { userId } = await request.json();
 
   if (!userId) {

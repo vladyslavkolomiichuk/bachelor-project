@@ -1,12 +1,19 @@
+import { ReviewsProvider } from "@/context/ReviewsContext";
+import AIBookBlock from "../AIBookBlock/ai-book-block";
 import DescriptionSection from "../DescriptionSection/description-section";
+import AverageRating from "../ReviewsComponents/AverageRating/average-rating";
+import ReviewsList from "../ReviewsComponents/Reviews/reviews-list";
 
 import styles from "./full-book-description.module.css";
 
 export default function FullBookDescription({ book }) {
   const {
+    id,
     isbn13,
+    title,
     title_long: longTitle,
     synopsis,
+    authors,
     subjects,
     language,
     pages,
@@ -16,14 +23,16 @@ export default function FullBookDescription({ book }) {
     dimensions,
   } = book;
   return (
-    <>
+    <div>
       <div className={styles.fullBookDescription}>
-        <div className={styles.mainPart}>
+        <div className={styles.part}>
           {longTitle ? (
             <DescriptionSection title="Long Title">
               <p>{longTitle}</p>
             </DescriptionSection>
-          ) : null}
+          ) : (
+            ""
+          )}
           <DescriptionSection title="Synopsis">
             <p>{synopsis}</p>
           </DescriptionSection>
@@ -35,9 +44,9 @@ export default function FullBookDescription({ book }) {
             </p>
           </DescriptionSection>
         </div>
-        <div className={styles.secondPart}>
+        <div className={styles.part}>
           <DescriptionSection title="AI Description">
-            <p>Not Available For Now</p>
+            <AIBookBlock title={title} authors={authors} subjects={subjects} />
           </DescriptionSection>
           <DescriptionSection title="Publication Details">
             <p>
@@ -46,7 +55,7 @@ export default function FullBookDescription({ book }) {
           </DescriptionSection>
           <DescriptionSection title="Book Details">
             <p>
-              Language: {language} Page count: {pages} {binding}: 
+              Language: {language} Page count: {pages} {binding}:
               {dimensions
                 ? dimensions.toLowerCase().replace(/:/g, " ")
                 : "Dimensions not available"}
@@ -54,10 +63,21 @@ export default function FullBookDescription({ book }) {
           </DescriptionSection>
         </div>
       </div>
-      <div className={styles.reviewContainer}>
-        <DescriptionSection title="Average Rating"></DescriptionSection>
-        <DescriptionSection title="Reviews"></DescriptionSection>
-      </div>
-    </>
+      
+      <ReviewsProvider>
+        <div className={styles.reviewContainer}>
+          <div className={styles.part}>
+            <DescriptionSection title="Average Rating">
+              <AverageRating bookId={id} />
+            </DescriptionSection>
+          </div>
+          <div className={styles.part}>
+            <DescriptionSection title="Reviews">
+              <ReviewsList bookId={id} />
+            </DescriptionSection>
+          </div>
+        </div>
+      </ReviewsProvider>
+    </div>
   );
 }

@@ -4,7 +4,7 @@ import { createContext, useState, useContext, useEffect } from "react";
 
 const TimerContext = createContext();
 
-export const TimerProvider = ({ children, initialTime = 0 }) => {
+export function TimerProvider({ children, initialTime = 0 }) {
   const [timer, setTimer] = useState(initialTime);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -46,12 +46,14 @@ export const TimerProvider = ({ children, initialTime = 0 }) => {
   }, [isRunning]);
 
   return (
-    <TimerContext.Provider value={{ timer, isRunning, startTimer, pauseTimer, stopTimer }}>
+    <TimerContext.Provider
+      value={{ timer, isRunning, startTimer, pauseTimer, stopTimer }}
+    >
       {children}
     </TimerContext.Provider>
   );
-};
+}
 
-export const useTimer = () => {
+export function useTimer() {
   return useContext(TimerContext);
-};
+}

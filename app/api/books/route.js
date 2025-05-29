@@ -50,13 +50,16 @@ export async function GET(request) {
     } else if (author) {
       const pageSize = limit || 20;
 
-      response = await fetch(`${baseUrl}/author/${author}?pageSize=${pageSize}`, {
-        method: "GET",
-        headers: {
-          Authorization: apiKey,
-          "Content-Type": "application/json",
-        },
-      });
+      response = await fetch(
+        `${baseUrl}/author/${author}?pageSize=${pageSize}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: apiKey,
+            "Content-Type": "application/json",
+          },
+        }
+      );
     } else if (publisher) {
       const pageNumber = page || Math.floor(Math.random() * 20) + 1;
       const pageSize = limit || 50;
@@ -69,6 +72,16 @@ export async function GET(request) {
             Authorization: apiKey,
             "Content-Type": "application/json",
           },
+        }
+      );
+    }
+
+    if (response.status === 404) {
+      return new Response(
+        JSON.stringify([]),
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
         }
       );
     }

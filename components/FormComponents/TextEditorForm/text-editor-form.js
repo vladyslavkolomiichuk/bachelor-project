@@ -54,6 +54,16 @@ export default function TextEditorForm({
   }, [formPending, formState]);
 
   useEffect(() => {
+    if (!isOpen) {
+      resetDescription();
+      resetEndPage();
+      resetStartPage();
+      resetTitle();
+      formState.errors = null;
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
         onCancel();
@@ -82,6 +92,7 @@ export default function TextEditorForm({
     handleInputBlur: handleTitleBlur,
     hasError: titleHasError,
     errorMessage: titleError,
+    reset: resetTitle,
   } = useInput(
     defaultTitle,
     TextEditorFormSchema._def.schema.shape.title,
@@ -93,6 +104,7 @@ export default function TextEditorForm({
     handleInputBlur: handleDescriptionBlur,
     hasError: descriptionHasError,
     errorMessage: descriptionError,
+    reset: resetDescription,
   } = useInput(
     defaultDescription,
     TextEditorFormSchema._def.schema.shape.description,
@@ -104,6 +116,7 @@ export default function TextEditorForm({
     handleInputBlur: handleStartPageBlur,
     hasError: startPageHasError,
     errorMessage: startPageError,
+    reset: resetStartPage,
   } = useInput(
     defaultStartPage,
     TextEditorFormSchema._def.schema.shape.startPage,
@@ -115,6 +128,7 @@ export default function TextEditorForm({
     handleInputBlur: handleEndPageBlur,
     hasError: endPageHasError,
     errorMessage: endPageError,
+    reset: resetEndPage,
   } = useInput(
     defaultEndPage,
     TextEditorFormSchema._def.schema.shape.endPage,

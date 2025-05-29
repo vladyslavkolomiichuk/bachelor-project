@@ -8,8 +8,16 @@
 .notesContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  justify-items: center;
   column-gap: 60px;
   row-gap: 30px;
+}
+
+.noItems {
+  width: 100%;
+  text-align: center;
+  font-size: var(--font-size-medium);
+  color: var(--primary-color);
 }
 
 .bookItem {

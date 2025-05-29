@@ -2,22 +2,15 @@ import Header from "@/components/MainLayoutComponents/Header/header";
 import Panel from "@/components/MainLayoutComponents/Panel/panel";
 import "./protected-globals.css";
 import Notifier from "@/components/Notifier/notifier";
-import { verifyAuth } from "@/lib/auth";
+import { UserProvider } from "@/context/UserContext";
 
-export default async function ProtectedLayout({ children }) {
-  const result = await verifyAuth();
-
-  if (!result.user) {
-    return redirect("/login");
-  }
-
-  const userId = result.user.id;
+export default function ProtectedLayout({ children }) {
   return (
-    <>
-      <Notifier userId={userId} />
+    <UserProvider>
+      <Notifier />
       <Header />
       <Panel />
       <main>{children}</main>
-    </>
+    </UserProvider>
   );
 }

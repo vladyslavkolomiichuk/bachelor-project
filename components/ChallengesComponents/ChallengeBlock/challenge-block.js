@@ -24,9 +24,9 @@ export default function ChallengeBlock({ challenge }) {
 
   const handleComplete = async () => {
     const res = await fetch("/api/challenges/complete", {
-      method: "POST",
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: id }),
+      body: JSON.stringify({ id }),
     });
 
     if (res.ok) {
@@ -50,7 +50,7 @@ export default function ChallengeBlock({ challenge }) {
     if (!confirmed) return;
 
     const res = await fetch("/api/challenges/delete", {
-      method: "POST",
+      method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: id }),
     });

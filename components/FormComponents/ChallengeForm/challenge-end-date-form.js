@@ -53,6 +53,13 @@ export default function ChallengeEndDateForm({
   }, [formPending, formState]);
 
   useEffect(() => {
+    if (!isOpen) {
+      resetEndDate();
+      formState.errors = null;
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
         onCancel();
@@ -81,6 +88,7 @@ export default function ChallengeEndDateForm({
     handleInputBlur: handleEndDateBlur,
     hasError: endDateHasError,
     errorMessage: endDateError,
+    reset: resetEndDate,
   } = useInput(defaultEndDate, ChallengeFormFields.shape.endDate, resetError);
 
   if (!isOpen) return null;

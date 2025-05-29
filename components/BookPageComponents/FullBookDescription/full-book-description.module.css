@@ -4,16 +4,13 @@
   justify-content: space-around;
   align-content: flex-start;
   gap: 100px;
-}
-
-.mainPart {
-  flex: 1;
-}
-
-.secondPart {
-  flex: 1;
-}
-
-.secondPart > section:first-child {
   color: var(--primary-color);
+}
+
+.reviewContainer {
+  margin-top: 1rem;
+}
+
+.part {
+  flex: 1;
 }

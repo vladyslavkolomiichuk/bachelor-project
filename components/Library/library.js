@@ -8,7 +8,6 @@ import { Suspense, useState } from "react";
 import CircleButton from "@/components/GeneralComponents/CircleButton/circle-button";
 import { Plus } from "lucide-react";
 import NoteBlock from "@/components/Editor/NoteBlock/note-block";
-import { redirect } from "next/navigation";
 import BookForm from "../FormComponents/BookForm/book-form";
 
 import styles from "./library.module.css";
@@ -24,11 +23,16 @@ export default function Library({
   return (
     <>
       <Section sectionName={["My Books", "My Notes"]} multi>
-        <div className={styles.booksContainer} categories={categories}>
-          {books.length > 0
-            ? books.map((book) => (
+        {books.length > 0 ? (
+          <div className={styles.booksContainer} categories={categories}>
+            {books.map((book) => {
+              const href = book.person_share_id
+                ? `/book/own/${book.id}`
+                : `/book/${book.isbn13}`;
+
+              return (
                 <BookLink
-                  href={`/book/${book.isbn13}`}
+                  href={href}
                   key={book.id}
                   style={styles.bookItem}
                   category={book.category}
@@ -41,16 +45,21 @@ export default function Library({
                     />
                   </Suspense>
                 </BookLink>
-              ))
-            : "There are no books"}
-        </div>
-        <div className={styles.notesContainer}>
-          {notes.length > 0
-            ? notes.map((note) => (
-                <NoteBlock key={note.session_id} note={note} />
-              ))
-            : "There are no notes"}
-        </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className={styles.noItems}>There are no books</p>
+        )}
+        {notes.length > 0 ? (
+          <div className={styles.notesContainer}>
+            {notes.map((note) => (
+              <NoteBlock key={note.session_id} note={note} />
+            ))}
+          </div>
+        ) : (
+          <p className={styles.noItems}>There are no notes</p>
+        )}
       </Section>
 
       <CircleButton

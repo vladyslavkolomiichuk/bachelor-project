@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState } from "react";
 import FormError from "../FormError/form-error";
@@ -23,7 +23,7 @@ export default function Input({ id, error, type, ...props }) {
         <FormError>
           {error.length > 1 ? (
             <div>
-              <p>Password must:</p>
+              <p>{props.placeholder} must:</p>
               <ul>
                 {error.map((msg, index) => (
                   <li key={index}>- {msg}</li>

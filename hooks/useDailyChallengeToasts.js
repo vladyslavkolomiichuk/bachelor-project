@@ -1,54 +1,47 @@
-"use client";
-
 import { useToast } from "@/context/ToastContext";
+import { useUser } from "@/context/UserContext";
 import { useEffect } from "react";
+import useSWR from "swr";
 
-export function useDailyChallengeToasts(userId) {
+export default function useDailyChallengeToasts() {
   const { showToast } = useToast();
+  const { user } = useUser();
+  const userId = user?.id;
 
-  useEffect(() => {
-    if (!userId) return;
+  const fetcher = (url) =>
+    fetch(url, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
+    }).then((res) => {
+      if (!res.ok) throw new Error("Fetch error");
+      return res.json();
+    });
 
-    const today = new Date().toISOString().split("T")[0];
-    const lastShown = localStorage.getItem("lastChallengeToast");
+  const { data, error } = useSWR(
+    userId ? "/api/challenges/toast-data" : null,
+    fetcher,
+    {
+      refreshInterval: 2 * 60 * 60 * 1000, 
+      onSuccess(data) {
+        if (!data) return;
+        
+        const today = new Date().toISOString().split("T")[0];
+        const lastShown = localStorage.getItem("lastChallengeToast");
 
-    if (lastShown === today) return;
+        if (lastShown === today) return;
 
-    async function handleShowChallenges() {
-      try {
-        const res = await fetch("/api/challenges/toast-data", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId }),
-        });
-
-        if (!res.ok) throw new Error("Toast data fetch failed");
-
-        const { failed, inProgress } = await res.json();
-
-        if (inProgress.length > 0) {
-          const msg = inProgress.map((c) => `- ${c.message}`).join("\n");
+        if (data.inProgress.length > 0) {
+          const msg = data.inProgress.map((c) => `- ${c.message}`).join("\n");
           showToast(`Active challenges for today:\n${msg}`, "info");
         }
-
-        if (failed.length > 0) {
-          const msg = failed.map((c) => `- ${c.message}`).join("\n");
+        if (data.failed.length > 0) {
+          const msg = data.failed.map((c) => `- ${c.message}`).join("\n");
           showToast(`Failed challenges:\n${msg}`, "error");
         }
-
         localStorage.setItem("lastChallengeToast", today);
         window.dispatchEvent(new Event("challenges:updated"));
-      } catch (err) {
-        console.error("Failed to fetch challenge toast data:", err);
-      }
+      },
     }
-
-    handleShowChallenges();
-
-    const interval = setInterval(handleShowChallenges, 2 * 60 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, [userId, showToast]);
+  );
 }

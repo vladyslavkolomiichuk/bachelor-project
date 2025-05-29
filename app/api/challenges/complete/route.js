@@ -1,6 +1,6 @@
 import { completeChallenge } from "@/lib/db/challenge";
 
-export async function POST(req) {
+export async function PATCH(req) {
   const { id } = await req.json();
 
   if (!id) return new Response("Missing ID", { status: 400 });

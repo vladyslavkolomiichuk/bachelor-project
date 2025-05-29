@@ -25,10 +25,11 @@
 .button svg {
   width: 20px;
   height: 20px;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-.button svg:hover {
+.button:hover svg,
+.authBtn:hover {
   color: var(--secondary-color);
 }
 
@@ -36,4 +37,18 @@
   font-size: var(--font-size-medium);
   font-weight: bold;
   color: var(--primary-color);
+  transition: all 0.2s ease;
+}
+
+.authActions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.authBtn {
+  cursor: pointer;
+}
+
+.loginBtn {
+  color: var(--button-color1);
 }

@@ -23,11 +23,17 @@ export function useInput(defaultValue, validationSchema, resetError) {
     setDidEdit(true);
   }
 
+  function reset() {
+    setEnteredValue("");
+    setDidEdit(false);
+  }
+
   return {
     value: enteredValue,
     handleInputChange,
     handleInputBlur,
     hasError: didEdit && !valueIsValid,
     errorMessage: didEdit && !valueIsValid ? errorMessage : null,
+    reset,
   };
 }

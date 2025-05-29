@@ -31,6 +31,8 @@ const COLORS = [
 export default function UserStats() {
   const [stats, setStats] = useState(null);
 
+  //Without API
+
   useEffect(() => {
     async function fetchStats() {
       const res = await fetch("/api/user/stats");

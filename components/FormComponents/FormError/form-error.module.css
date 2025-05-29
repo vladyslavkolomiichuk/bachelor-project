@@ -1,15 +1,19 @@
 .formError {
-  position: absolute;
+  /* position: absolute;
   opacity: 0;
   width: 320px;
   right: -10px;
   top: -10px;
-  transform: translateX(100%);
-  padding: 20px;
+  transform: translateX(100%); */
+  width: 100%;
+  /* padding: 20px; */
+  margin-top: 0.5rem;
   font-size: var(--font-size-medium);
-  color: var(--primary-color);
-  background-color: var(--error-color);
-  box-shadow: 20px 20px 50px var(--button-color1);
+  font-weight: 600;
+  /* color: var(--primary-color); */
+  color: var(--error-color);
+  /* background-color: var(--error-color); */
+  /* box-shadow: 20px 20px 50px var(--button-color1); */
   animation: fadeIn 0.2s forwards;
   z-index: 1;
 }
@@ -25,18 +29,18 @@
   padding: 0;
 }
 
-.formError::after {
+/* .formError::after {
   content: '';
   position: absolute;
   top: 30px;
-  left: -10px; /* Змістіть трикутник до правого краю */
+  left: -10px; 
   width: 0;
   height: 0;
-  border-right: 10px solid var(--error-color); /* Трикутник справа */
+  border-right: 10px solid var(--error-color); 
   border-top: 7px solid transparent;
   border-bottom: 7px solid transparent;
   transform: translateY(-50%);
-}
+} */
 
 @keyframes fadeIn {
   0% {

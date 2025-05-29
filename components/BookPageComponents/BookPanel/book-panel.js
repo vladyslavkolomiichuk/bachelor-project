@@ -16,6 +16,7 @@ import styles from "./book-panel.module.css";
 import { ArrowUpRight } from "lucide-react";
 import { Share2 } from "lucide-react";
 import { Trash } from "lucide-react";
+import { useUser } from "@/context/UserContext";
 
 export default function BookPanel({
   book,
@@ -36,7 +37,7 @@ export default function BookPanel({
 
   const handleAddBook = async () => {
     if (!isUserLoggedIn) {
-      showToast("You need to be logged in to add books.", "error");
+      showToast("You need to be logged in to add books.", "warning");
     } else {
       await addBookToDb(book);
       showToast("Book added successfully!", "success");
@@ -89,9 +90,19 @@ export default function BookPanel({
           </MainButton>
 
           <div className={styles.actionButtons}>
-            <a href={buyLink} target="_blank" className={styles.buyButton}>
+            <button
+              type="button"
+              className={styles.buyButton}
+              disabled={!buyLink}
+              onClick={() => {
+                if (buyLink) {
+                  window.open(buyLink, "_blank", "noopener,noreferrer");
+                }
+              }}
+            >
               Buy <ArrowUpRight />
-            </a>
+            </button>
+
             <button type="button" id="share" className={styles.shareButton}>
               <Share2 />
             </button>

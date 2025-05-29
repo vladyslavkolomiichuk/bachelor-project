@@ -2,20 +2,24 @@
 
 import { useEffect, useState } from "react";
 import styles from "./badge.module.css";
+import { useUser } from "@/context/UserContext";
 
-export default function Badge({ userId, getCount, type, children }) {
+export default function Badge({ getCount, type, children }) {
   const [count, setCount] = useState(0);
 
+  const { user } = useUser();
+  const userId = user?.id;
+
   useEffect(() => {
-    async function load() {
+    const fetchData = async () => {
       const result = await getCount(userId);
       setCount(result);
-    }
+    };
 
-    load();
+    fetchData();
 
     const handler = () => {
-      load();
+      fetchData();
     };
 
     window.addEventListener(`${type}:updated`, handler);

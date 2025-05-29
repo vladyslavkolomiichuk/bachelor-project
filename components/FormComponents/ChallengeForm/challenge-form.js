@@ -53,6 +53,15 @@ export default function ChallengeForm({
   }, [formPending, formState]);
 
   useEffect(() => {
+    if (!isOpen) {
+      resetEndDate();
+      resetMessage();
+      resetStartDate();
+      formState.errors = null;
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
         onCancel();
@@ -81,6 +90,7 @@ export default function ChallengeForm({
     handleInputBlur: handleMessageBlur,
     hasError: messageHasError,
     errorMessage: messageError,
+    reset: resetMessage,
   } = useInput(defaultMessage, ChallengeFormFields.shape.message, resetError);
   const {
     value: startDate,
@@ -88,6 +98,7 @@ export default function ChallengeForm({
     handleInputBlur: handleStartDateBlur,
     hasError: startDateHasError,
     errorMessage: startDateError,
+    reset: resetStartDate,
   } = useInput(
     defaultStartDate,
     ChallengeFormFields.shape.startDate,
@@ -99,6 +110,7 @@ export default function ChallengeForm({
     handleInputBlur: handleEndDateBlur,
     hasError: endDateHasError,
     errorMessage: endDateError,
+    reset: resetEndDate,
   } = useInput(defaultEndDate, ChallengeFormFields.shape.endDate, resetError);
 
   if (!isOpen) return null;

@@ -1,0 +1,31 @@
+.reviewRatingContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.voteBtn {
+  border: none;
+  background-color: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.voteBtn svg {
+  color: var(--primary-color);
+  transition: all 0.2s ease;
+}
+
+.voteBtn:not(.upVote):not(.downVote):hover svg {
+  color: var(--button-color2);
+}
+
+.upVote svg {
+  color: var(--success-color);
+  fill: var(--success-color);
+}
+
+.downVote svg {
+  color: var(--error-color);
+  fill: var(--error-color);
+}

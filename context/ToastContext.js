@@ -10,7 +10,7 @@ export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
 
   const showToast = (text, type = "info") => {
-    const id = Date.now();
+    const id = `${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     setToasts((prev) => [...prev, { id, text, type }]);
 
     setTimeout(() => {
@@ -23,7 +23,10 @@ export function ToastProvider({ children }) {
       {children}
       <div className={styles.toastContainer}>
         {toasts.map((toast) => (
-          <div key={toast.id} className={`${styles.toast} ${styles[toast.type]}`}>
+          <div
+            key={toast.id}
+            className={`${styles.toast} ${styles[toast.type]}`}
+          >
             {toast.text}
           </div>
         ))}

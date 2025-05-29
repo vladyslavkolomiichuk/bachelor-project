@@ -6,7 +6,7 @@ import styles from "./search-small-book-item.module.css";
 
 export default function SearchSmallBookItem({ book }) {
   return (
-    <BookLink link={`/book/${book.isbn13}`} style={styles.searchBookItem}>
+    <BookLink href={`/book/${book.isbn13}`} style={styles.searchBookItem}>
       <CoverImage
         // style={styles.cover}
         coverImg={book.image}

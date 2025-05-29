@@ -4,32 +4,34 @@ import { redirect } from "next/navigation";
 import { UserRoundCheck } from "lucide-react";
 import { Bell } from "lucide-react";
 import { Flame } from "lucide-react";
-
-import styles from "./notification-bar.module.css";
 import Badge from "@/components/Badge/badge";
 import { useEffect, useState } from "react";
+import { useUser } from "@/context/UserContext";
+import { getUsername, getUserVisitScore } from "@/lib/db/user";
+import NotificationBarUnauth from "./notification-bar-unauth";
 
-export default function NotificationBarClient({
-  userId,
-  getUsername,
-  getUserScore,
-}) {
+import styles from "./notification-bar.module.css";
+
+export default function NotificationBar() {
+  const { user } = useUser();
+  const userId = user?.id;
+
   const [username, setUsername] = useState(null);
 
   useEffect(() => {
-    async function loadData() {
+    const fetchData = async () => {
       const name = await getUsername(userId);
       setUsername(name);
-    }
+    };
 
-    loadData();
+    fetchData();
   }, [userId]);
 
   const handleUserButtonClick = () => {
     redirect(`/user/${username}`);
   };
 
-  return (
+  return user ? (
     <div className={styles.notificationBar}>
       <button
         type="button"
@@ -43,11 +45,13 @@ export default function NotificationBarClient({
       <button type="button" className={styles.button} title="Notifications">
         <Bell strokeWidth={3} />
       </button>
-      <Badge userId={userId} getCount={getUserScore} type="notification">
+      <Badge getCount={getUserVisitScore} type="notification">
         <button type="button" className={styles.button} title="Visit streak">
           <Flame strokeWidth={3} />
         </button>
       </Badge>
     </div>
+  ) : (
+    <NotificationBarUnauth />
   );
 }

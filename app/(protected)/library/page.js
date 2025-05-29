@@ -5,7 +5,7 @@ import { getAllNotesByUser } from "@/lib/db/note";
 
 import Library from "@/components/Library/library";
 
-const categories = [
+const BOOK_CATEGORIES = [
   { key: "all", label: "All" },
   { key: "completed", label: "Completed" },
   { key: "in-progress", label: "In Progress" },
@@ -31,7 +31,7 @@ export default async function LibraryPage() {
     <Library
       books={books}
       notes={notes}
-      categories={categories}
+      categories={BOOK_CATEGORIES}
       handleChangeCategory={handleChangeCategory}
     />
   );

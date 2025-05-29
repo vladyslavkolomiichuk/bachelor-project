@@ -1,32 +1,39 @@
 "use client";
 
-import { useEffect } from "react";
+import useSWR from "swr";
 import { useToast } from "@/context/ToastContext";
+import { useUser } from "@/context/UserContext";
+import { useEffect } from "react";
 
-export function useNotificationToasts(userId) {
+export function useNotificationToasts() {
   const { showToast } = useToast();
+  const { user } = useUser();
+  const userId = user?.id;
 
-  useEffect(() => {
-    if (!userId) return;
+  const fetcher = (url) =>
+    fetch(url, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
+    }).then((res) => {
+      if (!res.ok) throw new Error("Fetch error");
+      return res.json();
+    });
 
-    const today = new Date().toISOString().split("T")[0];
-    const lastShown = localStorage.getItem("lastVisitToast");
+  const { data, error } = useSWR(
+    userId ? "/api/user/toast-data" : null,
+    fetcher,
+    {
+      refreshInterval: 2 * 60 * 60 * 1000,
+      onSuccess(data) {
+        if (!data) return;
 
-    if (lastShown === today) return;
+        const today = new Date().toISOString().split("T")[0];
+        const lastShown = localStorage.getItem("lastVisitToast");
 
-    async function handleStreakToast() {
-      try {
-        const res = await fetch("/api/user/toast-data", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId }),
-        });
+        if (lastShown === today) return;
 
-        if (!res.ok) throw new Error("Failed to update streak");
-
-        const { flameScore } = await res.json();
+        const { flameScore } = data;
 
         if (flameScore === 1) {
           showToast("Good start, keep it up! Your visit streak is 1.", "info");
@@ -39,15 +46,7 @@ export function useNotificationToasts(userId) {
 
         localStorage.setItem("lastVisitToast", today);
         window.dispatchEvent(new Event("notification:updated"));
-      } catch (err) {
-        console.error("Streak toast failed:", err);
-      }
+      },
     }
-
-    handleStreakToast();
-
-    const interval = setInterval(handleStreakToast, 2 * 60 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, [userId, showToast]);
+  );
 }

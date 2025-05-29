@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { getInProgressCount } from "@/lib/db/challenge";
 import Badge from "@/components/Badge/badge";
-import { verifyAuth } from "@/lib/auth";
 import styles from "./header.module.css";
 
 const navItems = [
@@ -31,11 +30,7 @@ const navItems = [
   { href: "/friends", icon: BookUser },
 ];
 
-export default async function Header() {
-  const result = await verifyAuth();
-
-  const userId = result?.user?.id;
-
+export default function Header() {
   return (
     <header className={styles.header}>
       <Link href="/">
@@ -47,7 +42,7 @@ export default async function Header() {
             <li key={href}>
               <Link href={href}>
                 {badge ? (
-                  <Badge userId={userId} getCount={getCount} type={type}>
+                  <Badge getCount={getCount} type={type}>
                     <Icon />
                   </Badge>
                 ) : (
