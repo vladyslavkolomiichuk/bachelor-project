@@ -2,7 +2,7 @@
 
 import CoverImage from "@/components/GeneralComponents/CoverImage/cover-image";
 import Rating from "@/components/GeneralComponents/Rating/rating";
-import { addBookToDb, deleteBookFromDb } from "@/lib/db/book";
+import { addBookToUserLib, deleteBookFromDb } from "@/lib/db/book";
 import { useState } from "react";
 import MainButton from "@/components/GeneralComponents/MainButton/main-button";
 import { useRouter } from "next/navigation";
@@ -10,13 +10,13 @@ import { useToast } from "@/context/ToastContext";
 import TemplateModal from "@/components/Editor/TemplateSelection/template-selection";
 import EditorWindow from "@/components/Editor/EditorWindow/editor-window";
 import { useConfirm } from "@/context/ConfirmContext";
+import { useReviews } from "@/context/ReviewsContext";
 
 import styles from "./book-panel.module.css";
 
 import { ArrowUpRight } from "lucide-react";
 import { Share2 } from "lucide-react";
 import { Trash } from "lucide-react";
-import { useUser } from "@/context/UserContext";
 
 export default function BookPanel({
   book,
@@ -33,13 +33,15 @@ export default function BookPanel({
   const { showToast } = useToast();
   const confirm = useConfirm();
 
-  const { id, image, title, authors, rating = 0, buy_link: buyLink } = book;
+  const { id, image, title, authors, buy_link: buyLink } = book;
+
+  const { ratingCounts: { averageRating: rating } = {} } = useReviews();
 
   const handleAddBook = async () => {
     if (!isUserLoggedIn) {
       showToast("You need to be logged in to add books.", "warning");
     } else {
-      await addBookToDb(book);
+      await addBookToUserLib(book);
       showToast("Book added successfully!", "success");
       router.refresh();
     }

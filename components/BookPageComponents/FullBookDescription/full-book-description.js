@@ -1,4 +1,3 @@
-import { ReviewsProvider } from "@/context/ReviewsContext";
 import AIBookBlock from "../AIBookBlock/ai-book-block";
 import DescriptionSection from "../DescriptionSection/description-section";
 import AverageRating from "../ReviewsComponents/AverageRating/average-rating";
@@ -63,21 +62,19 @@ export default function FullBookDescription({ book }) {
           </DescriptionSection>
         </div>
       </div>
-      
-      <ReviewsProvider>
-        <div className={styles.reviewContainer}>
-          <div className={styles.part}>
-            <DescriptionSection title="Average Rating">
-              <AverageRating bookId={id} />
-            </DescriptionSection>
-          </div>
-          <div className={styles.part}>
-            <DescriptionSection title="Reviews">
-              <ReviewsList bookId={id} />
-            </DescriptionSection>
-          </div>
+
+      <div className={styles.reviewContainer}>
+        <div className={styles.part}>
+          <DescriptionSection title="Average Rating">
+            <AverageRating bookId={id ?? isbn13} />
+          </DescriptionSection>
         </div>
-      </ReviewsProvider>
+        <div className={styles.part}>
+          <DescriptionSection title="Reviews">
+            <ReviewsList bookId={id} />
+          </DescriptionSection>
+        </div>
+      </div>
     </div>
   );
 }

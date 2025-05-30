@@ -4,6 +4,7 @@ const baseUrl = "https://api2.isbndb.com";
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const q = searchParams.get("q");
+  const limit = searchParams.get("limit");
   const page = searchParams.get("page");
 
   if (!q) {
@@ -16,17 +17,12 @@ export async function GET(request) {
   try {
     let response;
 
-    if (q && page) {
-      response = await fetch(`${baseUrl}/books/${q}?pageSize=40&page=${page}`, {
-        method: "GET",
-        headers: {
-          Authorization: apiKey,
-          "Content-Type": "application/json",
-        },
-      });
-    } else if (q) {
+    if (q) {
+      const pageNumber = page || 1;
+      const pageSize = limit || 30;
+
       response = await fetch(
-        `${baseUrl}/books/${q}?pageSize=10&shouldMatchAll=1`,
+        `${baseUrl}/books/${q}?pageSize=${pageSize}&page=${pageNumber}&shouldMatchAll=1`,
         {
           method: "GET",
           headers: {

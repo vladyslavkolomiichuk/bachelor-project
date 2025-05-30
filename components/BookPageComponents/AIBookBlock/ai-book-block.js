@@ -11,8 +11,8 @@ export default function AIBookBlock({ title, authors, subjects }) {
   const hasFetched = useRef(false);
 
   useEffect(() => {
-    if (hasFetched.current) return; 
-    hasFetched.current = true; 
+    if (hasFetched.current) return;
+    hasFetched.current = true;
 
     const fetchStream = async () => {
       setAIText("");

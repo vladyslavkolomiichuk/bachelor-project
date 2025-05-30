@@ -62,3 +62,10 @@
   column-gap: 60px;
   row-gap: 30px;
 }
+
+.noItems {
+  width: 100%;
+  text-align: center;
+  font-size: var(--font-size-medium);
+  color: var(--primary-color);
+}

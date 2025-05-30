@@ -1,6 +1,5 @@
 import { useToast } from "@/context/ToastContext";
 import { useUser } from "@/context/UserContext";
-import { useEffect } from "react";
 import useSWR from "swr";
 
 export default function useDailyChallengeToasts() {
@@ -22,14 +21,15 @@ export default function useDailyChallengeToasts() {
     userId ? "/api/challenges/toast-data" : null,
     fetcher,
     {
-      refreshInterval: 2 * 60 * 60 * 1000, 
+      refreshInterval: 2 * 60 * 60 * 1000,
       onSuccess(data) {
         if (!data) return;
-        
-        const today = new Date().toISOString().split("T")[0];
+
+        const today = new Date();
+        const localDate = today.toLocaleDateString();
         const lastShown = localStorage.getItem("lastChallengeToast");
 
-        if (lastShown === today) return;
+        if (lastShown === localDate) return;
 
         if (data.inProgress.length > 0) {
           const msg = data.inProgress.map((c) => `- ${c.message}`).join("\n");
@@ -39,7 +39,7 @@ export default function useDailyChallengeToasts() {
           const msg = data.failed.map((c) => `- ${c.message}`).join("\n");
           showToast(`Failed challenges:\n${msg}`, "error");
         }
-        localStorage.setItem("lastChallengeToast", today);
+        localStorage.setItem("lastChallengeToast", localDate);
         window.dispatchEvent(new Event("challenges:updated"));
       },
     }

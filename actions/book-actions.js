@@ -1,7 +1,7 @@
 "use server";
 
 import { uploadImage } from "@/lib/cloudinary";
-import { addBookToDb } from "@/lib/db/book";
+import { addBookToUserLib } from "@/lib/db/book";
 import { NewBookFormSchema } from "@/lib/definitions";
 import { redirect } from "next/navigation";
 
@@ -79,7 +79,7 @@ export async function newBookAddAction(prevState, formData) {
     .filter(Boolean);
 
   try {
-    await addBookToDb(
+    await addBookToUserLib(
       {
         isbn13: Number(isbn13),
         title,

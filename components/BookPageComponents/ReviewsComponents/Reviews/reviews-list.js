@@ -28,6 +28,7 @@ export default function ReviewsList({ bookId }) {
     const fetchData = async () => {
       setIsLoading(true);
       const data = await getBookReviews(bookId, userId);
+
       replaceAllReviews(data);
       setIsLoading(false);
     };

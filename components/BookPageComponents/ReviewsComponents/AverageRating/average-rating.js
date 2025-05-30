@@ -11,18 +11,21 @@ import styles from "./average-rating.module.css";
 import { useToast } from "@/context/ToastContext";
 
 export default function AverageRating({ bookId }) {
-  const [ratingCounts, setRatingCounts] = useState({});
+  // const [ratingCounts, setRatingCounts] = useState({});
   const [formOpen, setFormOpen] = useState(false);
   const { user } = useUser();
 
-  const { refreshTrigger } = useReviews();
+  const { refreshTrigger, ratingCounts, addRatingCounts } = useReviews();
 
   const { showToast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getRatingCounts(bookId);
-      setRatingCounts(data);
+      try {
+        const data = await getRatingCounts(bookId);
+        
+        addRatingCounts(data);
+      } catch {}
     };
     fetchData();
   }, [bookId, refreshTrigger]);

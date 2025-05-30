@@ -8,10 +8,49 @@ import {
   useState,
 } from "react";
 
+const calculateAverageRating = (ratingCounts) => {
+  let totalVotes = 0;
+  let totalScore = 0;
+
+  for (const rating in ratingCounts) {
+    const count = ratingCounts[rating];
+    const ratingNum = parseInt(rating);
+
+    totalVotes += count;
+    totalScore += ratingNum * count;
+  }
+
+  const averageRating = totalVotes === 0 ? 0 : totalScore / totalVotes;
+
+  return {
+    averageRating: parseFloat(averageRating.toFixed(2)),
+    totalVotes,
+  };
+};
+
+function calculateRatingPercentages(ratingCounts) {
+  const result = {};
+  let totalVotes = 0;
+
+  for (const rating in ratingCounts) {
+    totalVotes += ratingCounts[rating];
+  }
+
+  for (const rating in ratingCounts) {
+    const votes = ratingCounts[rating];
+    const percentage =
+      totalVotes === 0 ? 0 : Math.round((votes / totalVotes) * 100);
+    result[rating] = percentage;
+  }
+
+  return result;
+}
+
 const ReviewsContext = createContext();
 
 export function ReviewsProvider({ children }) {
-  const [reviews, setReviews] = useState("");
+  const [reviews, setReviews] = useState([]);
+  const [ratingCounts, setRatingCounts] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const triggerRefresh = useCallback(() => {
@@ -20,6 +59,13 @@ export function ReviewsProvider({ children }) {
 
   const replaceAllReviews = useCallback((newReviewArray) => {
     setReviews(newReviewArray);
+  }, []);
+
+  const addRatingCounts = useCallback((newRatingCountsArray) => {
+    const { averageRating, totalVotes } =
+      calculateAverageRating(newRatingCountsArray);
+    const percentages = calculateRatingPercentages(newRatingCountsArray);
+    setRatingCounts({ averageRating, totalVotes, percentages });
   }, []);
 
   // const addReview = useCallback((newReview) => {
@@ -35,7 +81,9 @@ export function ReviewsProvider({ children }) {
   const contextValue = useMemo(
     () => ({
       reviews,
+      ratingCounts,
       replaceAllReviews,
+      addRatingCounts,
       refreshTrigger,
       triggerRefresh,
       // addReview,

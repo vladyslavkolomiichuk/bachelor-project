@@ -7,6 +7,7 @@ import Loader from "../Loader/loader";
 import DropdownMenu from "../DropdownMenu/dropdown-menu";
 
 import styles from "./search-bar.module.css";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,17 +15,47 @@ export default function SearchBar() {
   const [timer, setTimer] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
+  const buttonRef = useRef(null);
+
+  const isOpenRef = useRef(isOpen);
+
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
+
+  const [shouldClear, setShouldClear] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (shouldClear && pathname.startsWith("/search")) {
+      setSearchQuery("");
+      setSearchResults(null);
+      if (timer) {
+        clearTimeout(timer);
+        setTimer(null);
+      }
+      setShouldClear(false);
+    }
+  }, [pathname, shouldClear]);
+
+  const router = useRouter();
 
   const handleSearchOnChange = async (event) => {
     const value = event.target.value;
     setSearchQuery(value);
     if (!value) {
-      searchResults(null);
+      setSearchQuery("");
     }
     if (timer) {
       clearTimeout(timer);
+    }
+    if (value === "") {
+      setSearchResults([]);
+      setLoading(false);
+      return;
     }
 
     setLoading(true);
@@ -41,20 +72,28 @@ export default function SearchBar() {
           }
 
           setLoading(false);
-        } catch {}
+        } catch {
+          setLoading(false);
+        }
       }, 1000)
     );
   };
 
   const handleClickOutside = (event) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target) &&
-      inputRef.current &&
-      !inputRef.current.contains(event.target)
-    ) {
+    const clickedButton =
+      buttonRef.current && buttonRef.current.contains(event.target);
+    const clickedDropdown =
+      dropdownRef.current && dropdownRef.current.contains(event.target);
+    const clickedInput =
+      inputRef.current && inputRef.current.contains(event.target);
+
+    if (clickedButton && isOpenRef.current) {
       setIsOpen(false);
-    } else setIsOpen(true);
+    } else if (clickedButton || clickedDropdown || clickedInput) {
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+    }
   };
 
   useEffect(() => {
@@ -65,24 +104,32 @@ export default function SearchBar() {
   }, []);
 
   return (
-    <div className={styles.searchWrapper} ref={inputRef}>
-      <form className={styles.searchBox}>
+    <div className={styles.searchWrapper}>
+      <div className={styles.searchBox}>
         <button
+          ref={buttonRef}
           className={styles.searchButton}
-          type="submit"
-          onFocus={() => setIsOpen(true)}
+          type="button"
+          onClick={() => {
+            if (searchQuery.trim() && isOpen) {
+              setShouldClear(true);
+              router.push(
+                `/search?q=${encodeURIComponent(searchQuery.trim())}`
+              );
+            }
+          }}
         >
           <Search strokeWidth={3} />
         </button>
         <input
+          ref={inputRef}
           type="text"
           className={`${styles.searchInput} ${isOpen ? styles.open : ""}`}
           placeholder="Search book by name..."
           value={searchQuery}
           onChange={handleSearchOnChange}
-          onFocus={() => setIsOpen(true)}
         />
-      </form>
+      </div>
 
       <DropdownMenu isOpen={isOpen} ref={dropdownRef}>
         {loading && (

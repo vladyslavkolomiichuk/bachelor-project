@@ -11,6 +11,8 @@ export default function Badge({ getCount, type, children }) {
   const userId = user?.id;
 
   useEffect(() => {
+    if (!user) return;
+    
     const fetchData = async () => {
       const result = await getCount(userId);
       setCount(result);

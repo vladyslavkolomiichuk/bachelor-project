@@ -1,47 +1,52 @@
 import Rating from "@/components/GeneralComponents/Rating/rating";
 import styles from "./rating-section.module.css";
 
-const calculateAverageRating = (ratingCounts) => {
-  let totalVotes = 0;
-  let totalScore = 0;
+// const calculateAverageRating = (ratingCounts) => {
+//   let totalVotes = 0;
+//   let totalScore = 0;
 
-  for (const rating in ratingCounts) {
-    const count = ratingCounts[rating];
-    const ratingNum = parseInt(rating);
+//   for (const rating in ratingCounts) {
+//     const count = ratingCounts[rating];
+//     const ratingNum = parseInt(rating);
 
-    totalVotes += count;
-    totalScore += ratingNum * count;
-  }
+//     totalVotes += count;
+//     totalScore += ratingNum * count;
+//   }
 
-  const averageRating = totalVotes === 0 ? 0 : totalScore / totalVotes;
+//   const averageRating = totalVotes === 0 ? 0 : totalScore / totalVotes;
 
-  return {
-    averageRating: parseFloat(averageRating.toFixed(2)),
-    totalVotes,
-  };
-};
+//   return {
+//     averageRating: parseFloat(averageRating.toFixed(2)),
+//     totalVotes,
+//   };
+// };
 
-function calculateRatingPercentages(ratingCounts) {
-  const result = {};
-  let totalVotes = 0;
+// function calculateRatingPercentages(ratingCounts) {
+//   const result = {};
+//   let totalVotes = 0;
 
-  for (const rating in ratingCounts) {
-    totalVotes += ratingCounts[rating];
-  }
+//   for (const rating in ratingCounts) {
+//     totalVotes += ratingCounts[rating];
+//   }
 
-  for (const rating in ratingCounts) {
-    const votes = ratingCounts[rating];
-    const percentage =
-      totalVotes === 0 ? 0 : Math.round((votes / totalVotes) * 100);
-    result[rating] = percentage;
-  }
+//   for (const rating in ratingCounts) {
+//     const votes = ratingCounts[rating];
+//     const percentage =
+//       totalVotes === 0 ? 0 : Math.round((votes / totalVotes) * 100);
+//     result[rating] = percentage;
+//   }
 
-  return result;
-}
+//   return result;
+// }
 
 export default function RatingSection({ ratingCounts }) {
-  const { averageRating, totalVotes } = calculateAverageRating(ratingCounts);
-  const percentages = calculateRatingPercentages(ratingCounts);
+  // const { averageRating, totalVotes } = calculateAverageRating(ratingCounts);
+  // const percentages = calculateRatingPercentages(ratingCounts);
+  const {
+    averageRating = 0,
+    totalVotes = 0,
+    percentages = {},
+  } = ratingCounts || {};
 
   return (
     <div className={styles.ratingSection}>

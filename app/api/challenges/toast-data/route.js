@@ -2,6 +2,7 @@ import {
   getTodayFailedChallenges,
   getTodayInProgressChallenges,
   updateExpiredChallenges,
+  updateUpcomingChallenges,
 } from "@/lib/db/challenge";
 
 export async function PATCH(request) {
@@ -13,6 +14,7 @@ export async function PATCH(request) {
 
   try {
     await updateExpiredChallenges();
+    await updateUpcomingChallenges();
 
     const failed = await getTodayFailedChallenges(userId);
     const inProgress = await getTodayInProgressChallenges(userId);

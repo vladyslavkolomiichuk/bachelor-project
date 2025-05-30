@@ -23,13 +23,15 @@ export default async function AddedBook({ book, bookColor, userId }) {
           mode="added"
         />
         <Section sectionName={["Notes", "Book Description"]} multi>
-          <div className={styles.notesContainer}>
-            {notes.length > 0
-              ? notes.map((note) => (
-                  <NoteBlock key={note.session_id} note={note} />
-                ))
-              : "There are no notes"}
-          </div>
+          {notes.length > 0 ? (
+            <div className={styles.notesContainer}>
+              {notes.map((note) => (
+                <NoteBlock key={note.session_id} note={note} />
+              ))}
+            </div>
+          ) : (
+            <p className={styles.noItems}>There are no notes</p>
+          )}
           <FullBookDescription book={book} />
         </Section>
       </div>

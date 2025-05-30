@@ -5,24 +5,40 @@ import Loader from "@/components/GeneralComponents/SearchComponents/Loader/loade
 import TransparentBookBlock from "../TransparentBookBlock/transparent-book-block";
 import styles from "./books-list.module.css";
 
-export default function BooksList({getBooks}) {
+export default function BooksList({ getBooks, query = "" }) {
   const [books, setBooks] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const observerRef = useRef();
 
-  const loadBooks = useCallback(async () => {
-    setLoading(true);
-    const newBooks = await getBooks(50, page);
-    setBooks((prev) => [...prev, ...newBooks]);
-    setHasMore(newBooks.length > 0);
-    setLoading(false);
-  }, [page]);
+  useEffect(() => {
+    setBooks([]);
+    setPage(1);
+    setHasMore(true);
+  }, [query]);
 
   useEffect(() => {
+    let ignore = false;
+    const loadBooks = async () => {
+      setLoading(true);
+      let newBooks;
+      if (query) {
+        newBooks = await getBooks(query, 40, page);
+      } else {
+        newBooks = await getBooks(40, page);
+      }
+      if (!ignore) {
+        setBooks((prev) => (page === 1 ? newBooks : [...prev, ...newBooks]));
+        setHasMore(newBooks.length >= 40);
+        setLoading(false);
+      }
+    };
     loadBooks();
-  }, [loadBooks]);
+    return () => {
+      ignore = true;
+    };
+  }, [page, query, getBooks]);
 
   const lastBookRef = useCallback(
     (node) => {

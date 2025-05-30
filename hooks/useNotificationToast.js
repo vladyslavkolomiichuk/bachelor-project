@@ -28,10 +28,11 @@ export function useNotificationToasts() {
       onSuccess(data) {
         if (!data) return;
 
-        const today = new Date().toISOString().split("T")[0];
+        const today = new Date();
+        const localDate = today.toLocaleDateString();
         const lastShown = localStorage.getItem("lastVisitToast");
 
-        if (lastShown === today) return;
+        if (lastShown === localDate) return;
 
         const { flameScore } = data;
 
@@ -44,7 +45,7 @@ export function useNotificationToasts() {
           );
         }
 
-        localStorage.setItem("lastVisitToast", today);
+        localStorage.setItem("lastVisitToast", localDate);
         window.dispatchEvent(new Event("notification:updated"));
       },
     }

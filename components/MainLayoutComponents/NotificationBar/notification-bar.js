@@ -7,8 +7,8 @@ import { Flame } from "lucide-react";
 import Badge from "@/components/Badge/badge";
 import { useEffect, useState } from "react";
 import { useUser } from "@/context/UserContext";
+import { UserRoundX } from "lucide-react";
 import { getUsername, getUserVisitScore } from "@/lib/db/user";
-import NotificationBarUnauth from "./notification-bar-unauth";
 
 import styles from "./notification-bar.module.css";
 
@@ -31,17 +31,43 @@ export default function NotificationBar() {
     redirect(`/user/${username}`);
   };
 
-  return user ? (
+  const handleClickLogin = () => {
+    redirect("/login");
+  };
+
+  const handleClickSignup = () => {
+    redirect("/signup");
+  };
+
+  return (
     <div className={styles.notificationBar}>
       <button
         type="button"
         className={styles.button}
         onClick={handleUserButtonClick}
         title="Profile"
+        disabled={!user}
       >
-        <UserRoundCheck strokeWidth={3} />
+        {user ? (
+          <UserRoundCheck strokeWidth={3} />
+        ) : (
+          <UserRoundX strokeWidth={3} />
+        )}
       </button>
-      <p>{username}</p>
+      {user ? (
+        <p>{username}</p>
+      ) : (
+        <div className={styles.authActions}>
+          <p onClick={handleClickLogin} className={styles.authBtn}>
+            Log In
+          </p>
+          <p>/</p>
+          <p onClick={handleClickSignup} className={styles.authBtn}>
+            Sign Up
+          </p>
+        </div>
+      )}
+
       <button type="button" className={styles.button} title="Notifications">
         <Bell strokeWidth={3} />
       </button>
@@ -51,7 +77,5 @@ export default function NotificationBar() {
         </button>
       </Badge>
     </div>
-  ) : (
-    <NotificationBarUnauth />
   );
 }
