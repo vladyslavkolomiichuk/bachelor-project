@@ -1,17 +1,41 @@
 "use client";
 
-import { useState } from "react";
-import styles from "./challenges.module.css";
+import { useEffect, useState } from "react";
 import ChallengeBlock from "../ChallengeBlock/challenge-block";
 import NewChallengeBtn from "../NewChallengeBtn/new-challenge-btn";
 import ChallengeForm from "@/components/FormComponents/ChallengeForm/challenge-form";
 import ChallengeFormSmall from "@/components/FormComponents/ChallengeForm/challenge-form-small";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useUser } from "@/context/UserContext";
+import { useRouter } from "nextjs13-progress";
+import { getChallengesByUser } from "@/lib/db/challenge";
 
-export default function ChallengesList({ challenges }) {
+import styles from "./challenges.module.css";
+
+export default function ChallengesList() {
   const [newFormOpen, setNewFormOpen] = useState(false);
+  const [challenges, setChallenges] = useState([]);
   const [smallFormOpen, setSmallFormOpen] = useState(false);
   const [smallFormChallenge, setSmallFormChallenge] = useState(null);
+
+  const router = useRouter();
+
+  const { user } = useUser();
+  const userId = user?.id;
+
+  useEffect(() => {
+    if (user === null) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const userChallenges = await getChallengesByUser(userId);
+      setChallenges(userChallenges);
+    };
+    fetchData();
+  }, [userId]);
 
   const newChallengeActions = [
     {

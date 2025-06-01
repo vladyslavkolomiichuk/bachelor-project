@@ -1,15 +1,16 @@
 .badgeWrapper {
   position: relative;
   display: inline-block;
+  cursor: pointer;
+  user-select: none;
 }
 
 .badge {
   position: absolute;
   top: -8px;
-  right: -30%;
+  right: -10%;
   width: fit-content;
-  height: 16px;
-  padding: 1px 6px;
+  padding: 2px 6px 3px 6px;
   background-color: var(--error-color);
   color: var(--primary-color);
   border-radius: 9px;
@@ -18,4 +19,5 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  transform: translateX(50%);
 }

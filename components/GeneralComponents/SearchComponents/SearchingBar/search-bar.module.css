@@ -47,6 +47,10 @@
   align-items: center;
 }
 
+.searchButton:active svg {
+  transform: scale(0.95);
+}
+
 .searchButton svg {
   width: 25px;
   height: 25px;
@@ -70,5 +74,4 @@
 }
 
 .moreResultsButton {
-  
 }

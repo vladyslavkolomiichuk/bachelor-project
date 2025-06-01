@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "nextjs13-progress";
 
 import styles from "./book-link.module.css";
 

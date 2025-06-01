@@ -1,20 +1,23 @@
 "use client";
 
-import { useState, useMemo, useTransition } from "react";
+import { useState, useMemo, useTransition, useEffect } from "react";
 import {
   addWordToDb,
   deleteWordFromDb,
+  getDictionaryWords,
   updateWordToDb,
 } from "@/lib/db/dictionary";
 import { useToast } from "@/context/ToastContext";
 import { useConfirm } from "@/context/ConfirmContext";
 import { Pencil, Plus, Save, Trash2, X } from "lucide-react";
 import CircleButton from "../GeneralComponents/CircleButton/circle-button";
+import { useRouter } from "nextjs13-progress";
+import { useUser } from "@/context/UserContext";
 
 import styles from "./dictionary.module.css";
 
-export default function Dictionary({ words, userId }) {
-  const [data, setData] = useState(words);
+export default function Dictionary() {
+  const [words, setWords] = useState([]);
   const [adding, setAdding] = useState(false);
   const [newWord, setNewWord] = useState({
     word: "",
@@ -30,6 +33,25 @@ export default function Dictionary({ words, userId }) {
     date: "",
   });
 
+  const router = useRouter();
+
+  const { user } = useUser();
+  const userId = user?.id;
+
+  useEffect(() => {
+    if (user === null) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const userWords = await getDictionaryWords(userId);
+      setWords(userWords);
+    };
+    fetchData();
+  }, [userId]);
+
   const [isPending, startTransition] = useTransition();
 
   const { showToast } = useToast();
@@ -39,22 +61,22 @@ export default function Dictionary({ words, userId }) {
   const [filterCategory, setFilterCategory] = useState("");
 
   const categories = useMemo(() => {
-    const cats = new Set(data.map((item) => item.category).filter(Boolean));
+    const cats = new Set(words.map((item) => item.category).filter(Boolean));
     return Array.from(cats);
-  }, [data]);
+  }, [words]);
 
-  const filteredData = useMemo(() => {
-    return data.filter((item) => {
+  const filteredWords = useMemo(() => {
+    return words.filter((word) => {
       const matchDate = filterDate
-        ? new Date(item.date).toLocaleDateString() ===
+        ? new Date(word.date).toLocaleDateString() ===
           new Date(filterDate).toLocaleDateString()
         : true;
       const matchCategory = filterCategory
-        ? item.category === filterCategory
+        ? word.category === filterCategory
         : true;
       return matchDate && matchCategory;
     });
-  }, [data, filterDate, filterCategory]);
+  }, [words, filterDate, filterCategory]);
 
   const handleAddSubmit = async (event) => {
     event.preventDefault();
@@ -64,7 +86,7 @@ export default function Dictionary({ words, userId }) {
     }
 
     const tempId = Date.now() * -1;
-    setData((prev) => [
+    setWords((prev) => [
       {
         id: tempId,
         ...newWord,
@@ -84,12 +106,12 @@ export default function Dictionary({ words, userId }) {
           newWord.category,
           newWord.date
         );
-        setData((prev) =>
+        setWords((prev) =>
           prev.map((word) => (word.id === tempId ? savedWord : word))
         );
       } catch (error) {
         showToast("Failed to add word. Try later", "error");
-        setData((prev) => prev.filter((word) => word.id !== tempId));
+        setWords((prev) => prev.filter((word) => word.id !== tempId));
       }
     });
 
@@ -109,22 +131,22 @@ export default function Dictionary({ words, userId }) {
     });
     if (!confirmed) return;
 
-    const prevData = data;
+    const prevWords = words;
 
-    setData((prev) => prev.filter((word) => word.id !== id));
+    setWords((prev) => prev.filter((word) => word.id !== id));
 
     startTransition(async () => {
       try {
         await deleteWordFromDb(id);
       } catch (error) {
         showToast(`Failed to delete word. Try later.`, "error");
-        setData(prevData);
+        setWords(prevWords);
       }
     });
   };
 
   const handleEdit = (id) => {
-    const wordToEdit = data.find((item) => item.id === id);
+    const wordToEdit = words.find((item) => item.id === id);
     setIsEditing(id);
     setEditedWord({
       word: wordToEdit.word,
@@ -135,7 +157,7 @@ export default function Dictionary({ words, userId }) {
   };
 
   const handleUpdate = async (id) => {
-    setData((prev) =>
+    setWords((prev) =>
       prev.map((item) =>
         item.id === id
           ? {
@@ -162,7 +184,7 @@ export default function Dictionary({ words, userId }) {
         );
       } catch (error) {
         showToast("Failed to update changes. Try later", "error");
-        setData((prev) =>
+        setWords((prev) =>
           prev.map((item) =>
             item.id === id
               ? {
@@ -281,14 +303,14 @@ export default function Dictionary({ words, userId }) {
           )}
         </thead>
         <tbody>
-          {filteredData.length === 0 ? (
+          {filteredWords.length === 0 ? (
             <tr>
               <td colSpan={5} className={styles.noData}>
                 Nothing found
               </td>
             </tr>
           ) : (
-            filteredData.map(({ id, word, meaning, category, date }) => (
+            filteredWords.map(({ id, word, meaning, category, date }) => (
               <tr key={id} className={styles.row}>
                 <td>
                   {isEditing === id ? (

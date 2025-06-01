@@ -1,10 +1,14 @@
 import { verifyAuth } from "@/lib/auth";
+import { addNotificationForUser } from "@/lib/db/notification";
 import {
   createReviewVote,
+  getReviewById,
   getReviewVote,
   updateReviewRating,
   updateUserReviewVote,
 } from "@/lib/db/review";
+import { getUsername } from "@/lib/db/user";
+import { sanitizeInputBack } from "@/lib/sanitize-text";
 
 export async function PATCH(req, { params }) {
   const result = await verifyAuth();
@@ -34,5 +38,28 @@ export async function PATCH(req, { params }) {
 
   const updated = await updateReviewRating(ratingChange, reviewId);
 
-  return Response.json({ rating: updated });
+  if (action === "upvote") {
+    const review = await getReviewById(reviewId);
+    if (review) {
+      const reviewAuthorId = review.user_id;
+      const bookTitle = review.book_title;
+
+      const username = await getUsername(userId);
+
+      if (reviewAuthorId !== userId) {
+        const safeUsername = sanitizeInputBack(username);
+        const safeBookTitle = sanitizeInputBack(bookTitle);
+
+        const title = "A new voice for the review";
+        const message = `The user <span>${safeUsername}</span> liked your review of the book <span>"${safeBookTitle}"</span>.`;
+
+        await addNotificationForUser(reviewAuthorId, title, message, "review");
+      }
+    }
+  }
+
+  return new Response(JSON.stringify({ rating: updated }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 }

@@ -5,10 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/context/ToastContext";
 import { EllipsisVertical } from "lucide-react";
 import { deleteBookFromDb } from "@/lib/db/book";
+import { useRouter } from "nextjs13-progress";
 
 import styles from "./book-small-preview.module.css";
-import { useRouter } from "next/navigation";
-import { set } from "zod";
+import { useUser } from "@/context/UserContext";
 
 export default function BookSmallPreview({
   book,
@@ -23,6 +23,9 @@ export default function BookSmallPreview({
   const { showToast } = useToast();
 
   const router = useRouter();
+
+  const { user } = useUser();
+  const userId = user?.id;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -103,7 +106,7 @@ export default function BookSmallPreview({
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            updateCategory(book.id, "completed");
+                            updateCategory(userId, book.id, "completed");
                             setIsMenuOpen(false);
                             setIsCategoryMenuOpen(false);
                             router.refresh();
@@ -116,7 +119,7 @@ export default function BookSmallPreview({
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            updateCategory(book.id, "in-progress");
+                            updateCategory(userId, book.id, "in-progress");
                             setIsMenuOpen(false);
                             setIsCategoryMenuOpen(false);
                             router.refresh();
@@ -129,7 +132,7 @@ export default function BookSmallPreview({
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            updateCategory(book.id, "not-started");
+                            updateCategory(userId, book.id, "not-started");
                             setIsMenuOpen(false);
                             setIsCategoryMenuOpen(false);
                             router.refresh();

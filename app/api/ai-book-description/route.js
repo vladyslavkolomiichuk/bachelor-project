@@ -19,8 +19,8 @@ export async function POST(req) {
     Your task is to:
     1. Generate a compelling book description based on:
       - Book Title: ${title}
-      - Authors: ${authors.join(", ")}
-      - Subjects / Themes: ${subjects.join(", ")}
+      - Authors: ${authors?.join(", ")}
+      - Subjects / Themes: ${subjects?.join(", ")}
 
     2. Analyze whether this book is likely to be a good fit for the user, based on:
       - Authors of books in the user's library: ${userAuthors.join(", ")}

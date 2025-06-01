@@ -7,7 +7,7 @@ import { newBookAddAction } from "@/actions/book-actions";
 
 import styles from "../form.module.css";
 import { fetchBookByISBN } from "@/lib/api/books";
-import Link from "next/link";
+import { Link } from "nextjs13-progress";
 
 export default function BookForm({ isOpen, onCancel, onDone }) {
   const [formState, formAction, formPending] = useActionState(

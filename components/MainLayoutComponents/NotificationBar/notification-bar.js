@@ -1,18 +1,20 @@
 "use client";
 
-import { redirect } from "next/navigation";
 import { UserRoundCheck } from "lucide-react";
-import { Bell } from "lucide-react";
 import { Flame } from "lucide-react";
-import Badge from "@/components/Badge/badge";
+import SeparateBadge from "@/components/Badge/separate-badge";
 import { useEffect, useState } from "react";
 import { useUser } from "@/context/UserContext";
 import { UserRoundX } from "lucide-react";
 import { getUsername, getUserVisitScore } from "@/lib/db/user";
+import NotificationBell from "./notification-bell";
+import { useRouter } from "nextjs13-progress";
 
 import styles from "./notification-bar.module.css";
 
 export default function NotificationBar() {
+  const router = useRouter();
+
   const { user } = useUser();
   const userId = user?.id;
 
@@ -28,15 +30,15 @@ export default function NotificationBar() {
   }, [userId]);
 
   const handleUserButtonClick = () => {
-    redirect(`/user/${username}`);
+    router.push(`/user/${username}`);
   };
 
   const handleClickLogin = () => {
-    redirect("/login");
+    router.push("/login");
   };
 
   const handleClickSignup = () => {
-    redirect("/signup");
+    router.push("/signup");
   };
 
   return (
@@ -45,7 +47,6 @@ export default function NotificationBar() {
         type="button"
         className={styles.button}
         onClick={handleUserButtonClick}
-        title="Profile"
         disabled={!user}
       >
         {user ? (
@@ -54,28 +55,34 @@ export default function NotificationBar() {
           <UserRoundX strokeWidth={3} />
         )}
       </button>
+
       {user ? (
         <p>{username}</p>
       ) : (
         <div className={styles.authActions}>
-          <p onClick={handleClickLogin} className={styles.authBtn}>
+          <button
+            onClick={handleClickLogin}
+            className={`${styles.authBtn} ${styles.loginBtn}`}
+          >
             Log In
-          </p>
+          </button>
           <p>/</p>
-          <p onClick={handleClickSignup} className={styles.authBtn}>
+          <button onClick={handleClickSignup} className={styles.authBtn}>
             Sign Up
-          </p>
+          </button>
         </div>
       )}
 
-      <button type="button" className={styles.button} title="Notifications">
-        <Bell strokeWidth={3} />
-      </button>
-      <Badge getCount={getUserVisitScore} type="notification">
-        <button type="button" className={styles.button} title="Visit streak">
-          <Flame strokeWidth={3} />
-        </button>
-      </Badge>
+      {user && (
+        <>
+          <NotificationBell />
+          <SeparateBadge getCount={getUserVisitScore} type="visit">
+            <button type="button" className={styles.button}>
+              <Flame strokeWidth={3} />
+            </button>
+          </SeparateBadge>
+        </>
+      )}
     </div>
   );
 }

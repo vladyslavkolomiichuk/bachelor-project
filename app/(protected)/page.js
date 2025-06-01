@@ -1,17 +1,19 @@
+"use client";
+
 import Section from "@/components/GeneralComponents/Section/section";
 import ColoredBookBlock from "@/components/HomePageComponents/ColoredBooksBlock/colored-book-block";
 import ColoredBookBlockSkeleton from "@/components/HomePageComponents/ColoredBooksBlock/colored-book-block-skeleton";
 import TransparentBookBlock from "@/components/HomePageComponents/TransparentBookBlock/transparent-book-block";
 import TransparentBookBlockSkeleton from "@/components/HomePageComponents/TransparentBookBlock/transparent-book-block-skeleton";
-import { verifyAuth } from "@/lib/auth";
 import {
   fetchNewSubjectBooks,
   fetchRecommendedBooksByRandom,
   getAllBooks,
 } from "@/lib/api/books";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import BooksList from "@/components/HomePageComponents/BooksList/books-list";
 import { getUserBookAuthors, getUserBookSubjects } from "@/lib/db/book";
+import { verifyAuth } from "@/lib/auth";
 
 const SUBJECTS = [
   "Young Adult",
@@ -29,45 +31,98 @@ const AUTHORS = [
   "Leo Tolstoy",
 ];
 
-export default async function HomePage() {
-  let subjects = SUBJECTS;
-  let authors = AUTHORS;
+export default function HomePage() {
+  const [user, setUser] = useState(undefined);
 
-  const result = await verifyAuth();
+  const [subjects, setSubjects] = useState(SUBJECTS);
+  const [authors, setAuthors] = useState(AUTHORS);
 
-  if (result.user) {
-    const userId = result.user.id;
+  const [newSubject, setNewSubject] = useState("");
+  const [newSubjectBooks, setNewSubjectBooks] = useState([]);
+  const [recommendedBooksBySubject, setRecommendedBooksBySubject] = useState(
+    []
+  );
+  const [recommendedBooksByAuthor, setRecommendedBooksByAuthor] = useState([]);
 
-    const userSubjects = await getUserBookSubjects(userId);
-    const userAuthors = await getUserBookAuthors(userId);
+  const [isPersonalized, setIsPersonalized] = useState(false);
 
-    if (userSubjects && userSubjects.length >= 3) {
-      subjects = userSubjects;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await verifyAuth();
+        setUser(result?.user ?? null);
+      } catch (error) {
+        setUser(null);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (user === undefined) {
+      return;
     }
 
-    if (userAuthors && userAuthors.length >= 3) {
-      authors = userAuthors;
+    if (user === null) {
+      setIsPersonalized(true);
+      return;
     }
-  }
 
-  const { subject: newSubject, books: newSubjectBooks } =
-    await fetchNewSubjectBooks(12);
-  const recommendedBooksBySubject = await fetchRecommendedBooksByRandom(
-    "subject",
-    subjects,
-    24
-  );
-  const recommendedBooksByAuthor = await fetchRecommendedBooksByRandom(
-    "author",
-    authors,
-    36
-  );
+    async function fetchUserPrefs() {
+      console.log("as");
 
-  const handleGetAllBooks = async (limit, page) => {
-    "use server";
-    const result = await getAllBooks(limit, page);
-    return result;
-  };
+      try {
+        const userSubjects = await getUserBookSubjects(user.id);
+        const userAuthors = await getUserBookAuthors(user.id);
+
+        if (userSubjects && userSubjects.length >= 3) {
+          setSubjects(userSubjects);
+        }
+
+        if (userAuthors && userAuthors.length >= 3) {
+          setAuthors(userAuthors);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user preferences:", error);
+      } finally {
+        setIsPersonalized(true);
+      }
+    }
+
+    fetchUserPrefs();
+  }, [user]);
+
+  useEffect(() => {
+    if (!isPersonalized) return;
+
+    async function fetchBooks() {
+      try {
+        const { subject: newSubj, books: newBooks } =
+          await fetchNewSubjectBooks(12);
+        setNewSubject(newSubj);
+        setNewSubjectBooks(newBooks);
+
+        const recommendedBySubject = await fetchRecommendedBooksByRandom(
+          "subject",
+          subjects,
+          24
+        );
+        setRecommendedBooksBySubject(recommendedBySubject);
+
+        const recommendedByAuthor = await fetchRecommendedBooksByRandom(
+          "author",
+          authors,
+          36
+        );
+        setRecommendedBooksByAuthor(recommendedByAuthor);
+      } catch (error) {
+        console.error("Failed to fetch books:", error);
+      }
+    }
+
+    fetchBooks();
+  }, [isPersonalized]);
 
   return (
     <>
@@ -106,7 +161,7 @@ export default async function HomePage() {
         ))}
       </Section>
       <Section sectionName="All Books">
-        <BooksList getBooks={handleGetAllBooks} />
+        <BooksList getBooks={getAllBooks} />
       </Section>
     </>
   );

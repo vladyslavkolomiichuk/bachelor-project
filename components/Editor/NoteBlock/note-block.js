@@ -5,7 +5,7 @@ import EditorWindow from "../EditorWindow/editor-window";
 import { useEffect, useRef, useState } from "react";
 import { deleteNote } from "@/lib/db/note";
 import { useToast } from "@/context/ToastContext";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs13-progress";
 
 import styles from "./note-block.module.css";
 

@@ -2,7 +2,7 @@
 
 import { signupAction } from "@/actions/auth-actions";
 import { useActionState } from "react";
-import Link from "next/link";
+import { Link } from "nextjs13-progress";
 import Input from "../Input/Input";
 import { useInput } from "@/hooks/useInput";
 import { SignupFormSchema } from "@/lib/definitions";

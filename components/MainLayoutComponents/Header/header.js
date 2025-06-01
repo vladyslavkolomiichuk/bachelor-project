@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "nextjs13-progress";
 import logo from "@/public/logo.svg";
 import {
   House,
@@ -11,7 +11,8 @@ import {
   BookUser,
 } from "lucide-react";
 import { getInProgressCount } from "@/lib/db/challenge";
-import Badge from "@/components/Badge/badge";
+import SeparateBadge from "@/components/Badge/separate-badge";
+
 import styles from "./header.module.css";
 
 const navItems = [
@@ -42,9 +43,9 @@ export default function Header() {
             <li key={href}>
               <Link href={href}>
                 {badge ? (
-                  <Badge getCount={getCount} type={type}>
+                  <SeparateBadge getCount={getCount} type={type}>
                     <Icon />
-                  </Badge>
+                  </SeparateBadge>
                 ) : (
                   <Icon />
                 )}

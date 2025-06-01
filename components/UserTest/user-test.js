@@ -5,8 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/context/ToastContext";
 
 import styles from "./user-test.module.css";
+import { saveTestResult } from "@/lib/db/test";
+import { useRouter } from "nextjs13-progress";
+import { useUser } from "@/context/UserContext";
 
-export default function UserTest({ saveResult }) {
+export default function UserTest() {
   const [phase, setPhase] = useState("blurred"); // "blurred", "reading", "questions"
   const [selected, setSelected] = useState(1);
 
@@ -17,6 +20,17 @@ export default function UserTest({ saveResult }) {
   const timerRef = useRef(null);
 
   const { showToast } = useToast();
+
+  const router = useRouter();
+
+  const { user } = useUser();
+  const userId = user?.id;
+
+  useEffect(() => {
+    if (user === null) {
+      router.push("/login");
+    }
+  }, [user, router]);
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * texts.length);
@@ -71,7 +85,7 @@ export default function UserTest({ saveResult }) {
     setPhase("finished");
 
     try {
-      await saveResult(wpm, comprehension, timeReading);
+      await saveTestResult(userId, wpm, comprehension, timeReading);
     } catch (error) {
       showToast(`Error saving test result. Try again later.`, "error");
     }
@@ -92,7 +106,7 @@ export default function UserTest({ saveResult }) {
             easier to use this free tool we prepared for you.
             <br />
             <br />
-            <span style={{fontWeight: 700}}>How to use this test?</span>
+            <span style={{ fontWeight: 700 }}>How to use this test?</span>
             <br />
             <ol>
               <li>Take a few deep breaths to better focus.</li>

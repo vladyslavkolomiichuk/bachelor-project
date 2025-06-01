@@ -1,10 +1,10 @@
-/* @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Hind:wght@400;500&display=swap"); */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Hind:wght@400;500&display=swap");
 
 :root {
   --primary-color: #f2f2f3;
   --secondary-color: #797d82;
 
-  --error-color: #B71C1C;
+  --error-color: #b71c1c;
   --success-color: #22bb33;
   --info-color: #5bc0de;
   --warning-color: #f0ad4e;
@@ -79,4 +79,10 @@ body {
   background-attachment: fixed;
   height: 100vh;
   width: 100%;
+}
+
+/* Click animation for all possible buttons */
+button:active,
+a:active {
+  transform: scale(0.95);
 }

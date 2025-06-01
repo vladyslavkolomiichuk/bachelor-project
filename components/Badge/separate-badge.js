@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import styles from "./badge.module.css";
 import { useUser } from "@/context/UserContext";
+import Badge from "./simple-badge";
 
-export default function Badge({ getCount, type, children }) {
+export default function SeparateBadge({ getCount, type = "", children }) {
   const [count, setCount] = useState(0);
 
   const { user } = useUser();
@@ -12,7 +12,7 @@ export default function Badge({ getCount, type, children }) {
 
   useEffect(() => {
     if (!user) return;
-    
+
     const fetchData = async () => {
       const result = await getCount(userId);
       setCount(result);
@@ -31,10 +31,5 @@ export default function Badge({ getCount, type, children }) {
     };
   }, [userId, getCount, type]);
 
-  return (
-    <div className={styles.badgeWrapper}>
-      {children}
-      {count > 0 && <span className={styles.badge}>{count}</span>}
-    </div>
-  );
+  return <Badge count={count}>{children}</Badge>;
 }

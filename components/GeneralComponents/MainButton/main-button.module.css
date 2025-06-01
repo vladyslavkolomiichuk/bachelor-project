@@ -14,6 +14,12 @@
   cursor: pointer;
 }
 
+.button:disabled {
+  background-color: var(--button-color2);
+  color: var(--button-color1);
+  cursor: not-allowed;
+}
+
 .button span {
   z-index: 3;
 }
@@ -32,6 +38,6 @@
   z-index: 2;
 }
 
-.button:hover::after {
+.button:not(:disabled):hover::after {
   left: 120%;
 }

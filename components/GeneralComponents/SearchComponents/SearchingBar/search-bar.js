@@ -5,9 +5,10 @@ import { Search } from "lucide-react";
 import SearchSmallBookItem from "../SearchSmallBookItem/search-small-book-item";
 import Loader from "../Loader/loader";
 import DropdownMenu from "../DropdownMenu/dropdown-menu";
+import { usePathname } from "next/navigation";
+import { useRouter } from "nextjs13-progress";
 
 import styles from "./search-bar.module.css";
-import { usePathname, useRouter } from "next/navigation";
 
 export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,12 +81,9 @@ export default function SearchBar() {
   };
 
   const handleClickOutside = (event) => {
-    const clickedButton =
-      buttonRef.current && buttonRef.current.contains(event.target);
-    const clickedDropdown =
-      dropdownRef.current && dropdownRef.current.contains(event.target);
-    const clickedInput =
-      inputRef.current && inputRef.current.contains(event.target);
+    const clickedButton = buttonRef.current?.contains(event.target);
+    const clickedDropdown = dropdownRef.current?.contains(event.target);
+    const clickedInput = inputRef.current?.contains(event.target);
 
     if (clickedButton && isOpenRef.current) {
       setIsOpen(false);
@@ -109,6 +107,7 @@ export default function SearchBar() {
         <button
           ref={buttonRef}
           className={styles.searchButton}
+          style={{ transform: "translateY(-50%) translateX(20%)" }}
           type="button"
           onClick={() => {
             if (searchQuery.trim() && isOpen) {

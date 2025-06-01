@@ -1,8 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-
-import styles from "@/app/toast.module.css";
+import ToastList from "@/components/GeneralComponents/ToastList.js/toast-List";
 
 const ToastContext = createContext();
 
@@ -21,16 +20,7 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className={styles.toastContainer}>
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className={`${styles.toast} ${styles[toast.type]}`}
-          >
-            {toast.text}
-          </div>
-        ))}
-      </div>
+      <ToastList toasts={toasts} />
     </ToastContext.Provider>
   );
 }

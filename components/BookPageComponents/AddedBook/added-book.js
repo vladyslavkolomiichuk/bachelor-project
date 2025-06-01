@@ -2,17 +2,45 @@ import Section from "@/components/GeneralComponents/Section/section";
 import BookPanel from "../BookPanel/book-panel";
 import FullBookDescription from "../FullBookDescription/full-book-description";
 import MyBookSlider from "../MyBookSlider/my-book-slider";
-import { getLastOpenedBooks, updateBookLastOpened } from "@/lib/db/book";
-import { getNotesByBook } from "@/lib/db/note";
 import NoteBlock from "@/components/Editor/NoteBlock/note-block";
 
 import styles from "./added-book.module.css";
+import { useEffect, useState } from "react";
+import { useUser } from "@/context/UserContext";
 
-export default async function AddedBook({ book, bookColor, userId }) {
-  await updateBookLastOpened(userId, book.isbn13);
-  const lastOpenedBooks = await getLastOpenedBooks(userId);
-  const notes = await getNotesByBook(book.id, userId);
+export default function AddedBook({ book, bookColor }) {
+  const { user } = useUser();
+  const userId = user?.id;
 
+  const [lastOpenedBooks, setLastOpenedBooks] = useState([]);
+  const [notes, setNotes] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        await fetch(`/api/books/last-opened-books`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId, isbn13: book.isbn13 }),
+        });
+
+        const [booksRes, notesRes] = await Promise.all([
+          fetch(`/api/books/last-opened-books?userId=${userId}`),
+          fetch(`/api/notes/book-notes?bookId=${book.id}&userId=${userId}`),
+        ]);
+
+        const booksData = await booksRes.json();
+        const notesData = await notesRes.json();
+
+        setLastOpenedBooks(booksData);
+        setNotes(notesData);
+      } catch (error) {
+        console.error("Error loading book data:", error);
+      } 
+    }
+
+    fetchData();
+  }, [userId, book]);
   return (
     <div className={styles.addedBook}>
       <div className={styles.bookAndNote}>

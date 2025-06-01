@@ -3,7 +3,7 @@ import { useConfirm } from "@/context/ConfirmContext";
 import { useState } from "react";
 import styles from "./challenge-block.module.css";
 import ChallengeForm from "@/components/FormComponents/ChallengeForm/challenge-form";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "nextjs13-progress";
 import ChallengeEndDateForm from "@/components/FormComponents/ChallengeForm/challenge-end-date-form";
 
 export default function ChallengeBlock({ challenge }) {

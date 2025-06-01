@@ -1,10 +1,10 @@
 "use client";
 
 import useDailyChallengeToasts from "@/hooks/useDailyChallengeToasts";
-import { useNotificationToasts } from "@/hooks/useNotificationToast";
+import { useVisitToasts } from "@/hooks/useVisitToast";
 
 export default function Notifier() {
   useDailyChallengeToasts();
-  useNotificationToasts();
+  useVisitToasts();
   return null;
 }

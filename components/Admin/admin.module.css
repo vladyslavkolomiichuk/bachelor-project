@@ -1,0 +1,12 @@
+.together {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  gap: 3rem;
+}
+
+@media (max-width: 978px) {
+  .together {
+    flex-direction: column;
+  }
+}

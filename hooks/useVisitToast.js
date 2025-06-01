@@ -5,7 +5,7 @@ import { useToast } from "@/context/ToastContext";
 import { useUser } from "@/context/UserContext";
 import { useEffect } from "react";
 
-export function useNotificationToasts() {
+export function useVisitToasts() {
   const { showToast } = useToast();
   const { user } = useUser();
   const userId = user?.id;
@@ -46,7 +46,7 @@ export function useNotificationToasts() {
         }
 
         localStorage.setItem("lastVisitToast", localDate);
-        window.dispatchEvent(new Event("notification:updated"));
+        window.dispatchEvent(new Event("visit:updated"));
       },
     }
   );

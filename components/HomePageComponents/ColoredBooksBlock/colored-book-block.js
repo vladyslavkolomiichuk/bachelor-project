@@ -1,21 +1,34 @@
 import BookLink from "@/components/GeneralComponents/BookLink/book-link";
 import BookPreview from "../BookPreview/book-preview";
-
-import { getColorsFromImage } from "@/lib/color-finder";
+import { useEffect, useState } from "react";
 
 import styles from "./colored-book-block.module.css";
 
-export default async function ColoredBookBlock({ book }) {
-  const coverImg = book.image || "/default-image.png";
+export default function ColoredBookBlock({ book }) {
+  const [rgbValues, setRgbValues] = useState([]);
+  const [bookImage, setBookImage] = useState(book?.image);
 
-  const colors = await getColorsFromImage(coverImg);
+  useEffect(() => {
+    const fetchData = async () => {
+      // const bookImage = book?.image;
 
-  const dominantColor = colors[0];
+      const bookColorRes = await fetch("/api/books/book-color", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookImage }),
+      });
 
-  const rgbValues = dominantColor
-    .replace(/[^\d,]/g, "")
-    .split(",")
-    .map(Number);
+      const { dominantColor } = await bookColorRes.json();
+
+      const rgbValues = dominantColor
+        .replace(/[^\d,]/g, "")
+        .split(",")
+        .map(Number);
+
+      setRgbValues(rgbValues);
+    };
+    fetchData();
+  }, [book]);
 
   return (
     <div
@@ -26,7 +39,7 @@ export default async function ColoredBookBlock({ book }) {
               linear-gradient(to right, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 20%), 
               linear-gradient(to left, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 20%),
               linear-gradient(to top, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 20%),
-              url(${coverImg})`,
+              url(${bookImage})`,
       }}
     >
       <BookLink href={`/book/${book.isbn13}`} style={styles.coloredBlockLink}>

@@ -166,7 +166,7 @@ export default function Section({
           childrenArray[activeSection].props.categories.length > 0 && (
             <div className={styles.categorySelectContainer}>
               <select
-                value={activeCategories[activeSection]}
+                value={activeCategories[activeSection] || "all"}
                 onChange={(e) =>
                   updateActiveCategory(activeSection, e.target.value)
                 }

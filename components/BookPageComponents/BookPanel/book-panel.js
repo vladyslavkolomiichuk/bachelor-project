@@ -5,7 +5,7 @@ import Rating from "@/components/GeneralComponents/Rating/rating";
 import { addBookToUserLib, deleteBookFromDb } from "@/lib/db/book";
 import { useState } from "react";
 import MainButton from "@/components/GeneralComponents/MainButton/main-button";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs13-progress";
 import { useToast } from "@/context/ToastContext";
 import TemplateModal from "@/components/Editor/TemplateSelection/template-selection";
 import EditorWindow from "@/components/Editor/EditorWindow/editor-window";
@@ -17,15 +17,18 @@ import styles from "./book-panel.module.css";
 import { ArrowUpRight } from "lucide-react";
 import { Share2 } from "lucide-react";
 import { Trash } from "lucide-react";
+import { useUser } from "@/context/UserContext";
 
 export default function BookPanel({
   book,
   buttonText = "Add To My Books",
   bookColor,
   mode,
-  isUserLoggedIn = true,
 }) {
   const router = useRouter();
+
+  const { user } = useUser();
+  const isUserLoggedIn = !!user;
 
   const [templatesModalOpen, setTemplatesModalOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(null);

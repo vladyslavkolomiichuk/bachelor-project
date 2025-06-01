@@ -1,53 +1,50 @@
+"use client";
+
 import UnaddedBook from "@/components/BookPageComponents/UnaddedBook/unadded-book";
 import AddedBook from "@/components/BookPageComponents/AddedBook/added-book";
-import { fetchBookByISBN, getGoogleBookLink } from "@/lib/api/books";
-import { getColorsFromImage } from "@/lib/color-finder";
-import { verifyAuth } from "@/lib/auth";
-import { getUserBookDb, isBookInDbByIsbn } from "@/lib/db/book";
 import { ReviewsProvider } from "@/context/ReviewsContext";
+import { use, useEffect, useState } from "react";
+import { useUser } from "@/context/UserContext";
 
-export default async function BookPage({ params }) {
-  const { bookISBN } = await params;
+export default function BookPage({ params }) {
+  const { bookISBN } = use(params);
+  const { user } = useUser();
+  const userId = user?.id ?? null;
 
-  const result = await verifyAuth();
+  const [bookChildren, setBookChildren] = useState(null);
 
-  const bookInDb = await isBookInDbByIsbn(bookISBN);
+  useEffect(() => {
+    // if (userId === undefined || bookISBN === undefined) return;
+    async function loadBook() {
+      const bookRes = await fetch("/api/books/book-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, bookISBN }),
+      });
 
-  let userBookDb = null;
+      const { userBookDb, book } = await bookRes.json();
 
-  if (bookInDb && result.user) {
-    userBookDb = await getUserBookDb(bookInDb.id, result.user.id);
-  }
+      const bookImage = userBookDb?.image ?? book?.image;
 
-  let fullBook = null;
+      const bookColorRes = await fetch("/api/books/book-color", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookImage }),
+      });
 
-  if (!bookInDb && !userBookDb) {
-    const bookApi = await fetchBookByISBN(bookISBN);
+      const { dominantColor } = await bookColorRes.json();
 
-    const buyLink = await getGoogleBookLink(bookISBN);
+      const component = userBookDb ? (
+        <AddedBook book={userBookDb} bookColor={dominantColor} />
+      ) : (
+        <UnaddedBook book={book} bookColor={dominantColor} />
+      );
 
-    fullBook = { ...bookApi, buy_link: buyLink };
-  }
+      setBookChildren(component);
+    }
 
-  const coverImg =
-    (bookInDb ? bookInDb.image : fullBook.image) || "/default-image.png";
-  const colors = await getColorsFromImage(coverImg);
-
-  const dominantColor = colors[3];
-
-  const bookChildren = userBookDb ? (
-    <AddedBook
-      book={userBookDb}
-      bookColor={dominantColor}
-      userId={result.user.id}
-    />
-  ) : (
-    <UnaddedBook
-      book={bookInDb ?? fullBook}
-      bookColor={dominantColor}
-      isUserLoggedIn={result?.user}
-    />
-  );
+    loadBook();
+  }, [userId]);
 
   return <ReviewsProvider>{bookChildren}</ReviewsProvider>;
 }
