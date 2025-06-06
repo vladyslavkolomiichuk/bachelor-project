@@ -6,6 +6,7 @@ import { useToast } from "@/context/ToastContext";
 import { EllipsisVertical } from "lucide-react";
 import { deleteBookFromDb } from "@/lib/db/book";
 import { useRouter } from "nextjs13-progress";
+import { updateUserBookCategory } from "@/lib/db/book";
 
 import styles from "./book-small-preview.module.css";
 import { useUser } from "@/context/UserContext";
@@ -13,7 +14,9 @@ import { useUser } from "@/context/UserContext";
 export default function BookSmallPreview({
   book,
   withMenu = false,
-  updateCategory = null,
+  updateCategory = false,
+  setDeletedBook = null,
+  setBookCategory = null,
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
@@ -79,8 +82,12 @@ export default function BookSmallPreview({
                     try {
                       await deleteBookFromDb(book.isbn13);
                       showToast("Book deleted successfully");
-                      router.refresh();
-                    } catch (error) {
+                      setDeletedBook((prev) =>
+                        prev.filter(
+                          (thisBook) => thisBook.isbn13 !== book.isbn13
+                        )
+                      );
+                    } catch {
                       showToast("Failed to delete book", "error");
                     }
                   }}
@@ -103,39 +110,75 @@ export default function BookSmallPreview({
                       <div className={styles.categoryMenu}>
                         <button
                           className={styles.menuItem}
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            updateCategory(userId, book.id, "completed");
-                            setIsMenuOpen(false);
-                            setIsCategoryMenuOpen(false);
-                            router.refresh();
+                            try {
+                              await updateUserBookCategory(
+                                userId,
+                                book.id,
+                                "completed"
+                              );
+                              showToast("Book change category successfully");
+                              setBookCategory(book.id, "completed");
+                              setIsMenuOpen(false);
+                              setIsCategoryMenuOpen(false);
+                            } catch {
+                              showToast(
+                                "Failed to change book category ",
+                                "error"
+                              );
+                            }
                           }}
                         >
                           Completed
                         </button>
                         <button
                           className={styles.menuItem}
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            updateCategory(userId, book.id, "in-progress");
-                            setIsMenuOpen(false);
-                            setIsCategoryMenuOpen(false);
-                            router.refresh();
+                            try {
+                              await updateUserBookCategory(
+                                userId,
+                                book.id,
+                                "in-progress"
+                              );
+                              showToast("Book change category successfully");
+                              setBookCategory(book.id, "in-progress");
+                              setIsMenuOpen(false);
+                              setIsCategoryMenuOpen(false);
+                            } catch {
+                              showToast(
+                                "Failed to change book category ",
+                                "error"
+                              );
+                            }
                           }}
                         >
                           In Progress
                         </button>
                         <button
                           className={styles.menuItem}
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            updateCategory(userId, book.id, "not-started");
-                            setIsMenuOpen(false);
-                            setIsCategoryMenuOpen(false);
-                            router.refresh();
+                            try {
+                              await updateUserBookCategory(
+                                userId,
+                                book.id,
+                                "not-started"
+                              );
+                              showToast("Book change category successfully");
+                              setBookCategory(book.id, "not-started");
+                              setIsMenuOpen(false);
+                              setIsCategoryMenuOpen(false);
+                            } catch {
+                              showToast(
+                                "Failed to change book category ",
+                                "error"
+                              );
+                            }
                           }}
                         >
                           Not Started

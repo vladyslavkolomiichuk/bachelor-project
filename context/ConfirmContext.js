@@ -41,6 +41,7 @@ export function ConfirmProvider({ children }) {
           title={confirmState.options.title}
           message={confirmState.options.message}
           buttonName={confirmState.options.buttonName || "OK"}
+          type={confirmState.options.type}
           onConfirm={handleConfirm}
           onCancel={handleCancel}
         />

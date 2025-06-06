@@ -1,20 +1,21 @@
 "use client";
 
 import BookSmallPreview from "@/components/BookPageComponents/BookSmallPreview/book-small-preview";
-import BookSmallPreviewSkeleton from "@/components/BookPageComponents/BookSmallPreview/book-small-preview-skeleton";
 import BookLink from "@/components/GeneralComponents/BookLink/book-link";
 import Section from "@/components/GeneralComponents/Section/section";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import CircleButton from "@/components/GeneralComponents/CircleButton/circle-button";
 import { Plus } from "lucide-react";
 import NoteBlock from "@/components/Editor/NoteBlock/note-block";
-import BookForm from "../FormComponents/BookForm/book-form";
-import { getUserBooks, updateUserBookCategory } from "@/lib/db/book";
+import UserBookForm from "../FormComponents/UserBookForm/user-book-form";
 
 import styles from "./library.module.css";
 import { useRouter } from "nextjs13-progress";
 import { useUser } from "@/context/UserContext";
 import { getAllNotesByUser } from "@/lib/db/note";
+import { getUserBooks } from "@/lib/db/book";
+import BookSmallPreviewSkeleton from "../Loading/Components/book-small-preview-skeleton";
+import NoteBlockSkeleton from "../Loading/Components/note-block-skeleton";
 
 const BOOK_CATEGORIES = [
   { key: "all", label: "All" },
@@ -29,6 +30,8 @@ export default function Library() {
 
   const [books, setBooks] = useState([]);
   const [notes, setNotes] = useState([]);
+
+  const [loading, setLoading] = useState(true);
 
   const { user } = useUser();
   const userId = user?.id;
@@ -47,53 +50,87 @@ export default function Library() {
 
         setBooks(userBooks);
         setNotes(userNotes);
+
+        setLoading(false);
       } catch (error) {
+        setLoading(false);
         console.error(error);
       }
     }
 
-    fetchData();
+    if (user) {
+      fetchData();
+    }
   }, [userId]);
+
+  const setBookCategory = (bookId, newCategory) => {
+    setBooks((prevBooks) =>
+      prevBooks.map((book) =>
+        book.id === bookId ? { ...book, category: newCategory } : book
+      )
+    );
+  };
 
   return (
     <>
       <Section sectionName={["My Books", "My Notes"]} multi>
-        {books.length > 0 ? (
-          <div className={styles.booksContainer} categories={BOOK_CATEGORIES}>
-            {books.map((book) => {
-              const href = book.person_share_id
-                ? `/book/own/${book.id}`
-                : `/book/${book.isbn13}`;
+        {!loading ? (
+          books.length > 0 ? (
+            <div className={styles.booksContainer} categories={BOOK_CATEGORIES}>
+              {books.map((book) => {
+                const href = book.person_share_id
+                  ? `/book/own/${book.id}`
+                  : `/book/${book.isbn13}`;
 
-              return (
-                <BookLink
-                  href={href}
-                  key={book.id}
-                  style={styles.bookItem}
-                  category={book.category}
-                >
-                  <Suspense fallback={<BookSmallPreviewSkeleton />}>
+                return (
+                  <BookLink
+                    href={href}
+                    key={book.id}
+                    style={styles.bookItem}
+                    category={book.category}
+                  >
                     <BookSmallPreview
                       book={book}
                       withMenu
-                      updateCategory={updateUserBookCategory}
+                      updateCategory
+                      setDeletedBook={setBooks}
+                      setBookCategory={setBookCategory}
                     />
-                  </Suspense>
-                </BookLink>
-              );
-            })}
-          </div>
+                  </BookLink>
+                );
+              })}
+            </div>
+          ) : (
+            <p className={styles.noItems}>There are no books</p>
+          )
         ) : (
-          <p className={styles.noItems}>There are no books</p>
+          <div className={styles.booksContainer}>
+            <BookSmallPreviewSkeleton />
+            <BookSmallPreviewSkeleton />
+            <BookSmallPreviewSkeleton />
+            <BookSmallPreviewSkeleton />
+            <BookSmallPreviewSkeleton />
+            <BookSmallPreviewSkeleton />
+            <BookSmallPreviewSkeleton />
+            <BookSmallPreviewSkeleton />
+          </div>
         )}
-        {notes.length > 0 ? (
-          <div className={styles.notesContainer}>
-            {notes.map((note) => (
-              <NoteBlock key={note.session_id} note={note} />
-            ))}
-          </div>
+        {!loading ? (
+          notes.length > 0 ? (
+            <div className={styles.notesContainer}>
+              {notes.map((note) => (
+                <NoteBlock key={note.session_id} note={note} userId={userId} />
+              ))}
+            </div>
+          ) : (
+            <p className={styles.noItems}>There are no notes</p>
+          )
         ) : (
-          <p className={styles.noItems}>There are no notes</p>
+          <div className={styles.notesContainer}>
+            <NoteBlockSkeleton />
+            <NoteBlockSkeleton />
+            <NoteBlockSkeleton />
+          </div>
         )}
       </Section>
 
@@ -105,10 +142,15 @@ export default function Library() {
         <Plus />
       </CircleButton>
 
-      <BookForm
+      <UserBookForm
         isOpen={isFormOpen}
         onCancel={() => setIsFormOpen(false)}
-        onDone={() => setIsFormOpen(false)}
+        onDone={(newBook) => {
+          setIsFormOpen(false);
+          if (newBook) {
+            setBooks((prev) => [...prev, newBook]);
+          }
+        }}
       />
     </>
   );

@@ -52,8 +52,8 @@ export default function ChallengeFormSmall({
   };
 
   useEffect(() => {
-    if (!formPending && formState === undefined) {
-      onDone();
+    if (!formPending && formState?.data && !formState?.errors) {
+      onDone(formState.data);
     }
   }, [formPending, formState]);
 

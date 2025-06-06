@@ -8,8 +8,9 @@ import { useToast } from "@/context/ToastContext";
 import { useRouter } from "nextjs13-progress";
 
 import styles from "./note-block.module.css";
+import { getBookPDFUrl } from "@/lib/db/book";
 
-export default function NoteBlock({ note }) {
+export default function NoteBlock({ note, userId }) {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -128,6 +129,7 @@ export default function NoteBlock({ note }) {
         onCancel={() => setIsEditorOpen(false)}
         content={noteContent}
         bookId={bookId}
+        userId={userId}
         timer={time}
         editorForChange
         defaultNote={note}

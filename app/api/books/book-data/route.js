@@ -2,9 +2,7 @@ import { fetchBookByISBN, getGoogleBookLink } from "@/lib/api/books";
 import { getUserBookDb, isBookInDbByIsbn } from "@/lib/db/book";
 
 export async function POST(req) {
-  const { bookISBN, userId } = await req.json();
-  console.log(bookISBN, userId);
-  
+  const { bookISBN, userId } = await req.json();  
 
   // if (!bookISBN || !userId) {
   //   return Response.json(

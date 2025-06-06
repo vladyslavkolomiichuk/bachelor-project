@@ -1,6 +1,33 @@
-.lastOpenNotesBar {
+.tocContainer {
   background-color: var(--button-color1);
   padding: 20px;
   max-width: 200px;
   min-width: 100px;
+  overflow-y: auto;
+  color: var(--primary-color);
+}
+
+.tocTitle {
+  font-size: var(--font-size-large);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.tocList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tocItem {
+  margin: 8px 0;
+}
+
+.tocButton {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  font-size: var(--font-size-medium);
+  width: 100%;
+  text-align: left;
 }

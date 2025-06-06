@@ -119,8 +119,10 @@ export async function userImageAction(prevState, formData) {
   try {
     imageUrl = await uploadImage(image, "nextjs-notbook/users-image");
   } catch (error) {
+    console.log(error);
+    
     throw new Error(
-      "Image upload failed, post was not created. Please try again later."
+      `Image upload failed, post was not created. Please try again later. ${error}`
     );
   }
 

@@ -13,6 +13,7 @@ import { Pencil, Plus, Save, Trash2, X } from "lucide-react";
 import CircleButton from "../GeneralComponents/CircleButton/circle-button";
 import { useRouter } from "nextjs13-progress";
 import { useUser } from "@/context/UserContext";
+import WordPreviewSkeleton from "../Loading/Components/word-preview-skeleton";
 
 import styles from "./dictionary.module.css";
 
@@ -33,6 +34,8 @@ export default function Dictionary() {
     date: "",
   });
 
+  const [loading, setLoading] = useState(true);
+
   const router = useRouter();
 
   const { user } = useUser();
@@ -48,8 +51,12 @@ export default function Dictionary() {
     const fetchData = async () => {
       const userWords = await getDictionaryWords(userId);
       setWords(userWords);
+      setLoading(false);
     };
-    fetchData();
+
+    if (user) {
+      fetchData();
+    }
   }, [userId]);
 
   const [isPending, startTransition] = useTransition();
@@ -303,122 +310,128 @@ export default function Dictionary() {
           )}
         </thead>
         <tbody>
-          {filteredWords.length === 0 ? (
-            <tr>
-              <td colSpan={5} className={styles.noData}>
-                Nothing found
-              </td>
-            </tr>
-          ) : (
-            filteredWords.map(({ id, word, meaning, category, date }) => (
-              <tr key={id} className={styles.row}>
-                <td>
-                  {isEditing === id ? (
-                    <input
-                      type="text"
-                      value={editedWord.word}
-                      onChange={(event) =>
-                        setEditedWord({
-                          ...editedWord,
-                          word: event.target.value,
-                        })
-                      }
-                      className={styles.newWordInput}
-                    />
-                  ) : (
-                    word
-                  )}
-                </td>
-                <td>
-                  {isEditing === id ? (
-                    <input
-                      type="text"
-                      value={editedWord.meaning}
-                      onChange={(event) =>
-                        setEditedWord({
-                          ...editedWord,
-                          meaning: event.target.value,
-                        })
-                      }
-                      className={styles.newWordInput}
-                    />
-                  ) : (
-                    meaning
-                  )}
-                </td>
-                <td>
-                  {isEditing === id ? (
-                    <input
-                      type="text"
-                      value={editedWord.category}
-                      onChange={(event) =>
-                        setEditedWord({
-                          ...editedWord,
-                          category: event.target.value,
-                        })
-                      }
-                      className={styles.newWordInput}
-                    />
-                  ) : (
-                    category
-                  )}
-                </td>
-                <td>
-                  {isEditing === id ? (
-                    <input
-                      type="date"
-                      value={editedWord.date}
-                      onChange={(event) =>
-                        setEditedWord({
-                          ...editedWord,
-                          date: event.target.value,
-                        })
-                      }
-                      className={styles.newWordInput}
-                    />
-                  ) : (
-                    new Date(date).toLocaleDateString()
-                  )}
-                </td>
-                <td>
-                  {isEditing === id ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => handleUpdate(id)}
-                        className={styles.actionButton}
-                      >
-                        <Save />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setIsEditing(null)}
-                        className={styles.actionButton}
-                      >
-                        <X />
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        className={styles.actionButton}
-                        onClick={() => handleEdit(id)}
-                      >
-                        <Pencil />
-                      </button>
-                      <button
-                        type="button"
-                        className={styles.actionButton}
-                        onClick={() => handleDelete(id)}
-                      >
-                        <Trash2 />
-                      </button>
-                    </>
-                  )}
+          {!loading ? (
+            filteredWords.length === 0 ? (
+              <tr>
+                <td colSpan={5} className={styles.noData}>
+                  Nothing found
                 </td>
               </tr>
-            ))
+            ) : (
+              filteredWords.map(({ id, word, meaning, category, date }) => (
+                <tr key={id} className={styles.row}>
+                  <td>
+                    {isEditing === id ? (
+                      <input
+                        type="text"
+                        value={editedWord.word}
+                        onChange={(event) =>
+                          setEditedWord({
+                            ...editedWord,
+                            word: event.target.value,
+                          })
+                        }
+                        className={styles.newWordInput}
+                      />
+                    ) : (
+                      word
+                    )}
+                  </td>
+                  <td>
+                    {isEditing === id ? (
+                      <input
+                        type="text"
+                        value={editedWord.meaning}
+                        onChange={(event) =>
+                          setEditedWord({
+                            ...editedWord,
+                            meaning: event.target.value,
+                          })
+                        }
+                        className={styles.newWordInput}
+                      />
+                    ) : (
+                      meaning
+                    )}
+                  </td>
+                  <td>
+                    {isEditing === id ? (
+                      <input
+                        type="text"
+                        value={editedWord.category}
+                        onChange={(event) =>
+                          setEditedWord({
+                            ...editedWord,
+                            category: event.target.value,
+                          })
+                        }
+                        className={styles.newWordInput}
+                      />
+                    ) : (
+                      category
+                    )}
+                  </td>
+                  <td>
+                    {isEditing === id ? (
+                      <input
+                        type="date"
+                        value={editedWord.date}
+                        onChange={(event) =>
+                          setEditedWord({
+                            ...editedWord,
+                            date: event.target.value,
+                          })
+                        }
+                        className={styles.newWordInput}
+                      />
+                    ) : (
+                      new Date(date).toLocaleDateString()
+                    )}
+                  </td>
+                  <td>
+                    {isEditing === id ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdate(id)}
+                          className={styles.actionButton}
+                        >
+                          <Save />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsEditing(null)}
+                          className={styles.actionButton}
+                        >
+                          <X />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className={styles.actionButton}
+                          onClick={() => handleEdit(id)}
+                        >
+                          <Pencil />
+                        </button>
+                        <button
+                          type="button"
+                          className={styles.actionButton}
+                          onClick={() => handleDelete(id)}
+                        >
+                          <Trash2 />
+                        </button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )
+          ) : (
+            <tr className={styles.row}>
+              <WordPreviewSkeleton />
+            </tr>
           )}
         </tbody>
       </table>

@@ -1,0 +1,16 @@
+.bookSmallPreviewSkeleton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.skeletonCover {
+  width: 100px;
+  height: 150px;
+}
+
+.skeletonTitle {
+  width: 80%;
+  height: 16px;
+}

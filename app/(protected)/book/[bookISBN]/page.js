@@ -5,6 +5,7 @@ import AddedBook from "@/components/BookPageComponents/AddedBook/added-book";
 import { ReviewsProvider } from "@/context/ReviewsContext";
 import { use, useEffect, useState } from "react";
 import { useUser } from "@/context/UserContext";
+import MainLoading from "@/app/loading";
 
 export default function BookPage({ params }) {
   const { bookISBN } = use(params);
@@ -12,6 +13,8 @@ export default function BookPage({ params }) {
   const userId = user?.id ?? null;
 
   const [bookChildren, setBookChildren] = useState(null);
+
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // if (userId === undefined || bookISBN === undefined) return;
@@ -41,10 +44,13 @@ export default function BookPage({ params }) {
       );
 
       setBookChildren(component);
+      setLoading(false);
     }
 
-    loadBook();
+      loadBook();
   }, [userId]);
+
+  if (loading) return <MainLoading />;
 
   return <ReviewsProvider>{bookChildren}</ReviewsProvider>;
 }

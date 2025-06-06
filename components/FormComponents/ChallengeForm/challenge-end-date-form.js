@@ -47,8 +47,8 @@ export default function ChallengeEndDateForm({
   };
 
   useEffect(() => {
-    if (!formPending && formState === undefined) {
-      onDone();
+    if (!formPending && formState?.data && !formState?.errors) {
+      onDone(formState.data);
     }
   }, [formPending, formState]);
 

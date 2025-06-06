@@ -11,12 +11,16 @@ import { useRouter } from "nextjs13-progress";
 import { getChallengesByUser } from "@/lib/db/challenge";
 
 import styles from "./challenges.module.css";
+import ChallengeBlockPreviewSkeleton from "../../Loading/Components/challenge-block-preview-skeleton";
 
 export default function ChallengesList() {
-  const [newFormOpen, setNewFormOpen] = useState(false);
   const [challenges, setChallenges] = useState([]);
+
+  const [newFormOpen, setNewFormOpen] = useState(false);
   const [smallFormOpen, setSmallFormOpen] = useState(false);
   const [smallFormChallenge, setSmallFormChallenge] = useState(null);
+
+  const [loading, setLoading] = useState(true);
 
   const router = useRouter();
 
@@ -33,8 +37,12 @@ export default function ChallengesList() {
     const fetchData = async () => {
       const userChallenges = await getChallengesByUser(userId);
       setChallenges(userChallenges);
+      setLoading(false);
     };
-    fetchData();
+
+    if (user) {
+      fetchData();
+    }
   }, [userId]);
 
   const newChallengeActions = [
@@ -109,14 +117,21 @@ export default function ChallengesList() {
               )}
             </div>
 
-            {openGroups[status] &&
-              (group.length > 0 ? (
+            {openGroups[status] && !loading ? (
+              group.length > 0 ? (
                 group.map((challenge) => (
-                  <ChallengeBlock key={challenge.id} challenge={challenge} />
+                  <ChallengeBlock
+                    key={challenge.id}
+                    initChallenge={challenge}
+                    resetChallenges={setChallenges}
+                  />
                 ))
               ) : (
                 <p className={styles.noItems}>No {status} challenges yet.</p>
-              ))}
+              )
+            ) : (
+              <ChallengeBlockPreviewSkeleton />
+            )}
           </div>
         ))}
       </div>
@@ -126,8 +141,11 @@ export default function ChallengesList() {
       <ChallengeForm
         isOpen={newFormOpen}
         onCancel={() => setNewFormOpen(false)}
-        onDone={() => {
+        onDone={(challenge) => {
           setNewFormOpen(false);
+          if (challenge) {
+            setChallenges((prev) => [...prev, challenge]);
+          }
           window.dispatchEvent(new Event("challenges:updated"));
         }}
       />
@@ -137,9 +155,12 @@ export default function ChallengesList() {
           setSmallFormOpen(false);
           setSmallFormChallenge(null);
         }}
-        onDone={() => {
+        onDone={(challenge) => {
           setSmallFormOpen(false);
           setSmallFormChallenge(null);
+          if (challenge) {
+            setChallenges((prev) => [...prev, challenge]);
+          }
           window.dispatchEvent(new Event("challenges:updated"));
         }}
         challenge={smallFormChallenge}

@@ -34,8 +34,19 @@ export async function challengeCreateAction(prevState, formData) {
   const userId = result.user.id;
 
   try {
-    await addChallenge(message, startDate, endDate, category, status, userId);
-    redirect("/challenges");
+    const newChallenge = await addChallenge(
+      message,
+      startDate,
+      endDate,
+      category,
+      status,
+      userId
+    );
+
+    return {
+      data: newChallenge,
+      errors: null,
+    };
   } catch (error) {
     throw error;
   }
@@ -68,7 +79,7 @@ export async function challengeUpdateAction(prevState, formData) {
   }
 
   try {
-    await updateChallenge(
+    const newChallenge = await updateChallenge(
       challengeId,
       message,
       startDate,
@@ -76,7 +87,11 @@ export async function challengeUpdateAction(prevState, formData) {
       category,
       status
     );
-    redirect("/challenges");
+
+    return {
+      data: newChallenge,
+      errors: null,
+    };
   } catch (error) {
     throw error;
   }

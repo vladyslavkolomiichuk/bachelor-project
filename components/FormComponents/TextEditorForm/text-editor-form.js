@@ -15,12 +15,7 @@ export default function TextEditorForm({
   content,
   bookId,
   formType = "create",
-  noteId = null,
-  sessionId = null,
-  defaultTitle = "",
-  defaultDescription = "",
-  defaultStartPage = 0,
-  defaultEndPage = 0,
+  defaultNote = {},
 }) {
   const [formState, formAction, formPending] = useActionState(
     multiplexerAction,
@@ -36,8 +31,8 @@ export default function TextEditorForm({
 
     formData.append("actionType", formType);
 
-    formData.append("noteId", noteId);
-    formData.append("sessionId", sessionId);
+    formData.append("noteId", defaultNote?.note_id);
+    formData.append("sessionId", defaultNote?.session_id);
     formData.append("timer", timer);
     formData.append("content", content);
     formData.append("bookId", bookId);
@@ -46,6 +41,15 @@ export default function TextEditorForm({
       formAction(formData);
     });
   };
+
+  useEffect(() => {
+    if (defaultNote && formType === "update") {
+      setTitle(defaultNote.title || "");
+      setDescription(defaultNote.description || "");
+      setStartPage(defaultNote.start_page || "");
+      setEndPage(defaultNote.finish_page || "");
+    }
+  }, [defaultNote]);
 
   useEffect(() => {
     if (!formPending && formState === undefined) {
@@ -88,49 +92,53 @@ export default function TextEditorForm({
 
   const {
     value: title,
+    setValue: setTitle,
     handleInputChange: handleTitleChange,
     handleInputBlur: handleTitleBlur,
     hasError: titleHasError,
     errorMessage: titleError,
     reset: resetTitle,
   } = useInput(
-    defaultTitle,
+    defaultNote?.title || "",
     TextEditorFormSchema._def.schema.shape.title,
     resetError
   );
   const {
     value: description,
+    setValue: setDescription,
     handleInputChange: handleDescriptionChange,
     handleInputBlur: handleDescriptionBlur,
     hasError: descriptionHasError,
     errorMessage: descriptionError,
     reset: resetDescription,
   } = useInput(
-    defaultDescription,
+    defaultNote?.description || "",
     TextEditorFormSchema._def.schema.shape.description,
     resetError
   );
   const {
     value: startPage,
+    setValue: setStartPage,
     handleInputChange: handleStartPageChange,
     handleInputBlur: handleStartPageBlur,
     hasError: startPageHasError,
     errorMessage: startPageError,
     reset: resetStartPage,
   } = useInput(
-    defaultStartPage,
+    defaultNote?.start_page || "",
     TextEditorFormSchema._def.schema.shape.startPage,
     resetError
   );
   const {
     value: endPage,
+    setValue: setEndPage,
     handleInputChange: handleEndPageChange,
     handleInputBlur: handleEndPageBlur,
     hasError: endPageHasError,
     errorMessage: endPageError,
     reset: resetEndPage,
   } = useInput(
-    defaultEndPage,
+    defaultNote?.finish_page || "",
     TextEditorFormSchema._def.schema.shape.endPage,
     resetError
   );

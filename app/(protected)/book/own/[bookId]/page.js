@@ -5,6 +5,7 @@ import { useRouter } from "nextjs13-progress";
 import { useUser } from "@/context/UserContext";
 import { use, useEffect, useState } from "react";
 import { ReviewsProvider } from "@/context/ReviewsContext";
+import MainLoading from "@/app/loading";
 
 export default function OwnBookPage({ params }) {
   const { bookId } = use(params);
@@ -13,7 +14,7 @@ export default function OwnBookPage({ params }) {
 
   const [book, setBook] = useState(null);
   const [dominantColor, setDominantColor] = useState(null);
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const { user } = useUser();
   const userId = user?.id;
@@ -48,11 +49,15 @@ export default function OwnBookPage({ params }) {
 
       setBook(bookData);
       setDominantColor(dominantColor);
-      // setLoading(false);
+      setLoading(false);
     }
 
-    fetchData();
-  }, []);
+    if (user) {
+      fetchData();
+    }
+  }, [userId]);
+
+  if (loading) return <MainLoading />;
 
   return (
     book && (

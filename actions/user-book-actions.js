@@ -3,7 +3,6 @@
 import { uploadImage } from "@/lib/cloudinary";
 import { addBookToUserLib } from "@/lib/db/book";
 import { NewBookFormSchema } from "@/lib/definitions";
-import { redirect } from "next/navigation";
 
 export async function newBookAddAction(prevState, formData) {
   const isbn13 = formData.get("isbn13");
@@ -11,15 +10,15 @@ export async function newBookAddAction(prevState, formData) {
   const image = formData.get("image");
   const synopsis = formData.get("synopsis");
   const subjects = formData.get("subjects");
-  const buyLink = formData.get("buyLink");
+  const buy_link = formData.get("buyLink");
   const binding = formData.get("binding");
   const authors = formData.get("authors");
-  const longTitle = formData.get("longTitle");
+  const title_long = formData.get("longTitle");
   const pages = formData.get("pages");
   const dimensions = formData.get("dimensions");
   const language = formData.get("language");
   const publisher = formData.get("publisher");
-  const datePublished = formData.get("datePublished");
+  const date_published = formData.get("datePublished");
 
   const validatedFields = NewBookFormSchema.safeParse({
     isbn13,
@@ -27,15 +26,15 @@ export async function newBookAddAction(prevState, formData) {
     image,
     synopsis,
     subjects,
-    buyLink,
+    buyLink: buy_link,
     binding,
     authors,
-    longTitle,
+    longTitle: title_long,
     pages,
     dimensions,
     language,
     publisher,
-    datePublished,
+    datePublished: date_published,
   });
 
   if (!validatedFields.success) {
@@ -47,15 +46,15 @@ export async function newBookAddAction(prevState, formData) {
         image,
         synopsis,
         subjects,
-        buyLink,
+        buy_link,
         binding,
         authors,
-        longTitle,
+        title_long,
         pages,
         dimensions,
         language,
         publisher,
-        datePublished,
+        date_published,
       },
     };
   }
@@ -79,26 +78,35 @@ export async function newBookAddAction(prevState, formData) {
     .filter(Boolean);
 
   try {
-    await addBookToUserLib(
+    const newBook = await addBookToUserLib(
       {
         isbn13: Number(isbn13),
         title,
         image: imageUrl,
         synopsis,
         subjects: subjectsArray,
-        buyLink,
+        buy_link,
         binding,
         authors: authorsArray,
-        longTitle,
+        title_long,
         pages,
         dimensions,
         language,
         publisher,
-        datePublished,
+        date_published,
       },
       true
     );
-    redirect("/library");
+
+    const createdBook = {
+      ...newBook,
+      category: "default",
+    };
+
+    return {
+      data: createdBook,
+      errors: null,
+    };
   } catch (error) {
     throw error;
   }

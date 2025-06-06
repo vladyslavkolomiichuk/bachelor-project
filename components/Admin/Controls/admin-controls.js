@@ -7,11 +7,15 @@ import { useToast } from "@/context/ToastContext";
 import { useConfirm } from "@/context/ConfirmContext";
 
 import styles from "./admin-controls.module.css";
+import AdminBookForm from "@/components/FormComponents/AdminBookForm/admin-book-form";
 
 export default function AdminControls({ type, items, children }) {
   const [itemsSearch, setItemsSearch] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
   const [currentItems, setCurrentItems] = useState(items);
+
+  const [isBookCreateFormOpen, setIsBookCreateFormOpen] = useState(false);
+  const [isBookEditFormOpen, setIsBookEditFormOpen] = useState(false);
 
   const { showToast } = useToast();
   const confirm = useConfirm();
@@ -44,9 +48,8 @@ export default function AdminControls({ type, items, children }) {
 
   // Add Book
   const handleAdd = () => {
-    if (!selectedItem) {
-      showToast(`No ${type} selected.`, "warning");
-      return;
+    if (type === "books") {
+      setIsBookCreateFormOpen(true);
     }
   };
 
@@ -57,20 +60,9 @@ export default function AdminControls({ type, items, children }) {
       return;
     }
 
-    const prevItems = [...currentItems];
-    setCurrentItems((prev) =>
-      prev.map((item) => (item.id === editedItem.id ? editedItem : item))
-    );
-
-    try {
-      await updateBookInDb(editedItem);
-    } catch (error) {
-      showToast(
-        `Failed to edit ${type.endsWith("s") ? type.slice(0, -1) : type}`,
-        "error"
-      );
-      console.log(`Failed to edit: `, error);
-      setCurrentItems(prevItems);
+    if (type === "books") {
+      setIsBookEditFormOpen(true);
+    } else if (type === "users") {
     }
   };
 
@@ -116,9 +108,11 @@ export default function AdminControls({ type, items, children }) {
           className={styles.searchInput}
         />
         <div className={styles.buttonGroup}>
-          <MainButton onClick={handleAdd}>
-            <span>Add</span>
-          </MainButton>
+          {type !== "users" && (
+            <MainButton onClick={handleAdd}>
+              <span>Add</span>
+            </MainButton>
+          )}
           <MainButton onClick={handleDelete}>
             <span>Delete</span>
           </MainButton>
@@ -136,6 +130,33 @@ export default function AdminControls({ type, items, children }) {
       >
         {children}
       </ItemList>
+
+      <AdminBookForm
+        isOpen={isBookCreateFormOpen}
+        onCancel={() => setIsBookCreateFormOpen(false)}
+        onDone={(book) => {
+          setIsBookCreateFormOpen(false);
+          if (book) {
+            setCurrentItems((prev) => [...prev, book]);
+          }
+          showToast("The book has been added successfully", "success");
+        }}
+      />
+      <AdminBookForm
+        isOpen={isBookEditFormOpen}
+        onCancel={() => setIsBookEditFormOpen(false)}
+        onDone={(book) => {
+          setIsBookEditFormOpen(false);
+          if (book) {
+            setCurrentItems((prevBooks) =>
+              prevBooks.map((b) => (b.id === book.id ? book : b))
+            );
+          }
+          showToast("The book has been updated successfully", "success");
+        }}
+        formType="update"
+        defaultBook={selectedItem || {}}
+      />
     </div>
   );
 }

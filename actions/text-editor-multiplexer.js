@@ -5,15 +5,15 @@ import {
   textEditorUpdateAction,
 } from "./text-editor-actions";
 
-export async function multiplexerAction(prevStat, formData) {
+export async function multiplexerAction(prevState, formData) {
   const actionType = formData.get("actionType");
 
   if (actionType === "create") {
-    return textEditorCreateAction(prevStat, formData);
+    return textEditorCreateAction(prevState, formData);
   }
 
   if (actionType === "update") {
-    return textEditorUpdateAction(prevStat, formData);
+    return textEditorUpdateAction(prevState, formData);
   }
 
   return { error: "Unknown action type" };

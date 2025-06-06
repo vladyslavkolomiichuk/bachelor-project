@@ -8,12 +8,16 @@ import ToC from "../ToC/ToC";
 import { TimerProvider, useTimer } from "@/context/TimerContext";
 import { useEffect, useState } from "react";
 import TextEditorForm from "@/components/FormComponents/TextEditorForm/text-editor-form";
+import FileViewer from "../FileViewer/file-viewer";
+import { getBookPDFUrl } from "@/lib/db/book";
+import { useConfirm } from "@/context/ConfirmContext";
 
 export default function EditorWindow({
   isOpen,
   onCancel,
   content,
   bookId,
+  userId,
   editorForChange = false,
   timer = 0,
   defaultNote = null,
@@ -27,6 +31,7 @@ export default function EditorWindow({
         onCancel={onCancel}
         defaultContent={content}
         bookId={bookId}
+        userId={userId}
         editorForChange={editorForChange}
         defaultNote={defaultNote}
       />
@@ -39,13 +44,36 @@ function EditorWindowContent({
   onCancel,
   defaultContent,
   bookId,
+  userId,
   editorForChange,
   defaultNote,
 }) {
-  const [updateNoteFormOpen, setUpdateNoteFormOpen] = useState(false);
-  const [createNoteFormOpen, setCreateNoteFormOpen] = useState(false);
   const [content, setContent] = useState(defaultContent);
   const { timer, stopTimer } = useTimer();
+
+  const [note, setNote] = useState(null);
+
+  const [updateNoteFormOpen, setUpdateNoteFormOpen] = useState(false);
+  const [createNoteFormOpen, setCreateNoteFormOpen] = useState(false);
+
+  const [pdfUrl, setPdfUrl] = useState(null);
+
+  const confirm = useConfirm();
+
+  useEffect(() => {
+    const fetchUrl = async () => {
+      const url = await getBookPDFUrl(bookId, userId);
+      setPdfUrl(url);
+    };
+
+    fetchUrl();
+  }, [bookId, userId]);
+
+  useEffect(() => {
+    if (defaultNote) {
+      setNote(defaultNote);
+    }
+  }, [defaultNote]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -93,15 +121,32 @@ function EditorWindowContent({
         <Plus />
       </button>
 
-      <ToC content={content} />
+      {/* <ToC content={content} /> */}
+      {pdfUrl && (
+        <FileViewer
+          fileUrl={pdfUrl}
+          onTextSelect={(selectedText) => {
+            console.log("Selected text:", selectedText);
+            // Обробка виділеного тексту
+          }}
+        />
+      )}
       <TextEditor content={content} setContent={setContent} />
       <CircleButton
         buttonType="button"
         colorType="success"
-        onClick={() => {
+        onClick={async () => {
           if (editorForChange) {
             setUpdateNoteFormOpen(true);
           } else {
+            const confirmed = await confirm({
+              title: "Highlighting a read test",
+              message:
+                "You can highlight the read text in the PDF and get the total number of words read. Use the button in the PDF panel.",
+              type: "ok",
+            });
+
+            if (!confirmed) return;
             setCreateNoteFormOpen(true);
           }
           stopTimer();
@@ -136,12 +181,7 @@ function EditorWindowContent({
         content={content}
         bookId={bookId}
         formType="update"
-        noteId={defaultNote?.note_id}
-        sessionId={defaultNote?.session_id}
-        defaultTitle={defaultNote?.title}
-        defaultDescription={defaultNote?.description}
-        defaultStartPage={defaultNote?.start_page}
-        defaultEndPage={defaultNote?.finish_page}
+        defaultNote={note}
       />
     </div>
   );

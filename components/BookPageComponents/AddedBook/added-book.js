@@ -36,10 +36,12 @@ export default function AddedBook({ book, bookColor }) {
         setNotes(notesData);
       } catch (error) {
         console.error("Error loading book data:", error);
-      } 
+      }
     }
 
-    fetchData();
+    if (userId) {
+      fetchData();
+    }
   }, [userId, book]);
   return (
     <div className={styles.addedBook}>
@@ -54,7 +56,7 @@ export default function AddedBook({ book, bookColor }) {
           {notes.length > 0 ? (
             <div className={styles.notesContainer}>
               {notes.map((note) => (
-                <NoteBlock key={note.session_id} note={note} />
+                <NoteBlock key={note.session_id} note={note} userId={userId} />
               ))}
             </div>
           ) : (

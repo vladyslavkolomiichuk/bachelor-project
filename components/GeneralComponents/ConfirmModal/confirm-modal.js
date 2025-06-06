@@ -9,6 +9,7 @@ export default function ConfirmModal({
   title,
   message,
   buttonName,
+  type = "delete",
 }) {
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -39,7 +40,10 @@ export default function ConfirmModal({
           <button className={styles.cancel} onClick={onCancel}>
             Cancel
           </button>
-          <button className={styles.confirm} onClick={onConfirm}>
+          <button
+            className={type === "delete" ? styles.delete : styles.confirm}
+            onClick={onConfirm}
+          >
             {buttonName}
           </button>
         </div>

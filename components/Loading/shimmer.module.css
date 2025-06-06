@@ -1,0 +1,20 @@
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--primary-color) 20%,
+    var(--secondary-color) 60%,
+    var(--primary-color) 75%
+  );
+  background-size: 200% 100%;
+  background-repeat: repeat-x;
+  animation: shimmer 2s linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

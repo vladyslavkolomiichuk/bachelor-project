@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Loader from "@/components/GeneralComponents/SearchComponents/Loader/loader";
 import TransparentBookBlock from "../TransparentBookBlock/transparent-book-block";
 import styles from "./books-list.module.css";
+import TransparentBookBlockSkeleton from "../../Loading/Components/transparent-book-block-skeleton";
+import { getRatingByBookIsbn } from "@/lib/db/book";
 
 export default function BooksList({ getBooks, query = "" }) {
   const [books, setBooks] = useState([]);
@@ -24,7 +26,13 @@ export default function BooksList({ getBooks, query = "" }) {
       setLoading(true);
       let newBooks;
       if (query) {
-        newBooks = await getBooks(query, 40, page);
+        const newBooksWithoutRating = await getBooks(query, 40, page);
+        newBooks = await Promise.all(
+          newBooksWithoutRating.map(async (book) => {
+            const rating = await getRatingByBookIsbn(book.isbn13);
+            return { ...book, rating };
+          })
+        );
       } else {
         newBooks = await getBooks(40, page);
       }
@@ -72,12 +80,17 @@ export default function BooksList({ getBooks, query = "" }) {
             <TransparentBookBlock key={book.isbn13} book={book} />
           );
         })}
+
+        {loading && (
+          <>
+            <TransparentBookBlockSkeleton />
+            <TransparentBookBlockSkeleton />
+            <TransparentBookBlockSkeleton />
+            <TransparentBookBlockSkeleton />
+            <TransparentBookBlockSkeleton />
+          </>
+        )}
       </div>
-      {loading && (
-        <div className={styles.loaderContainer}>
-          <Loader />
-        </div>
-      )}
       {!hasMore && <p className={styles.end}>There are no more books.</p>}
     </>
   );

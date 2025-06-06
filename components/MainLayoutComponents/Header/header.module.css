@@ -45,7 +45,7 @@
   cursor: pointer;
 }
 
-.nav ul li a {
+.button {
   text-decoration: none;
   width: 35px;
   height: 35px;
@@ -54,12 +54,12 @@
   border: none;
 }
 
-.nav ul li a svg {
+.button svg {
   height: 35px;
   width: 35px;
   transition: color 0.2s ease;
 }
 
-.nav ul li a svg:hover {
+.button svg:hover {
   color: var(--secondary-color); 
 }

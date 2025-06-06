@@ -9,6 +9,7 @@ import {
   BookA,
   BookOpenCheck,
   BookUser,
+  Info,
 } from "lucide-react";
 import { getInProgressCount } from "@/lib/db/challenge";
 import SeparateBadge from "@/components/Badge/separate-badge";
@@ -41,7 +42,7 @@ export default function Header() {
         <ul>
           {navItems.map(({ href, icon: Icon, badge, getCount, type }) => (
             <li key={href}>
-              <Link href={href}>
+              <Link href={href} className={styles.button}>
                 {badge ? (
                   <SeparateBadge getCount={getCount} type={type}>
                     <Icon />
@@ -54,6 +55,9 @@ export default function Header() {
           ))}
         </ul>
       </nav>
+      <Link href="/about" className={styles.button}>
+        <Info />
+      </Link>
     </header>
   );
 }

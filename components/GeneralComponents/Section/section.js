@@ -25,8 +25,8 @@ export default function Section({
 
   const [activeCategories, setActiveCategories] = useState(
     multi
-      ? childrenArray.map((child) => child.props.categories?.[0]?.key || null)
-      : [childrenArray[0]?.props.categories?.[0]?.key || null]
+      ? childrenArray.map((child) => child.props.categories?.[0]?.key || 'all')
+      : [childrenArray[0]?.props.categories?.[0]?.key || 'all']
   );
 
   const updateCurrentSlideIndex = (sectionIndex, newIndex) => {
@@ -166,7 +166,7 @@ export default function Section({
           childrenArray[activeSection].props.categories.length > 0 && (
             <div className={styles.categorySelectContainer}>
               <select
-                value={activeCategories[activeSection] || "all"}
+                value={activeCategories[activeSection]}
                 onChange={(e) =>
                   updateActiveCategory(activeSection, e.target.value)
                 }

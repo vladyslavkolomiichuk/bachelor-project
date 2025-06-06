@@ -30,6 +30,7 @@ export function useInput(defaultValue, validationSchema, resetError) {
 
   return {
     value: enteredValue,
+    setValue: setEnteredValue,
     handleInputChange,
     handleInputBlur,
     hasError: didEdit && !valueIsValid,

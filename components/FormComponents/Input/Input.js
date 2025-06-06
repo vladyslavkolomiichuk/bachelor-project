@@ -10,15 +10,17 @@ export default function Input({ id, error, type, ...props }) {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   return (
-    <div className={styles.input}>
-      <input id={id} type={passwordVisible ? "text" : type} {...props} />
-      {id === "password" || id === "confirmPassword" ? (
-        passwordVisible ? (
-          <EyeOff onClick={() => setPasswordVisible(false)} />
-        ) : (
-          <Eye onClick={() => setPasswordVisible(true)} />
-        )
-      ) : null}
+    <div className={styles.container}>
+      <div className={styles.input}>
+        <input id={id} type={passwordVisible ? "text" : type} {...props} />
+        {id === "password" || id === "confirmPassword" ? (
+          passwordVisible ? (
+            <EyeOff onClick={() => setPasswordVisible(false)} />
+          ) : (
+            <Eye onClick={() => setPasswordVisible(true)} />
+          )
+        ) : null}
+      </div>
       {error?.length > 0 && (
         <FormError>
           {error.length > 1 ? (

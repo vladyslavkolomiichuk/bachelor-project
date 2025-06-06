@@ -11,14 +11,63 @@ import {
   userImageAction,
   userPasswordAction,
 } from "@/actions/user-info-actions";
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import Image from "next/image";
 import { Aperture } from "lucide-react";
+import { logoutAction } from "@/actions/auth-actions";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/context/UserContext";
+import { getFullUserInfo } from "@/lib/db/user";
 
 import styles from "../form.module.css";
-import { logoutAction } from "@/actions/auth-actions";
+import {
+  UserImagePageSkeleton,
+  UserInfoPageSkeleton,
+  UserPasswordPageSkeleton,
+} from "@/components/Loading/Pages/user-page-skeleton";
 
-export default function UserForm({ user }) {
+export default function UserForm() {
+  const [user, setUser] = useState(null);
+
+  const [loading, setLoading] = useState(true);
+
+  const router = useRouter();
+
+  const result = useUser();
+  const userId = result?.user?.id;
+
+  useEffect(() => {
+    if (result?.user === null) {
+      router.push("/login");
+    }
+  }, [result, router]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userRes = await getFullUserInfo(userId);
+        setUser(userRes);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (result?.user) {
+      fetchData();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name || "");
+      setSurname(user.surname || "");
+      setUsername(user.username || "");
+      setEmail(user.email || "");
+    }
+  }, [user]);
+
   const [generalInfoFormState, generalInfoFormAction, generalInfoFormPending] =
     useActionState(generalUserInfoAction, {
       errors: null,
@@ -62,45 +111,49 @@ export default function UserForm({ user }) {
 
   const {
     value: name,
+    setValue: setName,
     handleInputChange: handleNameChange,
     handleInputBlur: handleNameBlur,
     hasError: nameHasError,
     errorMessage: nameError,
   } = useInput(
-    user.name,
+    user?.name || "",
     GeneralUserInfoFormSchema.shape.name,
     resetGeneralInfoError
   );
   const {
     value: surname,
+    setValue: setSurname,
     handleInputChange: handleSurnameChange,
     handleInputBlur: handleSurnameBlur,
     hasError: surnameHasError,
     errorMessage: surnameError,
   } = useInput(
-    user.surname,
+    user?.surname || "",
     GeneralUserInfoFormSchema.shape.surname,
     resetGeneralInfoError
   );
   const {
     value: username,
+    setValue: setUsername,
     handleInputChange: handleUsernameChange,
     handleInputBlur: handleUsernameBlur,
     hasError: usernameHasError,
     errorMessage: usernameError,
   } = useInput(
-    user.username,
+    user?.username || "",
     GeneralUserInfoFormSchema.shape.username,
     resetGeneralInfoError
   );
   const {
     value: email,
+    setValue: setEmail,
     handleInputChange: handleEmailChange,
     handleInputBlur: handleEmailBlur,
     hasError: emailHasError,
     errorMessage: emailError,
   } = useInput(
-    user.email,
+    user?.email || "",
     GeneralUserInfoFormSchema.shape.email,
     resetGeneralInfoError
   );
@@ -130,151 +183,173 @@ export default function UserForm({ user }) {
   return (
     <div className={styles.userFormContainer}>
       <div className={styles.imageContainer}>
-        <form action={imageFormAction} className={styles.userImageForm}>
-          <Image
-            src={user.image || "/previews/user.png"}
-            alt="User Image"
-            className={styles.userImage}
-            width={250}
-            height={250}
-          />
+        {!loading ? (
+          <>
+            <form action={imageFormAction} className={styles.userImageForm}>
+              <Image
+                src={user?.image || "/previews/user.png"}
+                alt="User Image"
+                className={styles.userImage}
+                width={250}
+                height={250}
+              />
 
-          <div className={styles.helpMask}>
-            <label htmlFor="userImage" className={styles.userImageLabel}>
-              <Aperture />
-              {imageFormState?.errors?.image}
-            </label>
-          </div>
-          <input
-            id="userImage"
-            name="userImage"
-            type="file"
-            accept="image/*"
-            className={styles.userImageInput}
-            onChange={(event) => {
-              const form = event.currentTarget.form;
-              resetImageError(event.target.name);
-              form?.requestSubmit();
-            }}
-            disabled={imageFormPending}
-          />
-        </form>
+              <div className={styles.helpMask}>
+                <label htmlFor="userImage" className={styles.userImageLabel}>
+                  <Aperture />
+                  {imageFormState?.errors?.image}
+                </label>
+              </div>
+              <input
+                id="userImage"
+                name="userImage"
+                type="file"
+                accept="image/*"
+                className={styles.userImageInput}
+                onChange={(event) => {
+                  const form = event.currentTarget.form;
+                  resetImageError(event.target.name);
+                  form?.requestSubmit();
+                }}
+                disabled={imageFormPending}
+              />
+            </form>
 
-        <form action={logoutAction} className={styles.logOutForm}>
-          <button type="submit" className={styles.logOutBtn}>
-            Log Out
-          </button>
-        </form>
+            <form action={logoutAction} className={styles.logOutForm}>
+              <button type="submit" className={styles.logOutBtn}>
+                Log Out
+              </button>
+            </form>
+          </>
+        ) : (
+          <UserImagePageSkeleton />
+        )}
       </div>
       <div className={styles.userInfoContainer}>
         <form action={generalInfoFormAction} className={styles.useeInfoForm}>
           <h2>General Info</h2>
-          <div className={styles.nameWrapper}>
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Name"
-              value={name}
-              onChange={handleNameChange}
-              onBlur={handleNameBlur}
-              error={
-                nameHasError ? nameError : generalInfoFormState?.errors?.name
-              }
-            />
+          {!loading ? (
+            <>
+              <div className={styles.nameWrapper}>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Name"
+                  value={name}
+                  onChange={handleNameChange}
+                  onBlur={handleNameBlur}
+                  error={
+                    nameHasError
+                      ? nameError
+                      : generalInfoFormState?.errors?.name
+                  }
+                />
 
-            <Input
-              id="surname"
-              name="surname"
-              type="text"
-              placeholder="Surname"
-              value={surname}
-              onChange={handleSurnameChange}
-              onBlur={handleSurnameBlur}
-              error={
-                surnameHasError
-                  ? surnameError
-                  : generalInfoFormState?.errors?.surname
-              }
-            />
+                <Input
+                  id="surname"
+                  name="surname"
+                  type="text"
+                  placeholder="Surname"
+                  value={surname}
+                  onChange={handleSurnameChange}
+                  onBlur={handleSurnameBlur}
+                  error={
+                    surnameHasError
+                      ? surnameError
+                      : generalInfoFormState?.errors?.surname
+                  }
+                />
 
-            <Input
-              id="username"
-              name="username"
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={handleUsernameChange}
-              onBlur={handleUsernameBlur}
-              error={
-                usernameHasError
-                  ? usernameError
-                  : generalInfoFormState?.errors?.username
-              }
-            />
-          </div>
+                <Input
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  onChange={handleUsernameChange}
+                  onBlur={handleUsernameBlur}
+                  error={
+                    usernameHasError
+                      ? usernameError
+                      : generalInfoFormState?.errors?.username
+                  }
+                />
+              </div>
 
-          <Input
-            id="email"
-            name="email"
-            type="text"
-            placeholder="Email"
-            value={email}
-            onChange={handleEmailChange}
-            onBlur={handleEmailBlur}
-            error={
-              emailHasError ? emailError : generalInfoFormState?.errors?.email
-            }
-          />
+              <Input
+                id="email"
+                name="email"
+                type="text"
+                placeholder="Email"
+                value={email}
+                onChange={handleEmailChange}
+                onBlur={handleEmailBlur}
+                error={
+                  emailHasError
+                    ? emailError
+                    : generalInfoFormState?.errors?.email
+                }
+              />
 
-          <button
-            type="submit"
-            className={styles.submitUserInfo}
-            disabled={generalInfoFormPending}
-          >
-            Save General Info
-          </button>
+              <button
+                type="submit"
+                className={styles.submitUserInfo}
+                disabled={generalInfoFormPending}
+              >
+                Save General Info
+              </button>
+            </>
+          ) : (
+            <UserInfoPageSkeleton />
+          )}
         </form>
 
         <form action={passwordFormAction} className={styles.useeInfoForm}>
           <h2>Change Password</h2>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={handlePasswordChange}
-            onBlur={handlePasswordBlur}
-            error={
-              passwordHasError
-                ? passwordError
-                : passwordFormState?.errors?.password
-            }
-          />
+          {!loading ? (
+            <>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={handlePasswordChange}
+                onBlur={handlePasswordBlur}
+                error={
+                  passwordHasError
+                    ? passwordError
+                    : passwordFormState?.errors?.password
+                }
+              />
 
-          <Input
-            id="confirmPassword"
-            name="confirmPassword"
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-            onBlur={handleConfirmPasswordBlur}
-            error={
-              confirmPasswordHasError
-                ? confirmPasswordError
-                : passwordFormState?.errors?.confirmPassword
-            }
-          />
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={handleConfirmPasswordChange}
+                onBlur={handleConfirmPasswordBlur}
+                error={
+                  confirmPasswordHasError
+                    ? confirmPasswordError
+                    : passwordFormState?.errors?.confirmPassword
+                }
+              />
 
-          <button
-            type="submit"
-            className={styles.submitUserInfo}
-            disabled={passwordFormPending}
-          >
-            Save New Password
-          </button>
+              <button
+                type="submit"
+                className={styles.submitUserInfo}
+                disabled={passwordFormPending}
+              >
+                Save New Password
+              </button>
+            </>
+          ) : (
+            <UserPasswordPageSkeleton />
+          )}
         </form>
       </div>
     </div>

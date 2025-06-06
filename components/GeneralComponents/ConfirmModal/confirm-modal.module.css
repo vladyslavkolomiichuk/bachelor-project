@@ -56,7 +56,8 @@
 }
 
 .cancel,
-.confirm {
+.confirm,
+.delete {
   border: none;
   font-family: "Montserrat", sans-serif;
   font-size: var(--font-size-medium);
@@ -70,7 +71,7 @@
   background-color: transparent;
 }
 
-.confirm {
+.delete {
   margin-right: 20px;
   padding: 5px 20px;
   color: var(--button-color1);
@@ -79,11 +80,25 @@
   font-weight: 600;
 }
 
+.confirm {
+  margin-right: 20px;
+  padding: 5px 20px;
+  color: var(--button-color1);
+  border-radius: 5px;
+  background-color: var(--success-color);
+  font-weight: 600;
+}
+
 .cancel:hover {
   color: var(--button-color1);
 }
 
-.confirm:hover {
+.delete:hover {
   color: var(--error-color);
+  background-color: var(--button-color1);
+}
+
+.confirm:hover {
+  color: var(--success-color);
   background-color: var(--button-color1);
 }

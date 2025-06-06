@@ -1,38 +1,57 @@
 import { Check, Pencil, RotateCcw, Trash2 } from "lucide-react";
 import { useConfirm } from "@/context/ConfirmContext";
-import { useState } from "react";
-import styles from "./challenge-block.module.css";
+import { useEffect, useState } from "react";
 import ChallengeForm from "@/components/FormComponents/ChallengeForm/challenge-form";
-import { useRouter } from "nextjs13-progress";
 import ChallengeEndDateForm from "@/components/FormComponents/ChallengeForm/challenge-end-date-form";
+import { useToast } from "@/context/ToastContext";
 
-export default function ChallengeBlock({ challenge }) {
-  const {
-    id,
-    message,
-    start_date: startDate,
-    end_date: endDate,
-    status,
-    category,
-  } = challenge;
+import styles from "./challenge-block.module.css";
+
+export default function ChallengeBlock({ initChallenge, resetChallenges }) {
+  // const {
+  //   id,
+  //   message,
+  //   start_date: startDate,
+  //   end_date: endDate,
+  //   status,
+  //   category,
+  // } = challenge;
+  const [challenge, setChallenge] = useState(null);
   const [editFormOpen, setEditFormOpen] = useState();
   const [resetFormOpen, setResetFormOpen] = useState();
 
-  const router = useRouter();
-
   const confirm = useConfirm();
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    if (initChallenge) {
+      setChallenge(initChallenge);
+    }
+  }, [initChallenge]);
 
   const handleComplete = async () => {
+    const prevChallenge = challenge;
+    resetChallenges((prev) =>
+      prev.map((c) =>
+        c.id === challenge?.id ? { ...c, status: "completed" } : c
+      )
+    );
+
+    const challengeId = challenge?.id;
+
     const res = await fetch("/api/challenges/complete", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ id: challengeId }),
     });
 
     if (res.ok) {
       window.dispatchEvent(new Event("challenges:updated"));
-      router.push("/challenges");
     } else {
+      resetChallenges((prev) =>
+        prev.map((c) => (c.id === prevChallenge.id ? prevChallenge : c))
+      );
+      showToast("Failed to mark challenge as completed", "error");
       console.error("Failed to mark challenge as completed");
     }
   };
@@ -49,16 +68,22 @@ export default function ChallengeBlock({ challenge }) {
     });
     if (!confirmed) return;
 
+    const prevChallenge = challenge;
+    resetChallenges((prev) => prev.filter((c) => c.id !== challenge?.id));
+
+    const challengeId = challenge?.id;
+
     const res = await fetch("/api/challenges/delete", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: id }),
+      body: JSON.stringify({ id: challengeId }),
     });
 
     if (res.ok) {
       window.dispatchEvent(new Event("challenges:updated"));
-      router.push("/challenges");
     } else {
+      resetChallenges((prev) => [...prev, prevChallenge]);
+      showToast("Failed to delete challenge", "error");
       console.error("Failed to delete challenge");
     }
   };
@@ -68,7 +93,7 @@ export default function ChallengeBlock({ challenge }) {
   };
 
   const renderActions = () => {
-    if (status === "in-progress") {
+    if (challenge?.status === "in-progress") {
       return (
         <>
           <button
@@ -96,7 +121,7 @@ export default function ChallengeBlock({ challenge }) {
       );
     }
 
-    if (status === "completed" || status === "failed") {
+    if (challenge?.status === "completed" || challenge?.status === "failed") {
       return (
         <>
           <button
@@ -117,7 +142,7 @@ export default function ChallengeBlock({ challenge }) {
       );
     }
 
-    if (status === "upcoming") {
+    if (challenge?.status === "upcoming") {
       return (
         <>
           <button
@@ -150,15 +175,17 @@ export default function ChallengeBlock({ challenge }) {
   }
 
   return (
-    <div className={`${styles.challengeBlock} ${styles[status]}`}>
+    <div className={`${styles.challengeBlock} ${styles[challenge?.status]}`}>
       <div className={styles.info}>
-        <p className={styles.message}>{message}</p>
-        <p className={styles.category}>{category}</p>
+        <p className={styles.message}>{challenge?.message}</p>
+        <p className={styles.category}>{challenge?.category}</p>
         <p className={styles.time}>
-          {new Date(startDate).toLocaleDateString()}
+          {new Date(challenge?.start_date).toLocaleDateString()}
         </p>
-        <p className={styles.time}>{new Date(endDate).toLocaleDateString()}</p>
-        <p className={styles.status}>{status}</p>
+        <p className={styles.time}>
+          {new Date(challenge?.end_date).toLocaleDateString()}
+        </p>
+        <p className={styles.status}>{challenge?.status}</p>
       </div>
 
       <div className={styles.actions}>{renderActions()}</div>
@@ -166,29 +193,35 @@ export default function ChallengeBlock({ challenge }) {
       <ChallengeForm
         isOpen={editFormOpen}
         onCancel={() => setEditFormOpen(false)}
-        onDone={() => {
+        onDone={(newChallenge) => {
           setEditFormOpen(false);
+          if (newChallenge) {
+            resetChallenges((prev) =>
+              prev.map((c) => (c.id === newChallenge.id ? newChallenge : c))
+            );
+          }
           window.dispatchEvent(new Event("challenges:updated"));
         }}
         formType="update"
-        challengeId={id}
-        defaultMessage={message}
-        defaultStartDate={formatDateForInput(startDate)}
-        defaultEndDate={formatDateForInput(endDate)}
+        defaultChallenge={challenge}
       />
       <ChallengeEndDateForm
         isOpen={resetFormOpen}
         onCancel={() => setResetFormOpen(false)}
-        onDone={() => {
+        onDone={(newChallenge) => {
           setResetFormOpen(false);
+          if (newChallenge) {
+            resetChallenges((prev) =>
+              prev.map((c) => (c.id === newChallenge.id ? newChallenge : c))
+            );
+          }
           window.dispatchEvent(new Event("challenges:updated"));
         }}
-        formType="update"
-        challengeId={id}
-        message={message}
-        startDate={formatDateForInput(startDate)}
-        category={category}
-        defaultEndDate={formatDateForInput(endDate)}
+        challengeId={challenge?.id}
+        message={challenge?.message}
+        startDate={formatDateForInput(new Date())}
+        category={challenge?.category}
+        defaultEndDate={formatDateForInput(challenge?.endDate)}
       />
     </div>
   );

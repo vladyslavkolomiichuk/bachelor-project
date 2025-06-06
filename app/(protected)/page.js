@@ -2,17 +2,21 @@
 
 import Section from "@/components/GeneralComponents/Section/section";
 import ColoredBookBlock from "@/components/HomePageComponents/ColoredBooksBlock/colored-book-block";
-import ColoredBookBlockSkeleton from "@/components/HomePageComponents/ColoredBooksBlock/colored-book-block-skeleton";
+import ColoredBookBlockSkeleton from "@/components/Loading/Components/colored-book-block-skeleton";
 import TransparentBookBlock from "@/components/HomePageComponents/TransparentBookBlock/transparent-book-block";
-import TransparentBookBlockSkeleton from "@/components/HomePageComponents/TransparentBookBlock/transparent-book-block-skeleton";
+import TransparentBookBlockSkeleton from "@/components/Loading/Components/transparent-book-block-skeleton";
 import {
   fetchNewSubjectBooks,
   fetchRecommendedBooksByRandom,
   getAllBooks,
 } from "@/lib/api/books";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import BooksList from "@/components/HomePageComponents/BooksList/books-list";
-import { getUserBookAuthors, getUserBookSubjects } from "@/lib/db/book";
+import {
+  getRatingByBookIsbn,
+  getUserBookAuthors,
+  getUserBookSubjects,
+} from "@/lib/db/book";
 import { verifyAuth } from "@/lib/auth";
 
 const SUBJECTS = [
@@ -46,6 +50,8 @@ export default function HomePage() {
 
   const [isPersonalized, setIsPersonalized] = useState(false);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -70,8 +76,6 @@ export default function HomePage() {
     }
 
     async function fetchUserPrefs() {
-      console.log("as");
-
       try {
         const userSubjects = await getUserBookSubjects(user.id);
         const userAuthors = await getUserBookAuthors(user.id);
@@ -85,6 +89,7 @@ export default function HomePage() {
         }
       } catch (error) {
         console.error("Failed to fetch user preferences:", error);
+        setLoading(false);
       } finally {
         setIsPersonalized(true);
       }
@@ -100,24 +105,51 @@ export default function HomePage() {
       try {
         const { subject: newSubj, books: newBooks } =
           await fetchNewSubjectBooks(12);
+
+        const newBooksWithRatings = await Promise.all(
+          newBooks.map(async (book) => {
+            const rating = await getRatingByBookIsbn(book.isbn13);
+            return { ...book, rating };
+          })
+        );
+
         setNewSubject(newSubj);
-        setNewSubjectBooks(newBooks);
+        setNewSubjectBooks(newBooksWithRatings);
 
         const recommendedBySubject = await fetchRecommendedBooksByRandom(
           "subject",
           subjects,
           24
         );
-        setRecommendedBooksBySubject(recommendedBySubject);
+
+        const recommendedBySubjectWithRatings = await Promise.all(
+          recommendedBySubject.map(async (book) => {
+            const rating = await getRatingByBookIsbn(book.isbn13);
+            return { ...book, rating };
+          })
+        );
+
+        setRecommendedBooksBySubject(recommendedBySubjectWithRatings);
 
         const recommendedByAuthor = await fetchRecommendedBooksByRandom(
           "author",
           authors,
           36
         );
-        setRecommendedBooksByAuthor(recommendedByAuthor);
+
+        const recommendedByAuthorWithRatings = await Promise.all(
+          recommendedByAuthor.map(async (book) => {
+            const rating = await getRatingByBookIsbn(book.isbn13);
+            return { ...book, rating };
+          })
+        );
+
+        setRecommendedBooksByAuthor(recommendedByAuthorWithRatings);
       } catch (error) {
         console.error("Failed to fetch books:", error);
+        setLoading(false);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -127,22 +159,37 @@ export default function HomePage() {
   return (
     <>
       <Section sectionName={`Try Something New - ${newSubject}`} inlineSlider>
-        {newSubjectBooks.map((book) => (
-          <Suspense key={book.isbn13} fallback={<ColoredBookBlockSkeleton />}>
-            <ColoredBookBlock book={book} />
-          </Suspense>
-        ))}
+        {!loading ? (
+          newSubjectBooks.map((book) => (
+            <ColoredBookBlock book={book} key={book.isbn13} />
+          ))
+        ) : (
+          <>
+            <ColoredBookBlockSkeleton />
+            <ColoredBookBlockSkeleton />
+            <ColoredBookBlockSkeleton />
+            <ColoredBookBlockSkeleton />
+          </>
+        )}
       </Section>
       <div className="double-section">
         <Section sectionName="Books For You" gridSlider slidesToShow={8}>
-          {recommendedBooksBySubject.map((book) => (
-            <Suspense
-              key={book.isbn13}
-              fallback={<TransparentBookBlockSkeleton />}
-            >
-              <TransparentBookBlock book={book} />
-            </Suspense>
-          ))}
+          {!loading ? (
+            recommendedBooksBySubject.map((book) => (
+              <TransparentBookBlock key={book.isbn13} book={book} />
+            ))
+          ) : (
+            <>
+              <TransparentBookBlockSkeleton />
+              <TransparentBookBlockSkeleton />
+              <TransparentBookBlockSkeleton />
+              <TransparentBookBlockSkeleton />
+              <TransparentBookBlockSkeleton />
+              <TransparentBookBlockSkeleton />
+              <TransparentBookBlockSkeleton />
+              <TransparentBookBlockSkeleton />
+            </>
+          )}
         </Section>
         <Section sectionName="Our Lovely Genres"></Section>
       </div>
@@ -151,14 +198,24 @@ export default function HomePage() {
         gridSlider
         slidesToShow={10}
       >
-        {recommendedBooksByAuthor.map((book) => (
-          <Suspense
-            key={book.isbn13}
-            fallback={<TransparentBookBlockSkeleton />}
-          >
-            <TransparentBookBlock book={book} />
-          </Suspense>
-        ))}
+        {!loading ? (
+          recommendedBooksByAuthor.map((book) => (
+            <TransparentBookBlock key={book.isbn13} book={book} />
+          ))
+        ) : (
+          <>
+            <TransparentBookBlockSkeleton />
+            <TransparentBookBlockSkeleton />
+            <TransparentBookBlockSkeleton />
+            <TransparentBookBlockSkeleton />
+            <TransparentBookBlockSkeleton />
+            <TransparentBookBlockSkeleton />
+            <TransparentBookBlockSkeleton />
+            <TransparentBookBlockSkeleton />
+            <TransparentBookBlockSkeleton />
+            <TransparentBookBlockSkeleton />
+          </>
+        )}
       </Section>
       <Section sectionName="All Books">
         <BooksList getBooks={getAllBooks} />

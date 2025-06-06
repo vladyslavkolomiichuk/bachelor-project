@@ -3,7 +3,7 @@
 import CoverImage from "@/components/GeneralComponents/CoverImage/cover-image";
 import Rating from "@/components/GeneralComponents/Rating/rating";
 import { addBookToUserLib, deleteBookFromDb } from "@/lib/db/book";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MainButton from "@/components/GeneralComponents/MainButton/main-button";
 import { useRouter } from "nextjs13-progress";
 import { useToast } from "@/context/ToastContext";
@@ -18,6 +18,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Share2 } from "lucide-react";
 import { Trash } from "lucide-react";
 import { useUser } from "@/context/UserContext";
+import FileUploadModal from "@/components/FormComponents/FileUpload/modal-file-upload";
 
 export default function BookPanel({
   book,
@@ -31,22 +32,37 @@ export default function BookPanel({
   const isUserLoggedIn = !!user;
 
   const [templatesModalOpen, setTemplatesModalOpen] = useState(false);
+  const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
+
   const [selectedTemplate, setSelectedTemplate] = useState(null);
 
   const { showToast } = useToast();
   const confirm = useConfirm();
 
-  const { id, image, title, authors, buy_link: buyLink } = book;
+  const {
+    id,
+    image,
+    title,
+    authors,
+    buy_link: buyLink,
+    rating: defaultRating = 0,
+  } = book;
 
   const { ratingCounts: { averageRating: rating } = {} } = useReviews();
 
   const handleAddBook = async () => {
     if (!isUserLoggedIn) {
       showToast("You need to be logged in to add books.", "warning");
-    } else {
+      return;
+    }
+
+    try {
       await addBookToUserLib(book);
       showToast("Book added successfully!", "success");
       router.refresh();
+    } catch (error) {
+      showToast("Failed to add book. Please try again.", "error");
+      console.error(error);
     }
   };
 
@@ -57,11 +73,17 @@ export default function BookPanel({
         "This action will remove the book from your library but will leave the notes associated with it.",
       buttonName: "Delete",
     });
+
     if (!confirmed) return;
 
-    deleteBookFromDb(book.isbn13);
-    showToast("Book deleted successfully!", "success");
-    router.refresh();
+    try {
+      await deleteBookFromDb(book.isbn13);
+      showToast("Book deleted successfully!", "success");
+      router.refresh();
+    } catch (error) {
+      showToast("Failed to delete book. Please try again.", "error");
+      console.error(error);
+    }
   };
 
   return (
@@ -75,7 +97,7 @@ export default function BookPanel({
           <div>
             <p>{authors?.join(", ") || "Unknown Author"}</p>
             <div className={styles.rating}>
-              <Rating rating={rating} />
+              <Rating rating={rating || defaultRating} />
               {/* <p>{ratingsCount}</p> */}
             </div>
           </div>
@@ -93,6 +115,12 @@ export default function BookPanel({
           >
             <span>{buttonText}</span>
           </MainButton>
+
+          {mode === "added" && (
+            <MainButton onClick={() => setIsFileUploadOpen(true)}>
+              Add PDF Book
+            </MainButton>
+          )}
 
           <div className={styles.actionButtons}>
             <button
@@ -131,12 +159,24 @@ export default function BookPanel({
         onCancel={() => setSelectedTemplate(null)}
         content={selectedTemplate?.content}
         bookId={id}
+         userId={user?.id}
       />
 
       <TemplateModal
         setTemplate={setSelectedTemplate}
         isOpen={templatesModalOpen}
         onCancel={() => setTemplatesModalOpen(false)}
+      />
+
+      <FileUploadModal
+        isOpen={isFileUploadOpen}
+        onCancel={() => setIsFileUploadOpen(false)}
+        onDone={() => {
+          setIsFileUploadOpen(false);
+          showToast("PDF file added successfully", "success");
+        }}
+        bookId={id}
+        userId={user?.id}
       />
     </div>
   );

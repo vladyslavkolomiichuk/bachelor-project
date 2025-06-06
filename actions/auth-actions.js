@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createUser, getUserByEmail } from "@/lib/db/user";
 import { createAuthSession, destroySession } from "@/lib/auth";
 import { hashUserPassword, verifyPassword } from "@/lib/hash";
+import { lucia } from "@/lib/lucia";
 
 export async function signupAction(prevState, formData) {
   const name = formData.get("name");
@@ -116,6 +117,7 @@ export async function loginAction(prevState, formData) {
   }
 
   await createAuthSession(existingUser.id);
+  await lucia.deleteExpiredSessions();
   redirect("/");
 }
 

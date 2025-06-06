@@ -7,15 +7,20 @@ import { multiplexerAction } from "@/actions/challenge-multiplexer";
 
 import styles from "../form.module.css";
 
+function formatDateForInput(dateInput) {
+  const date = new Date(dateInput);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export default function ChallengeForm({
   isOpen,
   onCancel,
   onDone,
   formType = "create",
-  challengeId = null,
-  defaultMessage = "",
-  defaultStartDate = "",
-  defaultEndDate = "",
+  defaultChallenge = {},
 }) {
   const [formState, formAction, formPending] = useActionState(
     multiplexerAction,
@@ -31,7 +36,7 @@ export default function ChallengeForm({
 
     formData.append("actionType", formType);
 
-    formData.append("challengeId", challengeId);
+    formData.append("challengeId", defaultChallenge.id);
     formData.append("category", "Own");
 
     const today = new Date();
@@ -47,8 +52,16 @@ export default function ChallengeForm({
   };
 
   useEffect(() => {
-    if (!formPending && formState === undefined) {
-      onDone();
+    if (defaultChallenge && formType === "update") {
+      setMessage(defaultChallenge.message || "");
+      setStartDate(formatDateForInput(defaultChallenge.start_date) || "");
+      setEndDate(formatDateForInput(defaultChallenge.end_date) || "");
+    }
+  }, [defaultChallenge]);
+
+  useEffect(() => {
+    if (!formPending && formState?.data && !formState?.errors) {
+      onDone(formState.data);
     }
   }, [formPending, formState]);
 
@@ -86,32 +99,43 @@ export default function ChallengeForm({
 
   const {
     value: message,
+    setValue: setMessage,
     handleInputChange: handleMessageChange,
     handleInputBlur: handleMessageBlur,
     hasError: messageHasError,
     errorMessage: messageError,
     reset: resetMessage,
-  } = useInput(defaultMessage, ChallengeFormFields.shape.message, resetError);
+  } = useInput(
+    defaultChallenge?.message || "",
+    ChallengeFormFields.shape.message,
+    resetError
+  );
   const {
     value: startDate,
+    setValue: setStartDate,
     handleInputChange: handleStartDateChange,
     handleInputBlur: handleStartDateBlur,
     hasError: startDateHasError,
     errorMessage: startDateError,
     reset: resetStartDate,
   } = useInput(
-    defaultStartDate,
+    formatDateForInput(defaultChallenge?.start_date) || "",
     ChallengeFormFields.shape.startDate,
     resetError
   );
   const {
     value: endDate,
+    setValue: setEndDate,
     handleInputChange: handleEndDateChange,
     handleInputBlur: handleEndDateBlur,
     hasError: endDateHasError,
     errorMessage: endDateError,
     reset: resetEndDate,
-  } = useInput(defaultEndDate, ChallengeFormFields.shape.endDate, resetError);
+  } = useInput(
+    formatDateForInput(defaultChallenge?.end_date) || "",
+    ChallengeFormFields.shape.endDate,
+    resetError
+  );
 
   if (!isOpen) return null;
 

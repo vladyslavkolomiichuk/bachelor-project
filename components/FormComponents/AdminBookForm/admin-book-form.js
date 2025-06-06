@@ -1,17 +1,32 @@
-import { useActionState, useEffect, useState } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import { useInput } from "@/hooks/useInput";
 import { NewBookFormSchema } from "@/lib/definitions";
 import Input from "../Input/Input";
 import MainButton from "@/components/GeneralComponents/MainButton/main-button";
-import { newBookAddAction } from "@/actions/book-actions";
-
-import styles from "../form.module.css";
 import { fetchBookByISBN } from "@/lib/api/books";
 import { Link } from "nextjs13-progress";
+import { isBookInDbByIsbn } from "@/lib/db/book";
 
-export default function BookForm({ isOpen, onCancel, onDone }) {
+import styles from "../form.module.css";
+import { multiplexerAction } from "@/actions/admin-book-multiplexer";
+
+function formatDateForInput(dateInput) {
+  const date = new Date(dateInput);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+export default function AdminBookForm({
+  isOpen,
+  onCancel,
+  onDone,
+  formType = "create",
+  defaultBook = {},
+}) {
   const [formState, formAction, formPending] = useActionState(
-    newBookAddAction,
+    multiplexerAction,
     {
       errors: null,
       data: null,
@@ -25,23 +40,57 @@ export default function BookForm({ isOpen, onCancel, onDone }) {
 
     setIsbnStatus("checking");
 
-    const book = await fetchBookByISBN(isbn13.trim());
+    const ISBNdbBook = await fetchBookByISBN(isbn13.trim());
+    const DBBook = await isBookInDbByIsbn(isbn13.trim());
 
-    if (book) {
+    if (ISBNdbBook || DBBook) {
       setIsbnStatus("found");
     } else {
       setIsbnStatus("not-found");
     }
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
+    formData.append("actionType", formType);
+
+    formData.append("bookId", defaultBook.id);
+
+    startTransition(() => {
+      formAction(formData);
+    });
+  };
+
   useEffect(() => {
-    if (!formPending && formState === undefined) {
-      onDone();
+    if (defaultBook && formType === "update") {
+      setAuthors(defaultBook.authors || "");
+      setBinding(defaultBook.binding || "");
+      setBuyLink(defaultBook.buy_link || "");
+      setDatePublished(formatDateForInput(defaultBook.date_published) || "");
+      setDimensions(defaultBook.dimensions || "");
+      setImage(defaultBook.image || "");
+      setIsbn13(defaultBook.isbn13 || "");
+      setLanguage(defaultBook.language || "");
+      setLongTitle(defaultBook.title_long || "");
+      setPages(defaultBook.pages || "");
+      setPublisher(defaultBook.publisher || "");
+      setSubjects(defaultBook.subjects || "");
+      setSynopsis(defaultBook.synopsis || "");
+      setTitle(defaultBook.title || "");
+    }
+  }, [defaultBook]);
+
+  useEffect(() => {
+    if (!formPending && formState?.data && !formState?.errors) {
+      onDone(formState.data);
     }
   }, [formPending, formState]);
 
   useEffect(() => {
     if (!isOpen) {
+      setIsbnStatus(null);
       setIsbnStatus(null);
       resetAuthors();
       resetBinding();
@@ -86,116 +135,186 @@ export default function BookForm({ isOpen, onCancel, onDone }) {
 
   const {
     value: isbn13,
+    setValue: setIsbn13,
     handleInputChange: handleIsbn13Change,
     handleInputBlur: handleIsbn13Blur,
     hasError: isbn13HasError,
     errorMessage: isbn13Error,
     reset: resetIsbn13,
-  } = useInput("", NewBookFormSchema.shape.isbn13, resetError);
+  } = useInput(
+    defaultBook.isbn13 || "",
+    NewBookFormSchema.shape.isbn13,
+    resetError
+  );
   const {
     value: title,
+    setValue: setTitle,
     handleInputChange: handleTitleChange,
     handleInputBlur: handleTitleBlur,
     hasError: titleHasError,
     errorMessage: titleError,
     reset: resetTitle,
-  } = useInput("", NewBookFormSchema.shape.title, resetError);
+  } = useInput(
+    defaultBook.title || "",
+    NewBookFormSchema.shape.title,
+    resetError
+  );
   const {
     value: image,
+    setValue: setImage,
     handleInputChange: handleImageChange,
     handleInputBlur: handleImageBlur,
     hasError: imageHasError,
     errorMessage: imageError,
     reset: resetImage,
-  } = useInput("", NewBookFormSchema.shape.image, resetError);
+  } = useInput(
+    defaultBook.image || "",
+    NewBookFormSchema.shape.image,
+    resetError
+  );
   const {
     value: synopsis,
+    setValue: setSynopsis,
     handleInputChange: handleSynopsisChange,
     handleInputBlur: handleSynopsisBlur,
     hasError: synopsisHasError,
     errorMessage: synopsisError,
     reset: resetSynopsis,
-  } = useInput("", NewBookFormSchema.shape.synopsis, resetError);
+  } = useInput(
+    defaultBook.synopsis || "",
+    NewBookFormSchema.shape.synopsis,
+    resetError
+  );
   const {
     value: subjects,
+    setValue: setSubjects,
     handleInputChange: handleSubjectsChange,
     handleInputBlur: handleSubjectsBlur,
     hasError: subjectsHasError,
     errorMessage: subjectsError,
     reset: resetSubjects,
-  } = useInput("", NewBookFormSchema.shape.subjects, resetError);
+  } = useInput(
+    defaultBook.subjects || "",
+    NewBookFormSchema.shape.subjects,
+    resetError
+  );
   const {
     value: buyLink,
+    setValue: setBuyLink,
     handleInputChange: handleBuyLinkChange,
     handleInputBlur: handleBuyLinkBlur,
     hasError: buyLinkHasError,
     errorMessage: buyLinkError,
     reset: resetBuyLink,
-  } = useInput("", NewBookFormSchema.shape.buyLink, resetError);
+  } = useInput(
+    defaultBook.buy_link || "",
+    NewBookFormSchema.shape.buyLink,
+    resetError
+  );
   const {
     value: binding,
+    setValue: setBinding,
     handleInputChange: handleBindingChange,
     handleInputBlur: handleBindingBlur,
     hasError: bindingHasError,
     errorMessage: bindingError,
     reset: resetBinding,
-  } = useInput("", NewBookFormSchema.shape.binding, resetError);
+  } = useInput(
+    defaultBook.binding || "",
+    NewBookFormSchema.shape.binding,
+    resetError
+  );
   const {
     value: authors,
+    setValue: setAuthors,
     handleInputChange: handleAuthorsChange,
     handleInputBlur: handleAuthorsBlur,
     hasError: authorsHasError,
     errorMessage: authorsError,
     reset: resetAuthors,
-  } = useInput("", NewBookFormSchema.shape.authors, resetError);
+  } = useInput(
+    defaultBook.authors || "",
+    NewBookFormSchema.shape.authors,
+    resetError
+  );
   const {
     value: longTitle,
+    setValue: setLongTitle,
     handleInputChange: handleLongTitleChange,
     handleInputBlur: handleLongTitleBlur,
     hasError: longTitleHasError,
     errorMessage: longTitleError,
     reset: resetLongTitle,
-  } = useInput("", NewBookFormSchema.shape.longTitle, resetError);
+  } = useInput(
+    defaultBook.title_long || "",
+    NewBookFormSchema.shape.longTitle,
+    resetError
+  );
   const {
     value: pages,
+    setValue: setPages,
     handleInputChange: handlePagesChange,
     handleInputBlur: handlePagesBlur,
     hasError: pagesHasError,
     errorMessage: pagesError,
     reset: resetPages,
-  } = useInput("", NewBookFormSchema.shape.pages, resetError);
+  } = useInput(
+    defaultBook.pages || "",
+    NewBookFormSchema.shape.pages,
+    resetError
+  );
   const {
     value: dimensions,
+    setValue: setDimensions,
     handleInputChange: handleDimensionsChange,
     handleInputBlur: handleDimensionsBlur,
     hasError: dimensionsHasError,
     errorMessage: dimensionsError,
     reset: resetDimensions,
-  } = useInput("", NewBookFormSchema.shape.dimensions, resetError);
+  } = useInput(
+    defaultBook.dimensions || "",
+    NewBookFormSchema.shape.dimensions,
+    resetError
+  );
   const {
     value: language,
+    setValue: setLanguage,
     handleInputChange: handleLanguageChange,
     handleInputBlur: handleLanguageBlur,
     hasError: languageHasError,
     errorMessage: languageError,
     reset: resetLanguage,
-  } = useInput("", NewBookFormSchema.shape.language, resetError);
+  } = useInput(
+    defaultBook.language || "",
+    NewBookFormSchema.shape.language,
+    resetError
+  );
   const {
     value: publisher,
+    setValue: setPublisher,
     handleInputChange: handlePublisherChange,
     handleInputBlur: handlePublisherBlur,
     hasError: publisherHasError,
     errorMessage: publisherError,
     reset: resetPublisher,
-  } = useInput("", NewBookFormSchema.shape.publisher, resetError);
+  } = useInput(
+    defaultBook.publisher || "",
+    NewBookFormSchema.shape.publisher,
+    resetError
+  );
   const {
     value: datePublished,
+    setValue: setDatePublished,
     handleInputChange: handleDatePublishedChange,
     handleInputBlur: handleDatePublishedBlur,
     hasError: datePublishedHasError,
     errorMessage: datePublishedError,
     reset: resetDatePublished,
-  } = useInput("", NewBookFormSchema.shape.datePublished, resetError);
+  } = useInput(
+    formatDateForInput(defaultBook.date_published) || "",
+    NewBookFormSchema.shape.datePublished,
+    resetError
+  );
 
   if (!isOpen) return null;
 
@@ -206,15 +325,20 @@ export default function BookForm({ isOpen, onCancel, onDone }) {
         style={{ width: "550px" }}
       >
         <div className={styles.messageContainer}>
-          <h2>New Own Book</h2>
+          <h2>{formType === "create" ? "New Book" : "Update Book"}</h2>
           <p>
-            To add your own book to our application, first make sure that it
-            does not already exist using the ISBN13. If the book does not exist
-            in our database or you do not have an ISBN13, fill in the details
-            below.{" "}
-            <span style={{ fontWeight: 700 }}>
-              Authors and subjects should be separated by commas.
-            </span>
+            {formType === "create" ? (
+              <>
+                You can add a new book to the database, but first make sure that
+                it does not already exist using the ISBN13. If the book does not
+                exist in our database, fill in the details below.{" "}
+                <span style={{ fontWeight: 700 }}>
+                  Authors and subjects should be separated by commas.
+                </span>
+              </>
+            ) : (
+              "Edit the details of the book below."
+            )}
           </p>
           {isbnStatus === "checking" && <p>Checking ISBN...</p>}
           {isbnStatus === "found" && (
@@ -224,12 +348,12 @@ export default function BookForm({ isOpen, onCancel, onDone }) {
           )}
           {isbnStatus === "not-found" && (
             <p style={{ color: "red" }}>
-              Book not found in ISBNdb, you can add book by your own.
+              Book not found in ISBNdb and in DB, you can add book.
             </p>
           )}
         </div>
 
-        <form action={formAction} className={styles.noteForm}>
+        <form onSubmit={handleSubmit} className={styles.noteForm}>
           <Input
             id="isbn13"
             name="isbn13"
@@ -239,11 +363,14 @@ export default function BookForm({ isOpen, onCancel, onDone }) {
             onChange={handleIsbn13Change}
             onBlur={(e) => {
               handleIsbn13Blur(e);
-              checkIsbn13();
+              if (formType === "create") {
+                checkIsbn13();
+              }
             }}
             error={isbn13HasError ? isbn13Error : formState?.errors?.isbn13}
           />
-          {isbnStatus === "not-found" && !isbn13HasError && (
+          {((isbnStatus === "not-found" && !isbn13HasError) ||
+            formType === "update") && (
             <>
               <Input
                 id="image"
@@ -419,10 +546,12 @@ export default function BookForm({ isOpen, onCancel, onDone }) {
           <MainButton
             type="submit"
             disabled={
-              formPending || isbnStatus === "found" || isbnStatus === null
+              formPending ||
+              isbnStatus === "found" ||
+              (isbnStatus === null && formType !== "update")
             }
           >
-            <span>Add Book</span>
+            <span>{formType === "create" ? "Add Book" : "Update Book"}</span>
           </MainButton>
           <button
             className={styles.cancel}
