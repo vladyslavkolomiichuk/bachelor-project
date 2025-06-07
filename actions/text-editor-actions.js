@@ -16,6 +16,8 @@ export async function textEditorCreateAction(prevState, formData) {
   const content = formData.get("content");
   const bookId = formData.get("bookId");
 
+  const wordsCount = formData.get("wordsCount");
+
   const validatedFields = TextEditorFormSchema.safeParse({
     title,
     description,
@@ -47,7 +49,8 @@ export async function textEditorCreateAction(prevState, formData) {
       timer,
       content,
       bookId,
-      userId
+      userId,
+      wordsCount
     );
     redirect(`/book/${bookIsbn}`);
   } catch (error) {
@@ -102,7 +105,7 @@ export async function textEditorUpdateAction(prevState, formData) {
       bookId,
       userId
     );
-    revalidatePath('/');
+    revalidatePath("/");
   } catch (error) {
     throw error;
   }

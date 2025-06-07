@@ -2,7 +2,11 @@
 
 import CoverImage from "@/components/GeneralComponents/CoverImage/cover-image";
 import Rating from "@/components/GeneralComponents/Rating/rating";
-import { addBookToUserLib, deleteBookFromDb } from "@/lib/db/book";
+import {
+  addBookToUserLib,
+  deleteArticleFromDb,
+  deleteBookFromDb,
+} from "@/lib/db/book";
 import { useEffect, useState } from "react";
 import MainButton from "@/components/GeneralComponents/MainButton/main-button";
 import { useRouter } from "nextjs13-progress";
@@ -77,9 +81,14 @@ export default function BookPanel({
     if (!confirmed) return;
 
     try {
-      await deleteBookFromDb(book.isbn13);
+      if (book.doi) {
+        await deleteArticleFromDb(book.doi);
+        router.push("/library");
+      } else {
+        await deleteBookFromDb(book.isbn13, book.person_share_id);
+        router.refresh();
+      }
       showToast("Book deleted successfully!", "success");
-      router.refresh();
     } catch (error) {
       showToast("Failed to delete book. Please try again.", "error");
       console.error(error);
@@ -104,23 +113,25 @@ export default function BookPanel({
         </div>
 
         <div className={styles.bookInfoButtons}>
-          <MainButton
-            onClick={
-              mode === "unadded"
-                ? handleAddBook
-                : () => {
-                    setTemplatesModalOpen(true);
-                  }
-            }
-          >
-            <span>{buttonText}</span>
-          </MainButton>
-
-          {mode === "added" && (
-            <MainButton onClick={() => setIsFileUploadOpen(true)}>
-              Add PDF Book
+          <div className={styles.together}>
+            <MainButton
+              onClick={
+                mode === "unadded"
+                  ? handleAddBook
+                  : () => {
+                      setTemplatesModalOpen(true);
+                    }
+              }
+            >
+              <span>{buttonText}</span>
             </MainButton>
-          )}
+
+            {mode === "added" && (
+              <MainButton onClick={() => setIsFileUploadOpen(true)}>
+                Add PDF Book
+              </MainButton>
+            )}
+          </div>
 
           <div className={styles.actionButtons}>
             <button
@@ -136,9 +147,9 @@ export default function BookPanel({
               Buy <ArrowUpRight />
             </button>
 
-            <button type="button" id="share" className={styles.shareButton}>
+            {/* <button type="button" id="share" className={styles.shareButton}>
               <Share2 />
-            </button>
+            </button> */}
             {mode === "added" && (
               <button
                 type="button"
@@ -159,7 +170,7 @@ export default function BookPanel({
         onCancel={() => setSelectedTemplate(null)}
         content={selectedTemplate?.content}
         bookId={id}
-         userId={user?.id}
+        userId={user?.id}
       />
 
       <TemplateModal

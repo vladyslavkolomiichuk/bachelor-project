@@ -4,8 +4,9 @@ const baseUrl = "https://api2.isbndb.com";
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const q = searchParams.get("q");
-  const limit = searchParams.get("limit");
-  const page = searchParams.get("page");
+  const type = searchParams.get("type") || "title";
+  const limit = searchParams.get("limit") || 30;
+  const page = searchParams.get("page") || 1;
 
   if (!q) {
     return new Response(JSON.stringify({ error: "Missing query" }), {
@@ -15,23 +16,32 @@ export async function GET(request) {
   }
 
   try {
-    let response;
+    let endpoint;
+    let url;
 
-    if (q) {
-      const pageNumber = page || 1;
-      const pageSize = limit || 30;
-
-      response = await fetch(
-        `${baseUrl}/books/${q}?pageSize=${pageSize}&page=${pageNumber}&shouldMatchAll=1`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: apiKey,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+    switch (type) {
+      case "isbn":
+        endpoint = `/book/${encodeURIComponent(q)}`;
+        url = `${baseUrl}${endpoint}`;
+        break;
+      case "author":
+        endpoint = `/author/${encodeURIComponent(q)}`;
+        url = `${baseUrl}${endpoint}?pageSize=${limit}&page=${page}&shouldMatchAll=1`;
+        break;
+      case "title":
+      default:
+        endpoint = `/books/${encodeURIComponent(q)}`;
+        url = `${baseUrl}${endpoint}?pageSize=${limit}&page=${page}&shouldMatchAll=1`;
+        break;
     }
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: apiKey,
+        "Content-Type": "application/json",
+      },
+    });
 
     if (response.status === 404) {
       return new Response(JSON.stringify([]), {
@@ -46,10 +56,20 @@ export async function GET(request) {
 
     const data = await response.json();
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    if (type === "isbn") {
+      const singleBook = data.book;
+      const booksArray = singleBook ? [singleBook] : [];
+      return new Response(JSON.stringify({ books: booksArray }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } else {
+      // Для author або title ISBNdb повертає { books: [ ... ] }
+      return new Response(JSON.stringify({ books: data.books }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
   } catch (error) {
     console.error("Error fetching from ISBNdb:", error);
     return new Response(

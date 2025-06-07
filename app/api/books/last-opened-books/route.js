@@ -19,16 +19,16 @@ export async function GET(req) {
 
 export async function PATCH(req) {
   try {
-    const { userId, isbn13 } = await req.json();
+    const { userId, bookId } = await req.json();
 
-    if (!userId || !isbn13) {
+    if (!userId || !bookId) {
       return Response.json(
-        { error: "Missing userId or isbn13" },
+        { error: "Missing userId or bookId" },
         { status: 400 }
       );
     }
 
-    await updateBookLastOpened(userId, isbn13);
+    await updateBookLastOpened(userId, bookId);
 
     return Response.json({ success: true });
   } catch (error) {

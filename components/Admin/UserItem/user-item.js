@@ -54,14 +54,14 @@ export default function UserItem({ user }) {
       <td>
         <div>
           {date_of_first_visit
-            ? new Date(date_of_first_visit).toLocaleDateString()
+            ? new Date(user.date_of_first_visit).toLocaleDateString()
             : "-"}
         </div>
       </td>
       <td>
         <div>
           {date_of_last_visit
-            ? new Date(date_of_last_visit).toLocaleDateString()
+            ? new Date(user.date_of_last_visit).toLocaleDateString()
             : "-"}
         </div>
       </td>

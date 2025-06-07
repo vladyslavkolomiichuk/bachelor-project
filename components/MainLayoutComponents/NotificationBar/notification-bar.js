@@ -1,6 +1,6 @@
 "use client";
 
-import { UserRoundCheck } from "lucide-react";
+import { Shield, UserRoundCheck } from "lucide-react";
 import { Flame } from "lucide-react";
 import SeparateBadge from "@/components/Badge/separate-badge";
 import { useEffect, useState } from "react";
@@ -17,6 +17,7 @@ export default function NotificationBar() {
 
   const { user } = useUser();
   const userId = user?.id;
+  const userRole = user?.role;
 
   const [username, setUsername] = useState(null);
 
@@ -33,6 +34,10 @@ export default function NotificationBar() {
     router.push(`/user/${username}`);
   };
 
+  const handleAdminButtonClick = () => {
+    router.push("/admin");
+  };
+
   const handleClickLogin = () => {
     router.push("/login");
   };
@@ -43,6 +48,16 @@ export default function NotificationBar() {
 
   return (
     <div className={styles.notificationBar}>
+      {userRole === "admin" && (
+        <button
+          type="button"
+          className={styles.button}
+          onClick={handleAdminButtonClick}
+        >
+          <Shield strokeWidth={3} />
+        </button>
+      )}
+
       <button
         type="button"
         className={styles.button}

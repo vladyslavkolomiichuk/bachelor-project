@@ -10,6 +10,7 @@ import {
   BookOpenCheck,
   BookUser,
   Info,
+  MessageSquare,
 } from "lucide-react";
 import { getInProgressCount } from "@/lib/db/challenge";
 import SeparateBadge from "@/components/Badge/separate-badge";
@@ -29,7 +30,7 @@ const navItems = [
   },
   { href: "/dictionary", icon: BookA },
   { href: "/test", icon: BookOpenCheck },
-  { href: "/friends", icon: BookUser },
+  { href: "/chats", icon: MessageSquare },
 ];
 
 export default function Header() {

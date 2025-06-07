@@ -1,56 +1,62 @@
-"use client";
-
 import UnaddedBook from "@/components/BookPageComponents/UnaddedBook/unadded-book";
 import AddedBook from "@/components/BookPageComponents/AddedBook/added-book";
 import { ReviewsProvider } from "@/context/ReviewsContext";
-import { use, useEffect, useState } from "react";
-import { useUser } from "@/context/UserContext";
-import MainLoading from "@/app/loading";
+import { notFound as notFoundFunction } from "next/navigation";
+import { headers } from "next/headers";
+import { verifyAuth } from "@/lib/auth";
 
-export default function BookPage({ params }) {
-  const { bookISBN } = use(params);
-  const { user } = useUser();
-  const userId = user?.id ?? null;
+export default async function BookPage({ params }) {
+  const { bookISBN } = await params;
 
-  const [bookChildren, setBookChildren] = useState(null);
+  const { user } = await verifyAuth();
+  const userId = user?.id;
 
-  const [loading, setLoading] = useState(true);
+  if (!userId || !bookISBN) {
+    notFoundFunction();
+  }
 
-  useEffect(() => {
-    // if (userId === undefined || bookISBN === undefined) return;
-    async function loadBook() {
-      const bookRes = await fetch("/api/books/book-data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, bookISBN }),
-      });
+  const headersList = await headers();
+  const host = headersList.get("host");
+  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+  const baseUrl = `${protocol}://${host}`;
 
-      const { userBookDb, book } = await bookRes.json();
+  const bookRes = await fetch(`${baseUrl}/api/books/book-data`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId, bookISBN }),
+    cache: "no-store",
+  });
 
-      const bookImage = userBookDb?.image ?? book?.image;
+  if (!bookRes.ok) {
+    notFoundFunction();
+  }
 
-      const bookColorRes = await fetch("/api/books/book-color", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookImage }),
-      });
+  const { userBookDb, book } = await bookRes.json();
 
-      const { dominantColor } = await bookColorRes.json();
+  if (!userBookDb && !book) {
+    notFoundFunction();
+  }
 
-      const component = userBookDb ? (
-        <AddedBook book={userBookDb} bookColor={dominantColor} />
-      ) : (
-        <UnaddedBook book={book} bookColor={dominantColor} />
-      );
+  const bookImage = userBookDb?.image ?? book?.image;
 
-      setBookChildren(component);
-      setLoading(false);
-    }
+  const bookColorRes = await fetch(`${baseUrl}/api/books/book-color`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ bookImage }),
+    cache: "no-store",
+  });
 
-      loadBook();
-  }, [userId]);
+  if (!bookColorRes.ok) {
+    notFoundFunction();
+  }
 
-  if (loading) return <MainLoading />;
+  const { dominantColor } = await bookColorRes.json();
 
-  return <ReviewsProvider>{bookChildren}</ReviewsProvider>;
+  const bookComponent = userBookDb ? (
+    <AddedBook book={userBookDb} bookColor={dominantColor} />
+  ) : (
+    <UnaddedBook book={book} bookColor={dominantColor} />
+  );
+
+  return <ReviewsProvider>{bookComponent}</ReviewsProvider>;
 }

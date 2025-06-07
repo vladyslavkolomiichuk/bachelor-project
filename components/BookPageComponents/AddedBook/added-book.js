@@ -1,3 +1,5 @@
+"use client";
+
 import Section from "@/components/GeneralComponents/Section/section";
 import BookPanel from "../BookPanel/book-panel";
 import FullBookDescription from "../FullBookDescription/full-book-description";
@@ -21,7 +23,7 @@ export default function AddedBook({ book, bookColor }) {
         await fetch(`/api/books/last-opened-books`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId, isbn13: book.isbn13 }),
+          body: JSON.stringify({ userId, bookId: book.id }),
         });
 
         const [booksRes, notesRes] = await Promise.all([

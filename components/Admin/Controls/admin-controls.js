@@ -8,6 +8,8 @@ import { useConfirm } from "@/context/ConfirmContext";
 
 import styles from "./admin-controls.module.css";
 import AdminBookForm from "@/components/FormComponents/AdminBookForm/admin-book-form";
+import { adminDeleteFromDb } from "@/lib/db/admin";
+import AdminEditUserForm from "@/components/FormComponents/AdminEditUserForm/admin-edit-user-form";
 
 export default function AdminControls({ type, items, children }) {
   const [itemsSearch, setItemsSearch] = useState("");
@@ -16,6 +18,8 @@ export default function AdminControls({ type, items, children }) {
 
   const [isBookCreateFormOpen, setIsBookCreateFormOpen] = useState(false);
   const [isBookEditFormOpen, setIsBookEditFormOpen] = useState(false);
+
+  const [isUserEditFormOpen, setIsUserEditFormOpen] = useState(false);
 
   const { showToast } = useToast();
   const confirm = useConfirm();
@@ -46,14 +50,12 @@ export default function AdminControls({ type, items, children }) {
     }
   };
 
-  // Add Book
   const handleAdd = () => {
     if (type === "books") {
       setIsBookCreateFormOpen(true);
     }
   };
 
-  // Edit Book
   const handleEdit = async () => {
     if (!selectedItem) {
       showToast(`No ${type} selected.`, "warning");
@@ -63,6 +65,7 @@ export default function AdminControls({ type, items, children }) {
     if (type === "books") {
       setIsBookEditFormOpen(true);
     } else if (type === "users") {
+      setIsUserEditFormOpen(true);
     }
   };
 
@@ -87,6 +90,12 @@ export default function AdminControls({ type, items, children }) {
 
     try {
       await adminDeleteFromDb(type, selectedItem.id);
+      showToast(
+        `Deleted successfully: ${
+          type.endsWith("s") ? type.slice(0, -1) : type
+        }`,
+        "success"
+      );
     } catch (error) {
       showToast(
         `Failed to delete ${type.endsWith("s") ? type.slice(0, -1) : type}`,
@@ -156,6 +165,22 @@ export default function AdminControls({ type, items, children }) {
         }}
         formType="update"
         defaultBook={selectedItem || {}}
+      />
+
+      <AdminEditUserForm
+        isOpen={isUserEditFormOpen}
+        onCancel={() => setIsUserEditFormOpen(false)}
+        onDone={(user) => {
+          setIsUserEditFormOpen(false);
+          if (user) {
+            setCurrentItems((prevUser) =>
+              prevUser.map((u) => (u.id === user.id ? user : u))
+            );
+          }
+          showToast("The user has been updated successfully", "success");
+        }}
+        formType="update"
+        defaultUser={selectedItem || {}}
       />
     </div>
   );

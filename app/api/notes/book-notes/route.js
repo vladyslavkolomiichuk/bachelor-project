@@ -10,7 +10,7 @@ export async function GET(req) {
       return Response.json({ error: "Missing bookId or userId" }, { status: 400 });
     }
 
-    const notes = await getNotesByBook(bookId, userId);
+    const notes = await getNotesByBook(bookId, userId);    
     return Response.json(notes);
   } catch (error) {
     console.error("Error getting notes:", error);

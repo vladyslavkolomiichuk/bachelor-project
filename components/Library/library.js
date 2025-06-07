@@ -16,6 +16,8 @@ import { getAllNotesByUser } from "@/lib/db/note";
 import { getUserBooks } from "@/lib/db/book";
 import BookSmallPreviewSkeleton from "../Loading/Components/book-small-preview-skeleton";
 import NoteBlockSkeleton from "../Loading/Components/note-block-skeleton";
+import NewChallengeBtn from "../ChallengesComponents/NewChallengeBtn/new-challenge-btn";
+import UserArticleForm from "../FormComponents/UserArticleForm/user-article-form";
 
 const BOOK_CATEGORIES = [
   { key: "all", label: "All" },
@@ -26,6 +28,7 @@ const BOOK_CATEGORIES = [
 
 export default function Library() {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isSecondFormOpen, setIsSecondFormOpen] = useState(false);
   const router = useRouter();
 
   const [books, setBooks] = useState([]);
@@ -35,6 +38,21 @@ export default function Library() {
 
   const { user } = useUser();
   const userId = user?.id;
+
+  const newLibraryActions = [
+    {
+      label: "Add Own Book",
+      onClick: () => {
+        setIsFormOpen(true);
+      },
+    },
+    {
+      label: "Add Own Scientific Article",
+      onClick: () => {
+        setIsSecondFormOpen(true);
+      },
+    },
+  ];
 
   useEffect(() => {
     if (user === null) {
@@ -134,13 +152,15 @@ export default function Library() {
         )}
       </Section>
 
-      <CircleButton
+      {/* <CircleButton
         buttonType="button"
         colorType="success"
         onClick={() => setIsFormOpen(true)}
       >
         <Plus />
-      </CircleButton>
+      </CircleButton> */}
+
+      <NewChallengeBtn actions={newLibraryActions} />
 
       <UserBookForm
         isOpen={isFormOpen}
@@ -149,6 +169,17 @@ export default function Library() {
           setIsFormOpen(false);
           if (newBook) {
             setBooks((prev) => [...prev, newBook]);
+          }
+        }}
+      />
+
+      <UserArticleForm
+        isOpen={isSecondFormOpen}
+        onCancel={() => setIsSecondFormOpen(false)}
+        onDone={(newArticle) => {
+          setIsSecondFormOpen(false);
+          if (newArticle) {
+            setBooks((prev) => [...prev, newArticle]);
           }
         }}
       />

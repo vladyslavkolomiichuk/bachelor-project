@@ -64,7 +64,23 @@ export default function SearchBar() {
     setTimer(
       setTimeout(async () => {
         try {
-          const response = await fetch(`/api/search?q=${value}`);
+          let searchType = "title";
+          let query = value;
+
+          if (value.startsWith("a:")) {
+            searchType = "author";
+            query = value.slice(2).trim();
+          } else if (value.startsWith("isbn:")) {
+            searchType = "isbn";
+            query = value.slice(5).trim();
+          }
+
+          const response = await fetch(
+            `/api/search?q=${encodeURIComponent(
+              query
+            )}&type=${encodeURIComponent(searchType)}`
+          );
+
           if (response.ok) {
             const data = await response.json();
             setSearchResults(data.books);
@@ -91,6 +107,9 @@ export default function SearchBar() {
       setIsOpen(true);
     } else {
       setIsOpen(false);
+      inputRef.current.value = "";
+      setSearchQuery("");
+      setSearchResults(null);
     }
   };
 
@@ -136,9 +155,15 @@ export default function SearchBar() {
             <Loader />
           </div>
         )}
-        {!loading && !searchResults && <p>Enter your search</p>}
+        {!loading && !searchResults && (
+          <p className={styles.text}>
+            By default, the search is performed by the book title. If you want
+            to search by ISBN or author, you need to precede the query with
+            isbn: and a: respectively.
+          </p>
+        )}
         {!loading && searchResults && searchResults.length === 0 && (
-          <p>No results</p>
+          <p className={styles.text}>No results</p>
         )}
         {!loading &&
           searchResults &&

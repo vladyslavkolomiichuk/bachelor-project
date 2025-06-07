@@ -1,0 +1,121 @@
+.container {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-size: var(--font-size-medium);
+}
+
+.titleContainer {
+  height: 38px;
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  margin: 0;
+}
+
+.newChat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.input {
+  font-size: var(--font-size-medium);
+  color: var(--button-color1);
+  background-color: var(--primary-color);
+  font-family: "Montserrat", sans-serif;
+  border: none;
+  width: calc(100% - 0.5rem * 2);
+  padding: 0.5rem;
+}
+
+.input:focus {
+  outline: none;
+}
+
+.buttonWrapper {
+  width: 100%;
+  position: absolute;
+  top: 34px;
+  height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+}
+
+.buttonWrapper.visible {
+  height: 34px;
+}
+
+.buttonCreate {
+  width: 100%;
+  padding: 0.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: var(--button-color1);
+  background-color: var(--success-color);
+  border: none;
+  transition: all 0.2s ease;
+  transform: translateY(-10px);
+  opacity: 0;
+}
+
+.buttonWrapper.visible .buttonCreate {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.buttonCreate:hover {
+  color: var(--success-color);
+  background-color: var(--button-color1);
+}
+
+.buttonCreate svg {
+  height: 25px;
+  width: 25px;
+}
+
+.chatsList {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.listItem {
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.listItem:hover {
+  background-color: var(--button-color1);
+}
+
+.listItemActive {
+  color: var(--button-color1);
+  background-color: var(--button-color2);
+}
+
+.deleteButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--error-color);
+  font-weight: bold;
+  padding: 0 5px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.deleteButton:hover {
+  color: var(--button-color2);
+}

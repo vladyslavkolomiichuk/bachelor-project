@@ -33,6 +33,7 @@ export default function NoteBlock({ note, userId }) {
     book_title: bookTitle,
     book_image: bookImage,
     book_id: bookId,
+    words_count: wordsCount,
   } = note;
 
   useEffect(() => {
@@ -87,6 +88,7 @@ export default function NoteBlock({ note, userId }) {
           </p>
           <p>{new Date(date).toLocaleDateString()}</p>
           <p>{formatTime(time)}</p>
+          <p>{wordsCount}</p>
 
           <div className={styles.menuWrapper} ref={menuRef}>
             <button

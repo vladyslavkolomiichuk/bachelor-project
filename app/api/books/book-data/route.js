@@ -2,7 +2,7 @@ import { fetchBookByISBN, getGoogleBookLink } from "@/lib/api/books";
 import { getUserBookDb, isBookInDbByIsbn } from "@/lib/db/book";
 
 export async function POST(req) {
-  const { bookISBN, userId } = await req.json();  
+  const { bookISBN, userId } = await req.json();
 
   // if (!bookISBN || !userId) {
   //   return Response.json(
@@ -11,7 +11,7 @@ export async function POST(req) {
   //   );
   // }
 
-  const bookInDb = await isBookInDbByIsbn(bookISBN);
+  const bookInDb = await isBookInDbByIsbn(bookISBN);  
 
   let userBookDb = null;
   if (bookInDb && userId) {
@@ -22,7 +22,9 @@ export async function POST(req) {
   if (!bookInDb && !userBookDb) {
     const bookApi = await fetchBookByISBN(bookISBN);
     const buyLink = await getGoogleBookLink(bookISBN);
-    fullBook = { ...bookApi, buy_link: buyLink };
+    if (bookApi) {
+      fullBook = { ...bookApi, buy_link: buyLink };
+    }
   }
 
   return Response.json({

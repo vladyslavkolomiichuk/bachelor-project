@@ -1,42 +1,17 @@
-.userStatsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+.container {
+  padding: 2rem;
   color: var(--primary-color);
 }
 
-.userInfo {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 2rem;
-  font-size: var(--font-size-large);
+.header {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--info-color);
+  margin-bottom: 2rem;
 }
 
 .chartBlock {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 300px;
-}
-
-.chartBlock h3 {
-  margin: 0;
-  align-self: center;
-}
-
-.lineChart {
-  width: 600px;
-}
-
-.pieChart {
-  width: 400px;
-}
-
-.sectionChartsContainer {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: 16px;
 }

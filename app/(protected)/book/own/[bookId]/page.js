@@ -1,69 +1,48 @@
-"use client";
-
 import AddedBook from "@/components/BookPageComponents/AddedBook/added-book";
-import { useRouter } from "nextjs13-progress";
-import { useUser } from "@/context/UserContext";
-import { use, useEffect, useState } from "react";
+import { notFound, redirect } from "next/navigation";
 import { ReviewsProvider } from "@/context/ReviewsContext";
-import MainLoading from "@/app/loading";
+import { headers } from "next/headers";
+import { verifyAuth } from "@/lib/auth";
 
-export default function OwnBookPage({ params }) {
-  const { bookId } = use(params);
+export default async function OwnBookPage({ params }) {
+  const { bookId } = await params;
 
-  const router = useRouter();
-
-  const [book, setBook] = useState(null);
-  const [dominantColor, setDominantColor] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const { user } = useUser();
+  const {user} = await verifyAuth();
   const userId = user?.id;
 
-  useEffect(() => {
-    if (user === null) {
-      router.push("/login");
-    }
-  }, [user, router]);
+  if (!userId) {
+    redirect("/login");
+  }
 
-  useEffect(() => {
-    async function fetchData() {
-      const bookRes = await fetch(
-        `/api/books/own-book-data?userId=${userId}&bookId=${bookId}`
-      );
-      // if (!bookRes.ok) {
-      //   // Наприклад, перенаправлення чи показ повідомлення
-      //   router.push("/books");
-      //   return;
-      // }
-      const bookData = await bookRes.json();
+  const headersList = await headers();
+  const host = headersList.get("host");
+  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+  const baseUrl = `${protocol}://${host}`;
 
-      const bookImage = bookData?.image;
+  const bookRes = await fetch(
+    `${baseUrl}/api/books/own-book-data?userId=${userId}&bookId=${bookId}`,
+    { cache: "no-store" }
+  );
 
-      const bookColorRes = await fetch("/api/books/book-color", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookImage }),
-      });
+  if (bookRes.status === 404) {
+    notFound();
+  }
 
-      const { dominantColor } = await bookColorRes.json();
+  const bookData = await bookRes.json();
+  const bookImage = bookData?.image;
 
-      setBook(bookData);
-      setDominantColor(dominantColor);
-      setLoading(false);
-    }
+  const bookColorRes = await fetch(`${baseUrl}/api/books/book-color`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ bookImage }),
+    cache: "no-store",
+  });
 
-    if (user) {
-      fetchData();
-    }
-  }, [userId]);
-
-  if (loading) return <MainLoading />;
+  const { dominantColor } = await bookColorRes.json();
 
   return (
-    book && (
-      <ReviewsProvider>
-        <AddedBook book={book} bookColor={dominantColor} />
-      </ReviewsProvider>
-    )
+    <ReviewsProvider>
+      <AddedBook book={bookData} bookColor={dominantColor} />
+    </ReviewsProvider>
   );
 }

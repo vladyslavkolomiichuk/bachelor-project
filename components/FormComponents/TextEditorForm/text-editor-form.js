@@ -13,6 +13,7 @@ export default function TextEditorForm({
   onDone,
   timer,
   content,
+  selectedText,
   bookId,
   formType = "create",
   defaultNote = {},
@@ -36,6 +37,13 @@ export default function TextEditorForm({
     formData.append("timer", timer);
     formData.append("content", content);
     formData.append("bookId", bookId);
+
+    const countWords = (text) => {
+      if (!text) return 0;
+      return text.trim().split(/\s+/).filter(Boolean).length;
+    };    
+
+    formData.append("wordsCount", countWords(selectedText));
 
     startTransition(() => {
       formAction(formData);

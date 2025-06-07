@@ -1,4 +1,3 @@
-import Image from "next/image";
 import BookLink from "../../BookLink/book-link";
 import CoverImage from "../../CoverImage/cover-image";
 
@@ -8,7 +7,6 @@ export default function SearchSmallBookItem({ book }) {
   return (
     <BookLink href={`/book/${book.isbn13}`} style={styles.searchBookItem}>
       <CoverImage
-        // style={styles.cover}
         coverImg={book.image}
         altText={book.title}
         width={60}

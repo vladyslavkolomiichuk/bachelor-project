@@ -50,6 +50,7 @@ function EditorWindowContent({
 }) {
   const [content, setContent] = useState(defaultContent);
   const { timer, stopTimer } = useTimer();
+  const [selectedText, setSelectedText] = useState("");
 
   const [note, setNote] = useState(null);
 
@@ -125,10 +126,10 @@ function EditorWindowContent({
       {pdfUrl && (
         <FileViewer
           fileUrl={pdfUrl}
-          onTextSelect={(selectedText) => {
-            console.log("Selected text:", selectedText);
-            // Обробка виділеного тексту
+          onTextSelect={(text) => {
+            setSelectedText(text);
           }}
+          isUpdateNote={editorForChange}
         />
       )}
       <TextEditor content={content} setContent={setContent} />
@@ -139,14 +140,17 @@ function EditorWindowContent({
           if (editorForChange) {
             setUpdateNoteFormOpen(true);
           } else {
-            const confirmed = await confirm({
-              title: "Highlighting a read test",
-              message:
-                "You can highlight the read text in the PDF and get the total number of words read. Use the button in the PDF panel.",
-              type: "ok",
-            });
+            if (selectedText === "") {
+              const confirmed = await confirm({
+                title: "Highlighting a read test",
+                message:
+                  "You can highlight the read text in the PDF and get the total number of words read. Use the button in the PDF panel.",
+                type: "ok",
+              });
 
-            if (!confirmed) return;
+              if (!confirmed) return;
+            }
+
             setCreateNoteFormOpen(true);
           }
           stopTimer();
@@ -167,6 +171,7 @@ function EditorWindowContent({
         timer={timer}
         content={content}
         bookId={bookId}
+        selectedText={selectedText}
       />
       <TextEditorForm
         isOpen={updateNoteFormOpen}

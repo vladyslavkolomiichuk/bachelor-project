@@ -91,7 +91,6 @@ export default function AdminBookForm({
   useEffect(() => {
     if (!isOpen) {
       setIsbnStatus(null);
-      setIsbnStatus(null);
       resetAuthors();
       resetBinding();
       resetBuyLink();

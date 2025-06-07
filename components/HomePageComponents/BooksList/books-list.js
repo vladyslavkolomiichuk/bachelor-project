@@ -26,7 +26,18 @@ export default function BooksList({ getBooks, query = "" }) {
       setLoading(true);
       let newBooks;
       if (query) {
-        const newBooksWithoutRating = await getBooks(query, 40, page);
+        let type = "title";
+        query = query.trim();
+
+        if (query.startsWith("a:")) {
+          type = "author";
+          query = query.slice(2).trim();
+        } else if (query.startsWith("isbn:")) {
+          type = "isbn";
+          query = query.slice(5).trim();
+        }
+        
+        const newBooksWithoutRating = await getBooks(query, 40, page, type);
         newBooks = await Promise.all(
           newBooksWithoutRating.map(async (book) => {
             const rating = await getRatingByBookIsbn(book.isbn13);

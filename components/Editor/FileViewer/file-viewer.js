@@ -19,7 +19,11 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString();
 
-export default function FileViewer({ fileUrl, onTextSelect }) {
+export default function FileViewer({
+  fileUrl,
+  onTextSelect,
+  isUpdateNote = false,
+}) {
   const [numPages, setNumPages] = useState(null);
   const [scale, setScale] = useState(1.5);
   const [pdfData, setPdfData] = useState(null);
@@ -77,6 +81,7 @@ export default function FileViewer({ fileUrl, onTextSelect }) {
       onTextSelect?.(selectedText);
       setSelectedText("");
       window.getSelection()?.removeAllRanges();
+      showToast("Read text successfully highlighted", "success");
     }
   };
 
@@ -120,23 +125,27 @@ export default function FileViewer({ fileUrl, onTextSelect }) {
             <ZoomIn size={20} />
           </button>
         </div>
-        <div className={styles.divider} />
-        <button
-          onClick={() => {
-            setIsRangeSelectionMode((prev) => !prev);
-            setSelectedText("");
-            window.getSelection()?.removeAllRanges();
-          }}
-          className={`${styles.toolbarButton} ${
-            isRangeSelectionMode ? styles.active : ""
-          }`}
-        >
-          {isRangeSelectionMode ? (
-            <SquareDashedMousePointer size={20} />
-          ) : (
-            <TextCursor size={20} />
-          )}
-        </button>
+        {!isUpdateNote && (
+          <>
+            <div className={styles.divider} />
+            <button
+              onClick={() => {
+                setIsRangeSelectionMode((prev) => !prev);
+                setSelectedText("");
+                window.getSelection()?.removeAllRanges();
+              }}
+              className={`${styles.toolbarButton} ${
+                isRangeSelectionMode ? styles.active : ""
+              }`}
+            >
+              {isRangeSelectionMode ? (
+                <SquareDashedMousePointer size={20} />
+              ) : (
+                <TextCursor size={20} />
+              )}
+            </button>
+          </>
+        )}
 
         {isRangeSelectionMode && selectedText && (
           <>

@@ -1,0 +1,169 @@
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 700px;
+  color: var(--primary-color);
+  font-size: var(--font-size-medium);
+}
+
+.title {
+  margin: 0;
+}
+
+.chatTitleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.together {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.messagesWrapper {
+  flex: 1;
+  border: 2px solid var(--secondary-color);
+  padding: 1rem;
+  border-radius: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.avatar {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.messageInfo {
+  padding: 0.6rem;
+  border-radius: 0.5rem;
+  background-color: var(--editor-selection-color);
+  display: flex;
+  gap: 0.5rem;
+}
+
+.messageContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.username {
+  margin: 0;
+}
+
+.messageUserInfo {
+  align-self: flex-end;
+}
+
+.messageSenderInfo {
+  align-self: flex-start;
+}
+
+.message {
+  max-width: 500px;
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+}
+
+.messageSender {
+  background-color: var(--button-color1);
+}
+
+.messageUser {
+  background-color: var(--info-color);
+}
+
+.bookItem {
+  all: unset;
+  cursor: pointer;
+}
+
+.text {
+  margin: 0;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+  display: block;
+}
+
+.inputWrapper {
+  margin-top: 10px;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bookAttachment {
+  max-width: 350px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--table-color1);
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+  transition: all 0.2s ease;
+}
+
+.bookAttachment:hover {
+  background-color: var(--table-color3);
+}
+
+.select {
+  max-width: 200px;
+}
+
+.bookImage {
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.bookTitle {
+  margin: 0;
+  font-weight: 500;
+  color: var(--primary-color);
+  word-wrap: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+  display: block;
+}
+
+.input {
+  font-size: var(--font-size-medium);
+  color: var(--button-color1);
+  background-color: var(--primary-color);
+  font-family: "Montserrat", sans-serif;
+  border: none;
+  width: calc(100% - 0.5rem * 2);
+  padding: 0.5rem;
+}
+
+.input:focus {
+  outline: none;
+}
+
+.buttonSend {
+  width: 18%;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 5px;
+  border: none;
+  background-color: var(--button-color1);
+  color: var(--button-color2);
+  transition: all 0.2s ease;
+}
+
+.buttonSend:hover {
+  background-color: var(--button-color2);
+  color: var(--button-color1);
+}
+
+.buttonSend svg {
+  width: 30px;
+  height: 30px;
+}

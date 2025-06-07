@@ -64,7 +64,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "socket": "node socket-server.js"
+    "socket-notf": "node socket-notification-server.js",
+    "socket-chat": "node socket-chat-server.js"
   },
   "devDependencies": {
     "sass": "^1.88.0"

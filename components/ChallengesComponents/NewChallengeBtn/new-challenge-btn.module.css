@@ -23,7 +23,7 @@
 
 .menuItem {
   width: 100%;
-  height: 40px;
+  height: fit-content;
   border: none;
   cursor: pointer;
   font-family: "Montserrat", sans-serif;

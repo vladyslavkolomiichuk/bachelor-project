@@ -66,7 +66,7 @@ export default function FullBookDescription({ book }) {
       <div className={styles.reviewContainer}>
         <div className={styles.part}>
           <DescriptionSection title="Average Rating">
-            <AverageRating bookId={id ?? isbn13} />
+            <AverageRating bookId={id} />
           </DescriptionSection>
         </div>
         <div className={styles.part}>
