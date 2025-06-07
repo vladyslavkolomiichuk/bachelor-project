@@ -1,15 +1,24 @@
 .container {
-  width: 200px;
+  width: calc(300px - 2rem * 2);
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
   font-size: var(--font-size-medium);
+  background-color: var(--chat-side-color);
 }
 
 .titleContainer {
-  height: 38px;
   display: flex;
   align-items: center;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--editor-selection-color);
+}
+
+.titleContainer svg {
+  width: 30px;
+  height: 30px;
 }
 
 .title {
@@ -83,39 +92,5 @@
 }
 
 .chatsList {
-  height: 100%;
   overflow-y: auto;
-}
-
-.listItem {
-  cursor: pointer;
-  padding: 0.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: background-color 0.2s ease;
-}
-
-.listItem:hover {
-  background-color: var(--button-color1);
-}
-
-.listItemActive {
-  color: var(--button-color1);
-  background-color: var(--button-color2);
-}
-
-.deleteButton {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: var(--error-color);
-  font-weight: bold;
-  padding: 0 5px;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-}
-
-.deleteButton:hover {
-  color: var(--button-color2);
 }

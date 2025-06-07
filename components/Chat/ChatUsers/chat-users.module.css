@@ -17,9 +17,12 @@
 }
 
 .moreButton {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   background-color: var(--button-color2);
   font-size: var(--font-size-small);
@@ -27,6 +30,11 @@
   margin-left: -10px;
   z-index: 0;
   position: relative;
+  transition: all 0.2s ease;
+}
+
+.moreButton:hover {
+  background-color: var(--table-color1);
 }
 
 .modalOverlay {

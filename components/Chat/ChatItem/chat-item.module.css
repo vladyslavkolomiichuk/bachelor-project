@@ -1,0 +1,85 @@
+.item {
+  height: 60px;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--font-size-medium);
+  transition: background-color 0.2s ease;
+}
+
+.item:not(.itemActive):hover {
+  background-color: var(--table-color2);
+}
+
+.itemActive {
+  background-color: var(--table-color3);
+}
+
+.together {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.name,
+.date,
+.lastText {
+  margin: 0;
+  white-space: nowrap;    
+  overflow: hidden;         
+  text-overflow: ellipsis;  
+}
+
+.name {
+  font-weight: 600;
+}
+
+.date {
+  color: var(--button-color2);
+}
+
+.lastText {
+  color: var(--table-color1);
+}
+
+.unread {
+  width: fit-content;
+  padding: 2px 6px 3px 6px;
+  background-color: var(--error-color);
+  color: var(--primary-color);
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.deleteButton {
+  background: transparent;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  color: var(--error-color);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.deleteButton:hover {
+  color: var(--button-color2);
+}

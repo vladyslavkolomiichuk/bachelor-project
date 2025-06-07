@@ -24,10 +24,12 @@ export default function ChatPage() {
   const { showToast } = useToast();
   const confirm = useConfirm();
 
+  // Встановлюємо userId при завантаженні користувача
   useEffect(() => {
     if (user) setUserId(user.id);
   }, [user]);
 
+  // Підключення та обробка сокета
   useEffect(() => {
     if (!userId) return;
 
@@ -35,8 +37,37 @@ export default function ChatPage() {
     socket.emit("register", userId);
 
     socket.on("newMessage", (msg) => {
-      if (msg.chatId === activeChatId && msg.sender_id !== userId) {
+      if (msg.chat_id === activeChatId && msg.sender_id !== userId) {
         setMessages((prev) => [...prev, msg]);
+      } else if (msg.sender_id !== userId) {
+        // Якщо повідомлення для неактивного чату — оновлюємо last_message і збільшуємо unread_count
+        setChats((prev) =>
+          prev.map((chat) =>
+            chat.id === msg.chat_id
+              ? {
+                  ...chat,
+                  last_message_text: msg.text,
+                  last_message_time: msg.created_at,
+                  unread_count: (Number(chat.unread_count) || 0) + 1,
+                }
+              : chat
+          )
+        );
+      } else {
+        // Додаємо нове повідомлення у поточний чат
+        // Оновлюємо last_message та unread_count (0 — бо відкритий чат)
+        setChats((prev) =>
+          prev.map((chat) =>
+            chat.id === activeChatId
+              ? {
+                  ...chat,
+                  last_message_text: msg.text,
+                  last_message_time: msg.created_at,
+                  unread_count: 0,
+                }
+              : chat
+          )
+        );
       }
     });
 
@@ -45,6 +76,7 @@ export default function ChatPage() {
     };
   }, [userId, activeChatId]);
 
+  // Завантаження списку чатів
   useEffect(() => {
     if (!userId) return;
 
@@ -54,8 +86,9 @@ export default function ChatPage() {
       .catch(console.error);
   }, [userId]);
 
+  // Завантаження повідомлень чату + відмітка прочитаних
   useEffect(() => {
-    if (!activeChatId) {
+    if (!activeChatId || !userId) {
       setMessages([]);
       return;
     }
@@ -64,8 +97,20 @@ export default function ChatPage() {
       .then((res) => res.json())
       .then(setMessages)
       .catch(console.error);
-  }, [activeChatId]);
 
+    fetch(`/api/chats/${activeChatId}/read`, {
+      method: "POST",
+    }).catch(console.error);
+
+    // Локально скидаємо лічильник unread
+    setChats((prev) =>
+      prev.map((chat) =>
+        chat.id === activeChatId ? { ...chat, unread_count: 0 } : chat
+      )
+    );
+  }, [activeChatId, userId]);
+
+  // Створення нового чату
   const createChat = async (name) => {
     const res = await fetch("/api/chats", {
       method: "POST",
@@ -76,6 +121,7 @@ export default function ChatPage() {
     setChats((prev) => [...prev, newChat]);
   };
 
+  // Видалення чату
   const deleteChat = async (chatId) => {
     const confirmed = await confirm({
       title: "You're about to delete this chat",
@@ -91,7 +137,8 @@ export default function ChatPage() {
     if (activeChatId === chatId) setActiveChatId(null);
   };
 
-  const sendMessage = ({text, bookId}) => {
+  // Відправка повідомлення з можливістю прикріплення книги
+  const sendMessage = ({ text, bookId }) => {
     if (!text || !activeChatId || !userId) return;
 
     socket.emit(

@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 
 import styles from "./chat-users.module.css";
 import Image from "next/image";
+import AddUserToChat from "../AddUserToChat/add-user-to-chat";
+import { Plus } from "lucide-react";
 
-export default function ChatUsers({ chatId }) {
+export default function ChatUsers({ chatId, onAddUser }) {
   const [users, setUsers] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
@@ -21,7 +23,6 @@ export default function ChatUsers({ chatId }) {
   if (!chatId) return null;
 
   const visibleUsers = users.slice(0, 5);
-  const hiddenCount = users.length - 5;
 
   return (
     <div>
@@ -31,20 +32,18 @@ export default function ChatUsers({ chatId }) {
             key={user.id}
             src={user.image}
             alt={user.username}
-            width={32}
-            height={32}
+            width={30}
+            height={30}
             className={styles.avatar}
           />
         ))}
 
-        {hiddenCount > 0 && (
-          <button
-            className={styles.moreButton}
-            onClick={() => setShowModal(true)}
-          >
-            +{hiddenCount}
-          </button>
-        )}
+        <button
+          className={styles.moreButton}
+          onClick={() => setShowModal(true)}
+        >
+          <Plus />
+        </button>
       </div>
 
       {showModal && (
@@ -54,14 +53,15 @@ export default function ChatUsers({ chatId }) {
         >
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <h4>Chat participants</h4>
+            <AddUserToChat chatId={chatId} onAddUser={onAddUser} />
             <div className={styles.modalList}>
               {users.map((user) => (
                 <div key={user.id} className={styles.userItem}>
                   <Image
                     src={user.image}
                     alt={user.username}
-                    width={32}
-                    height={32}
+                    width={30}
+                    height={30}
                     className={styles.avatar}
                   />
                   <span>{user.username}</span>

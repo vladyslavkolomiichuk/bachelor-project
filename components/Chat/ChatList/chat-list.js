@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import styles from "./chat-list.module.css";
-import { Plus, X } from "lucide-react";
+import { MessageSquareText, Plus } from "lucide-react";
+import ChatItem from "../ChatItem/chat-item";
 
 export default function ChatList({
   chats,
@@ -23,6 +24,7 @@ export default function ChatList({
   return (
     <div className={styles.container}>
       <div className={styles.titleContainer}>
+        <MessageSquareText />
         <h3 className={styles.title}>Your Chats</h3>
       </div>
 
@@ -47,24 +49,13 @@ export default function ChatList({
 
       <div className={styles.chatsList}>
         {chats.map((chat) => (
-          <div
+          <ChatItem
             key={chat.id}
-            className={`${styles.listItem} ${
-              chat.id === activeChatId ? styles.listItemActive : ""
-            }`}
-            onClick={() => onSelect(chat.id)}
-          >
-            <span>{chat.name}</span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(chat.id);
-              }}
-              className={styles.deleteButton}
-            >
-              <X />
-            </button>
-          </div>
+            chat={chat}
+            onDelete={onDelete}
+            onSelect={onSelect}
+            activeChatId={activeChatId}
+          />
         ))}
       </div>
     </div>

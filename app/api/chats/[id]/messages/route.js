@@ -25,6 +25,7 @@ export async function GET(req, { params }) {
       m.text, 
       m.created_at, 
       m.sender_id,
+      m.chat_id,
       u.username,
       u.image,
       b.isbn13 AS book_isbn13,

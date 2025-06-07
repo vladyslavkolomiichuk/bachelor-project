@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import AddUserToChat from "@/components/Chat/AddUserToChat/add-user-to-chat";
 import styles from "./chat-window.module.css";
 import ChatUsers from "../ChatUsers/chat-users";
 import { Send } from "lucide-react";
@@ -56,8 +55,7 @@ export default function ChatWindow({
       <div className={styles.chatTitleContainer}>
         <h3 className={styles.title}>{chat.name}</h3>
         <div className={styles.together}>
-          <ChatUsers chatId={chat.id} />
-          <AddUserToChat chatId={chat.id} onAddUser={onAddUser} />
+          <ChatUsers chatId={chat.id} onAddUser={onAddUser} />
         </div>
       </div>
 
@@ -71,32 +69,24 @@ export default function ChatWindow({
                 : styles.messageSenderInfo
             }`}
           >
-            <Image
-              src={msg.image}
-              alt={msg.username}
-              width={40}
-              height={40}
-              className={styles.avatar}
-            />
+            {msg.sender_id !== userId && (
+              <Image
+                src={msg.image}
+                alt={msg.username}
+                width={35}
+                height={35}
+                className={styles.avatar}
+              />
+            )}
             <div className={styles.messageContainer}>
-              <p className={styles.username}>{msg.username}</p>
-              <div
-                className={`${styles.message} ${
-                  msg.sender_id === userId
-                    ? styles.messageUser
-                    : styles.messageSender
-                }`}
+              <p
+                className={styles.username}
+                style={{
+                  textAlign: msg.sender_id !== userId ? "left" : "right",
+                }}
               >
-                <p className={styles.text}>{msg.text}</p>
-
-                <small>
-                  {new Date(msg.created_at).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                  })}
-                </small>
-              </div>
+                {msg.username}
+              </p>
 
               {msg.book_isbn13 && msg.book_title && msg.book_image && (
                 <BookLink
@@ -115,27 +105,41 @@ export default function ChatWindow({
                   </div>
                 </BookLink>
               )}
+
+              <div
+                className={`${styles.message} ${
+                  msg.sender_id === userId
+                    ? styles.messageUser
+                    : styles.messageSender
+                }`}
+              >
+                <p className={styles.text}>{msg.text}</p>
+
+                <p className={styles.date}>
+                  {new Date(msg.created_at).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  })}
+                </p>
+              </div>
             </div>
+
+            {msg.sender_id === userId && (
+              <Image
+                src={msg.image}
+                alt={msg.username}
+                width={35}
+                height={35}
+                className={styles.avatar}
+              />
+            )}
           </div>
         ))}
         <div ref={messageEndRef} />
       </div>
 
       <div className={styles.inputWrapper}>
-        <select
-          className={styles.select}
-          value={selectedBookId || ""}
-          onChange={(e) =>
-            setSelectedBookId(e.target.value === "" ? null : e.target.value)
-          }
-        >
-          <option value="">Without book</option>
-          {books.map((book) => (
-            <option key={book.id} value={book.id}>
-              {book.title}
-            </option>
-          ))}
-        </select>
         <input
           type="text"
           placeholder="Write a message..."
@@ -146,9 +150,25 @@ export default function ChatWindow({
           }}
           className={styles.input}
         />
-        <button onClick={handleSend} className={styles.buttonSend}>
-          <Send />
-        </button>
+        <div className={styles.actions}>
+          <select
+            className={styles.select}
+            value={selectedBookId || ""}
+            onChange={(e) =>
+              setSelectedBookId(e.target.value === "" ? null : e.target.value)
+            }
+          >
+            <option value="">Without book</option>
+            {books.map((book) => (
+              <option key={book.id} value={book.id}>
+                {book.title}
+              </option>
+            ))}
+          </select>
+          <button onClick={handleSend} className={styles.buttonSend}>
+            <Send />
+          </button>
+        </div>
       </div>
     </div>
   );

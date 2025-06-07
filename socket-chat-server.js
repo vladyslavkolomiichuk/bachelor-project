@@ -40,33 +40,47 @@ app.prepare().then(() => {
       "sendMessage",
       async ({ chatId, userId, message, bookId = null }, callback) => {
         try {
+          // Вставляємо повідомлення
           const insertRes = await pool.query(
             `INSERT INTO messages (chat_id, sender_id, text, book_id) VALUES ($1, $2, $3, $4) RETURNING id, created_at`,
             [chatId, userId, message, bookId]
           );
 
+          const messageId = insertRes.rows[0].id;
+
+          // Отримуємо дані відправника
           const userRes = await pool.query(
             `SELECT username, image FROM users WHERE id = $1`,
             [userId]
           );
-
           const sender = userRes.rows[0];
 
+          // Дані книги (якщо є)
           let book = { isbn13: "", title: "", image: "" };
           if (bookId) {
             const bookRes = await pool.query(
               `SELECT isbn13, title, image FROM books WHERE id = $1`,
               [bookId]
             );
-
             if (bookRes.rowCount > 0) {
               book = bookRes.rows[0];
             }
           }
 
+          // Створюємо записи read = false для всіх користувачів чату, крім відправника
+          await pool.query(
+            `
+        INSERT INTO message_reads (message_id, user_id, read)
+        SELECT $1, user_id, false
+        FROM chat_users
+        WHERE chat_id = $2 AND user_id != $3
+        `,
+            [messageId, chatId, userId]
+          );
+
           const msg = {
-            id: insertRes.rows[0].id,
-            chatId,
+            id: messageId,
+            chat_id: chatId,
             sender_id: userId,
             text: message,
             created_at: insertRes.rows[0].created_at,
@@ -77,6 +91,7 @@ app.prepare().then(() => {
             book_title: book.title,
           };
 
+          // Відправляємо повідомлення всім учасникам чату
           const usersRes = await pool.query(
             `SELECT user_id FROM chat_users WHERE chat_id = $1`,
             [chatId]
