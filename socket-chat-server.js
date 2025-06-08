@@ -70,11 +70,11 @@ app.prepare().then(() => {
           // Створюємо записи read = false для всіх користувачів чату, крім відправника
           await pool.query(
             `
-        INSERT INTO message_reads (message_id, user_id, read)
-        SELECT $1, user_id, false
-        FROM chat_users
-        WHERE chat_id = $2 AND user_id != $3
-        `,
+            INSERT INTO message_reads (message_id, user_id, read)
+            SELECT $1, user_id, false
+            FROM chat_users
+            WHERE chat_id = $2 AND user_id != $3
+            `,
             [messageId, chatId, userId]
           );
 

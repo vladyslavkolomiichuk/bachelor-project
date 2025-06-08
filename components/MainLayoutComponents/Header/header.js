@@ -16,6 +16,7 @@ import { getInProgressCount } from "@/lib/db/challenge";
 import SeparateBadge from "@/components/Badge/separate-badge";
 
 import styles from "./header.module.css";
+import { getUnreadMessageCount } from "@/lib/db/chat";
 
 const navItems = [
   { href: "/", icon: House },
@@ -30,7 +31,13 @@ const navItems = [
   },
   { href: "/dictionary", icon: BookA },
   { href: "/test", icon: BookOpenCheck },
-  { href: "/chats", icon: MessageSquare },
+  {
+    href: "/chats",
+    icon: MessageSquare,
+    badge: true,
+    getCount: getUnreadMessageCount,
+    type: "chats",
+  },
 ];
 
 export default function Header() {

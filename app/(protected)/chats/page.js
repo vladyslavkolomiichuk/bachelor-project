@@ -10,26 +10,36 @@ import io from "socket.io-client";
 
 import styles from "@/components/Chat/chat.module.css";
 import { useConfirm } from "@/context/ConfirmContext";
+import { useRouter } from "next/navigation";
 
 let socket;
 
 export default function ChatPage() {
-  const { user } = useUser();
+  const result = useUser();
   const [userId, setUserId] = useState(null);
 
   const [chats, setChats] = useState([]);
   const [activeChatId, setActiveChatId] = useState(null);
   const [messages, setMessages] = useState([]);
 
+  const [chatsLoading, setChatsLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(true);
+
   const { showToast } = useToast();
   const confirm = useConfirm();
 
-  // Встановлюємо userId при завантаженні користувача
-  useEffect(() => {
-    if (user) setUserId(user.id);
-  }, [user]);
+  const router = useRouter();
 
-  // Підключення та обробка сокета
+  useEffect(() => {
+    if (result?.user === null) {
+      router.push("/login");
+    }
+  }, [result, router]);
+
+  useEffect(() => {
+    if (result?.user) setUserId(result.user.id);
+  }, [result]);
+
   useEffect(() => {
     if (!userId) return;
 
@@ -37,38 +47,36 @@ export default function ChatPage() {
     socket.emit("register", userId);
 
     socket.on("newMessage", (msg) => {
-      if (msg.chat_id === activeChatId && msg.sender_id !== userId) {
+      const isCurrentChat = msg.chat_id === activeChatId;
+      const isFromMe = msg.sender_id === userId;
+
+      if (isCurrentChat && !isFromMe) {
         setMessages((prev) => [...prev, msg]);
-      } else if (msg.sender_id !== userId) {
-        // Якщо повідомлення для неактивного чату — оновлюємо last_message і збільшуємо unread_count
-        setChats((prev) =>
-          prev.map((chat) =>
-            chat.id === msg.chat_id
-              ? {
-                  ...chat,
-                  last_message_text: msg.text,
-                  last_message_time: msg.created_at,
-                  unread_count: (Number(chat.unread_count) || 0) + 1,
-                }
-              : chat
-          )
-        );
-      } else {
-        // Додаємо нове повідомлення у поточний чат
-        // Оновлюємо last_message та unread_count (0 — бо відкритий чат)
-        setChats((prev) =>
-          prev.map((chat) =>
-            chat.id === activeChatId
-              ? {
-                  ...chat,
-                  last_message_text: msg.text,
-                  last_message_time: msg.created_at,
-                  unread_count: 0,
-                }
-              : chat
-          )
-        );
       }
+
+      setChats((prev) =>
+        prev.map((chat) =>
+          chat.id === msg.chat_id
+            ? {
+                ...chat,
+                last_message_text: msg.text,
+                last_message_time: msg.created_at,
+                unread_count:
+                  isCurrentChat || isFromMe
+                    ? 0
+                    : (Number(chat.unread_count) || 0) + 1,
+              }
+            : chat
+        )
+      );
+
+      if (!isCurrentChat && !isFromMe) {
+        window.dispatchEvent(new Event("chats:updated"));
+      }
+    });
+
+    socket.on("chatAdded", ({ chat }) => {
+      setChats((prev) => [...prev, chat]);
     });
 
     return () => {
@@ -76,17 +84,16 @@ export default function ChatPage() {
     };
   }, [userId, activeChatId]);
 
-  // Завантаження списку чатів
   useEffect(() => {
     if (!userId) return;
 
     fetch("/api/chats")
       .then((res) => res.json())
       .then(setChats)
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setChatsLoading(false));
   }, [userId]);
 
-  // Завантаження повідомлень чату + відмітка прочитаних
   useEffect(() => {
     if (!activeChatId || !userId) {
       setMessages([]);
@@ -96,21 +103,22 @@ export default function ChatPage() {
     fetch(`/api/chats/${activeChatId}/messages`)
       .then((res) => res.json())
       .then(setMessages)
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setMessagesLoading(false));
 
     fetch(`/api/chats/${activeChatId}/read`, {
       method: "POST",
     }).catch(console.error);
 
-    // Локально скидаємо лічильник unread
     setChats((prev) =>
       prev.map((chat) =>
         chat.id === activeChatId ? { ...chat, unread_count: 0 } : chat
       )
     );
+
+    window.dispatchEvent(new Event("chats:updated"));
   }, [activeChatId, userId]);
 
-  // Створення нового чату
   const createChat = async (name) => {
     const res = await fetch("/api/chats", {
       method: "POST",
@@ -121,7 +129,6 @@ export default function ChatPage() {
     setChats((prev) => [...prev, newChat]);
   };
 
-  // Видалення чату
   const deleteChat = async (chatId) => {
     const confirmed = await confirm({
       title: "You're about to delete this chat",
@@ -135,9 +142,9 @@ export default function ChatPage() {
     await fetch(`/api/chats/${chatId}`, { method: "DELETE" });
     setChats((prev) => prev.filter((c) => c.id !== chatId));
     if (activeChatId === chatId) setActiveChatId(null);
+    window.dispatchEvent(new Event("chats:updated"));
   };
 
-  // Відправка повідомлення з можливістю прикріплення книги
   const sendMessage = ({ text, bookId }) => {
     if (!text || !activeChatId || !userId) return;
 
@@ -163,6 +170,7 @@ export default function ChatPage() {
           onSelect={setActiveChatId}
           onDelete={deleteChat}
           onCreate={createChat}
+          loading={chatsLoading}
         />
 
         <ChatWindow
@@ -170,6 +178,7 @@ export default function ChatPage() {
           messages={messages}
           userId={userId}
           onSendMessage={sendMessage}
+          loading={messagesLoading}
         />
       </div>
     </Section>

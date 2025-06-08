@@ -11,7 +11,13 @@
 }
 
 .chartBlock {
+  width: 100%;
   padding: 1.5rem;
   margin-bottom: 2rem;
   border-radius: 16px;
+}
+
+.together{
+  display: flex;
+  justify-content: space-between;
 }

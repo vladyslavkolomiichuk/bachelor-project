@@ -4,6 +4,7 @@ import { useState } from "react";
 import styles from "./chat-list.module.css";
 import { MessageSquareText, Plus } from "lucide-react";
 import ChatItem from "../ChatItem/chat-item";
+import Loader from "@/components/GeneralComponents/SearchComponents/Loader/loader";
 
 export default function ChatList({
   chats,
@@ -11,6 +12,7 @@ export default function ChatList({
   onSelect,
   onDelete,
   onCreate,
+  loading,
 }) {
   const [newChatName, setNewChatName] = useState("");
 
@@ -47,17 +49,33 @@ export default function ChatList({
         </div>
       </div>
 
-      <div className={styles.chatsList}>
-        {chats.map((chat) => (
-          <ChatItem
-            key={chat.id}
-            chat={chat}
-            onDelete={onDelete}
-            onSelect={onSelect}
-            activeChatId={activeChatId}
-          />
-        ))}
-      </div>
+      {!loading ? (
+        <div className={styles.chatsList}>
+          {[...chats]
+            .sort((a, b) => {
+              const aTime = new Date(a.last_message_time).getTime();
+              const bTime = new Date(b.last_message_time).getTime();
+              return bTime - aTime;
+            })
+            .map((chat) => (
+              <ChatItem
+                key={chat.id}
+                chat={chat}
+                onDelete={onDelete}
+                onSelect={onSelect}
+                activeChatId={activeChatId}
+              />
+            ))}
+        </div>
+      ) : (
+        <Loader />
+      )}
+
+      {chats.length === 0 && !loading && (
+        <p className={styles.noItem}>
+          You don't have any chats, create your own.
+        </p>
+      )}
     </div>
   );
 }

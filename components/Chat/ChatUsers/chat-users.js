@@ -7,7 +7,7 @@ import Image from "next/image";
 import AddUserToChat from "../AddUserToChat/add-user-to-chat";
 import { Plus } from "lucide-react";
 
-export default function ChatUsers({ chatId, onAddUser }) {
+export default function ChatUsers({ chatId }) {
   const [users, setUsers] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
@@ -53,7 +53,7 @@ export default function ChatUsers({ chatId, onAddUser }) {
         >
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <h4>Chat participants</h4>
-            <AddUserToChat chatId={chatId} onAddUser={onAddUser} />
+            <AddUserToChat chatId={chatId} onAddUser={setUsers} />
             <div className={styles.modalList}>
               {users.map((user) => (
                 <div key={user.id} className={styles.userItem}>

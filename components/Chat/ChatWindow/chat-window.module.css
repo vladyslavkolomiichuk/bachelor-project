@@ -184,3 +184,13 @@
   width: 20px;
   height: 20px;
 }
+
+.noItem {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  color: var(--button-color2);
+}

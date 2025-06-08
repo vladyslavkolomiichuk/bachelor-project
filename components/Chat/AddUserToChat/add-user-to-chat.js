@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import styles from "./add-user-to-chat.module.css";
 import { useToast } from "@/context/ToastContext";
 
-export default function AddUserToChat({ chatId }) {
+export default function AddUserToChat({ chatId, onAddUser }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
@@ -46,7 +46,9 @@ export default function AddUserToChat({ chatId }) {
         const text = await res.text();
         showToast(`Error adding user: ${text}`, "error");
       } else {
+        const newChatUser = await res.json();
         showToast(`User ${username} added to chat!`, "success");
+        onAddUser((prev) => [...prev, newChatUser]);
         setQuery("");
         setResults([]);
       }

@@ -7,6 +7,8 @@ import { Send } from "lucide-react";
 import Image from "next/image";
 import { getUserBooks } from "@/lib/db/book";
 import BookLink from "@/components/GeneralComponents/BookLink/book-link";
+import Loader from "@/components/GeneralComponents/SearchComponents/Loader/loader";
+import { sanitizeObjectDeepBack } from "@/lib/sanitize-text";
 
 export default function ChatWindow({
   chat,
@@ -14,6 +16,7 @@ export default function ChatWindow({
   userId,
   onSendMessage,
   onAddUser,
+  loading,
 }) {
   const [messageText, setMessageText] = useState("");
   const messageEndRef = useRef(null);
@@ -39,8 +42,9 @@ export default function ChatWindow({
 
   const handleSend = () => {
     if (!messageText.trim()) return;
+
     onSendMessage({
-      text: messageText.trim(),
+      text: sanitizeObjectDeepBack(messageText.trim()),
       bookId: selectedBookId,
     });
 
@@ -48,7 +52,14 @@ export default function ChatWindow({
     setSelectedBookId(null);
   };
 
-  if (!chat) return;
+  if (!chat)
+    return (
+      <div className={styles.container}>
+        <p className={styles.noItem}>
+          Select or create a chat in which you will have a conversation
+        </p>
+      </div>
+    );
 
   return (
     <div className={styles.container}>
@@ -59,85 +70,89 @@ export default function ChatWindow({
         </div>
       </div>
 
-      <div className={styles.messagesWrapper}>
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`${styles.messageInfo} ${
-              msg.sender_id === userId
-                ? styles.messageUserInfo
-                : styles.messageSenderInfo
-            }`}
-          >
-            {msg.sender_id !== userId && (
-              <Image
-                src={msg.image}
-                alt={msg.username}
-                width={35}
-                height={35}
-                className={styles.avatar}
-              />
-            )}
-            <div className={styles.messageContainer}>
-              <p
-                className={styles.username}
-                style={{
-                  textAlign: msg.sender_id !== userId ? "left" : "right",
-                }}
-              >
-                {msg.username}
-              </p>
-
-              {msg.book_isbn13 && msg.book_title && msg.book_image && (
-                <BookLink
-                  href={`/book/${msg.book_isbn13}`}
-                  style={styles.bookItem}
-                >
-                  <div className={styles.bookAttachment}>
-                    <Image
-                      src={msg.book_image}
-                      alt={msg.book_title}
-                      width={60}
-                      height={90}
-                      className={styles.bookImage}
-                    />
-                    <p className={styles.bookTitle}>{msg.book_title}</p>
-                  </div>
-                </BookLink>
+      {!loading ? (
+        <div className={styles.messagesWrapper}>
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`${styles.messageInfo} ${
+                msg.sender_id === userId
+                  ? styles.messageUserInfo
+                  : styles.messageSenderInfo
+              }`}
+            >
+              {msg.sender_id !== userId && (
+                <Image
+                  src={msg.image}
+                  alt={msg.username}
+                  width={35}
+                  height={35}
+                  className={styles.avatar}
+                />
               )}
-
-              <div
-                className={`${styles.message} ${
-                  msg.sender_id === userId
-                    ? styles.messageUser
-                    : styles.messageSender
-                }`}
-              >
-                <p className={styles.text}>{msg.text}</p>
-
-                <p className={styles.date}>
-                  {new Date(msg.created_at).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                  })}
+              <div className={styles.messageContainer}>
+                <p
+                  className={styles.username}
+                  style={{
+                    textAlign: msg.sender_id !== userId ? "left" : "right",
+                  }}
+                >
+                  {msg.username}
                 </p>
-              </div>
-            </div>
 
-            {msg.sender_id === userId && (
-              <Image
-                src={msg.image}
-                alt={msg.username}
-                width={35}
-                height={35}
-                className={styles.avatar}
-              />
-            )}
-          </div>
-        ))}
-        <div ref={messageEndRef} />
-      </div>
+                {msg.book_isbn13 && msg.book_title && msg.book_image && (
+                  <BookLink
+                    href={`/book/${msg.book_isbn13}`}
+                    style={styles.bookItem}
+                  >
+                    <div className={styles.bookAttachment}>
+                      <Image
+                        src={msg.book_image}
+                        alt={msg.book_title}
+                        width={60}
+                        height={90}
+                        className={styles.bookImage}
+                      />
+                      <p className={styles.bookTitle}>{msg.book_title}</p>
+                    </div>
+                  </BookLink>
+                )}
+
+                <div
+                  className={`${styles.message} ${
+                    msg.sender_id === userId
+                      ? styles.messageUser
+                      : styles.messageSender
+                  }`}
+                >
+                  <p className={styles.text}>{msg.text}</p>
+
+                  <p className={styles.date}>
+                    {new Date(msg.created_at).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              {msg.sender_id === userId && (
+                <Image
+                  src={msg.image}
+                  alt={msg.username}
+                  width={35}
+                  height={35}
+                  className={styles.avatar}
+                />
+              )}
+            </div>
+          ))}
+          <div ref={messageEndRef} />
+        </div>
+      ) : (
+        <Loader />
+      )}
 
       <div className={styles.inputWrapper}>
         <input

@@ -1,5 +1,7 @@
 import pool from "@/lib/db/postgresDB";
 import { verifyAuth } from "@/lib/auth";
+import { addNotificationForUser } from "@/lib/db/notification";
+import { sanitizeInputBack } from "@/lib/sanitize-text";
 
 export async function GET(req, { params }) {
   const { user } = await verifyAuth();
@@ -58,7 +60,7 @@ export async function POST(req, { params }) {
   }
 
   const userRes = await client.query(
-    "SELECT id FROM users WHERE username = $1",
+    "SELECT id, image FROM users WHERE username = $1",
     [username]
   );
   if (userRes.rowCount === 0) {
@@ -81,6 +83,29 @@ export async function POST(req, { params }) {
     [chatId, newUserId]
   );
 
+  const chatRes = await client.query("SELECT name FROM chats WHERE id = $1", [
+    chatId,
+  ]);
+
+  const ownerRes = await client.query(
+    "SELECT username FROM users WHERE id = $1",
+    [userId]
+  );
+
+  const safeUsername = sanitizeInputBack(ownerRes.rows[0]?.username);
+  const safeChatName = sanitizeInputBack(chatRes.rows[0]?.name);
+
+  const title = "You have been added to the chat";
+  const message = `<span>${safeUsername}</span> added you to the chat <span>"${safeChatName}"</span>.`;
+
+  await addNotificationForUser(newUserId, title, message, "review");
+
   client.release();
-  return new Response("User added", { status: 201 });
+  return new Response(
+    JSON.stringify({ id: newUserId, username, image: userRes.rows[0].image }),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 }

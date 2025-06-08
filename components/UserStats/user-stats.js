@@ -28,15 +28,17 @@ import {
   ScatterChart,
   Scatter,
   ComposedChart,
+  Label,
+  LabelList,
 } from "recharts";
 import MainLoading from "@/app/loading";
 
-const accent = "#5bc0dea2";
-const gray = "#cfd8dc";
+const accent = "#a3a6ac";
+const gray = "#797d82";
 
 const colors = ["#8884d8", "#82ca9d", "#ffc658"];
 
-export default function Dashboard() {
+export default function UserStats() {
   const [data, setData] = useState({});
 
   const [loading, setLoading] = useState(true);
@@ -56,6 +58,13 @@ export default function Dashboard() {
 
     fetchData();
   }, []);
+
+  function formatTime(seconds) {
+    const hrs = String(Math.floor(seconds / 3600)).padStart(2, "0");
+    const mins = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+    const secs = String(seconds % 60).padStart(2, "0");
+    return `${hrs}:${mins}:${secs}`;
+  }
 
   const genresData = data.genres?.map((item) => ({
     ...item,
@@ -92,17 +101,35 @@ export default function Dashboard() {
     fill: colors[index % colors.length],
   }));
 
+  const cleanedWordsByDate = data?.wordsByDates?.map((item) => ({
+    date: new Date(item.date).toISOString().split("T")[0],
+    words: item.words ? parseInt(item.words, 10) : 0,
+  }));
+
   if (loading) return <MainLoading />;
 
   return (
     <div className={styles.container}>
       <section className={styles.chartBlock}>
-        <h2>Reading Progress</h2>
+        <h2>User Information</h2>
+        <p>
+          First Visit:{" "}
+          {new Date(data?.userInfo?.date_of_first_visit).toLocaleDateString()}
+        </p>
+        <p>Flame Score: {data?.userInfo?.flame_score}</p>
+      </section>
+
+      <section className={styles.chartBlock}>
+        <h2>Words Read Over Time</h2>
         <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={data.readingProgress}>
+          <LineChart data={cleanedWordsByDate}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="title" />
-            <YAxis />
+            <XAxis dataKey="date">
+              <Label value="Date" offset={-5} position="insideBottom" />
+            </XAxis>
+            <YAxis
+              label={{ value: "Words", angle: -90, position: "insideLeft" }}
+            />
             <Tooltip
               contentStyle={{
                 backgroundColor: "#222328",
@@ -110,6 +137,38 @@ export default function Dashboard() {
                 color: "#f2f2f3",
               }}
             />
+            <Line
+              type="monotone"
+              dataKey="words"
+              stroke={accent}
+              strokeWidth={2}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </section>
+
+      <section className={styles.chartBlock}>
+        <h2>Reading Progress</h2>
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={data.readingProgress}>
+            <CartesianGrid strokeDasharray="3 3" />
+
+            <XAxis dataKey="title">
+              <Label value="Book Title" offset={-5} position="insideBottom" />
+            </XAxis>
+
+            <YAxis>
+              <Label value="Pages Read" angle={-90} position="insideLeft" />
+            </YAxis>
+
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#222328",
+                border: "none",
+                color: "#f2f2f3",
+              }}
+            />
+
             <Bar dataKey="pages" fill={accent} />
           </BarChart>
         </ResponsiveContainer>
@@ -120,8 +179,15 @@ export default function Dashboard() {
         <ResponsiveContainer width="100%" height={250}>
           <LineChart data={data.dailyReading}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
+
+            <XAxis dataKey="date">
+              <Label value="Date" offset={-5} position="insideBottom" />
+            </XAxis>
+
+            <YAxis>
+              <Label value="Pages Read" angle={-90} position="insideLeft" />
+            </YAxis>
+
             <Tooltip
               contentStyle={{
                 backgroundColor: "#222328",
@@ -129,25 +195,28 @@ export default function Dashboard() {
                 color: "#f2f2f3",
               }}
             />
+
             <Line
               type="monotone"
               dataKey="pages"
               stroke={accent}
               strokeWidth={2}
-            />
+            >
+              <LabelList dataKey="pages" position="top" />
+            </Line>
           </LineChart>
         </ResponsiveContainer>
       </section>
 
       <section className={styles.chartBlock}>
-        <h2>Book Genres</h2>
-        <ResponsiveContainer width="100%" height={250}>
+        <h2>Book Subjects</h2>
+        <ResponsiveContainer width="100%" height={400}>
           <PieChart>
             <Pie
               data={genresData}
               dataKey="value"
               nameKey="name"
-              outerRadius={100}
+              outerRadius={170}
               label
             >
               {data.genres?.map((entry, index) => (
@@ -157,6 +226,7 @@ export default function Dashboard() {
                 />
               ))}
             </Pie>
+
             <Tooltip
               contentStyle={{
                 backgroundColor: "#222328",
@@ -165,38 +235,21 @@ export default function Dashboard() {
               }}
               itemStyle={{ color: "#f2f2f3" }}
             />
+
+            <Legend
+              layout="vertical"
+              verticalAlign="middle"
+              align="right"
+              wrapperStyle={{ color: "#f2f2f3" }}
+            />
           </PieChart>
         </ResponsiveContainer>
       </section>
 
       <section className={styles.chartBlock}>
-        <h2>Dictionary Growth</h2>
-        <ResponsiveContainer width="100%" height={250}>
-          <AreaChart data={data.dictionaryGrowth}>
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#222328",
-                border: "none",
-                color: "#f2f2f3",
-              }}
-            />
-            <Area
-              type="monotone"
-              dataKey="words"
-              stroke={accent}
-              fill={accent}
-              fillOpacity={0.3}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </section>
-
-      <section className={styles.chartBlock}>
         <h2>Tests</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <RadarChart cx="50%" cy="50%" outerRadius="80%" data={testData}>
+        <ResponsiveContainer width="100%" height={400}>
+          <RadarChart cx="50%" cy="50%" outerRadius={170} data={testData}>
             <PolarGrid />
             <PolarAngleAxis dataKey="subject" />
             <PolarRadiusAxis />
@@ -216,18 +269,78 @@ export default function Dashboard() {
       </section>
 
       <section className={styles.chartBlock}>
-        <h2>Time Distribution Across Books</h2>
+        <h2>Dictionary Growth</h2>
         <ResponsiveContainer width="100%" height={250}>
+          <AreaChart data={data.dictionaryGrowth}>
+            <XAxis
+              dataKey="date"
+              label={{
+                value: "Date",
+                position: "insideBottom",
+                offset: -5,
+              }}
+            />
+            <YAxis
+              label={{
+                value: "Words",
+                angle: -90,
+                position: "insideLeft",
+              }}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#222328",
+                border: "none",
+                color: "#f2f2f3",
+              }}
+            />
+            <Area
+              type="monotone"
+              dataKey="words"
+              stroke={accent}
+              fill={accent}
+              fillOpacity={0.3}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </section>
+
+      <section className={styles.chartBlock}>
+        <h2>Time Distribution Across Books</h2>
+        <ResponsiveContainer width="100%" height={300}>
           <ScatterChart>
             <CartesianGrid />
-            <XAxis dataKey="x" name="Book" />
-            <YAxis dataKey="y" name="Time" />
+            <XAxis
+              dataKey="x"
+              name="Session"
+              label={{
+                value: "Session Number",
+                position: "insideBottom",
+                offset: -5,
+              }}
+            />
+            <YAxis
+              dataKey="y"
+              name="Time"
+              tickFormatter={(seconds) => formatTime(seconds)}
+              label={{
+                value: "Reading Time (hh:mm:ss)",
+                angle: -90,
+                position: "insideLeft",
+              }}
+            />
             <Tooltip
               cursor={{ strokeDasharray: "3 3" }}
               contentStyle={{
                 backgroundColor: "#222328",
                 border: "none",
                 color: "#f2f2f3",
+              }}
+              formatter={(value, name) => {
+                if (name === "Time") {
+                  return [formatTime(value), "Time"];
+                }
+                return [value, name];
               }}
             />
             <Scatter name="Time" data={data.bookTimeScatter} fill={accent} />
@@ -238,27 +351,17 @@ export default function Dashboard() {
       <section className={styles.chartBlock}>
         <h2>Review Votes</h2>
         <ResponsiveContainer width="100%" height={250}>
-          <RadialBarChart
-            innerRadius="10%"
-            outerRadius="80%"
-            data={data.reviewVotes}
-            startAngle={180}
-            endAngle={0}
-          >
-            <RadialBar
-              minAngle={15}
-              label
-              background
-              clockWise
-              dataKey="value"
-              fill={accent}
+          <BarChart data={data.reviewVotes} layout="vertical">
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              type="number"
+              label={{
+                value: "Votes Count",
+                position: "insideBottom",
+                offset: -5,
+              }}
             />
-            <Legend
-              iconSize={10}
-              layout="horizontal"
-              verticalAlign="bottom"
-              align="center"
-            />
+            <YAxis dataKey="name" type="category" />
             <Tooltip
               contentStyle={{
                 backgroundColor: "#222328",
@@ -266,7 +369,12 @@ export default function Dashboard() {
                 color: "#f2f2f3",
               }}
             />
-          </RadialBarChart>
+            <Bar
+              dataKey="value"
+              fill={accent}
+              label={{ position: "right", fill: "#f2f2f3" }}
+            />
+          </BarChart>
         </ResponsiveContainer>
       </section>
 
@@ -314,7 +422,7 @@ export default function Dashboard() {
 
       <section className={styles.chartBlock}>
         <h2>Book Status</h2>
-        <ResponsiveContainer width="100%" height={200}>
+        <ResponsiveContainer width="100%" height={400}>
           <PieChart>
             <Pie
               data={bookCategoryData}
@@ -322,8 +430,8 @@ export default function Dashboard() {
               nameKey="category"
               cx="50%"
               cy="50%"
-              innerRadius={40}
-              outerRadius={80}
+              innerRadius={100}
+              outerRadius={160}
               fill={accent}
               label
             />
@@ -383,7 +491,7 @@ export default function Dashboard() {
 
       <section className={styles.chartBlock}>
         <h2>Word Categories</h2>
-        <ResponsiveContainer width="100%" height={200}>
+        <ResponsiveContainer width="100%" height={400}>
           <RadialBarChart
             innerRadius="20%"
             outerRadius="90%"
@@ -396,10 +504,10 @@ export default function Dashboard() {
               dataKey="value"
             />
             <Legend
-              iconSize={10}
-              layout="horizontal"
-              verticalAlign="bottom"
-              align="center"
+              layout="vertical"
+              verticalAlign="middle"
+              align="right"
+              wrapperStyle={{ color: "#f2f2f3" }}
             />
             <Tooltip
               contentStyle={{

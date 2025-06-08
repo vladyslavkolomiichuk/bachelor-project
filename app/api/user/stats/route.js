@@ -8,6 +8,8 @@ export async function GET(request) {
     const client = await pool.connect();
 
     const [
+      userInfo,
+      wordsByDates,
       readingProgress,
       dailyReading,
       genres,
@@ -22,6 +24,22 @@ export async function GET(request) {
       bookRatings,
       wordCategories,
     ] = await Promise.all([
+      //User info
+      client.query(
+        `SELECT date_of_first_visit, flame_score FROM users WHERE id = $1`,
+        [userId]
+      ),
+
+      //Noting words by dates
+      client.query(
+        `SELECT date, SUM(words_count) AS words
+        FROM note_sessions
+        WHERE user_id = $1
+        GROUP BY date
+        ORDER BY date`,
+        [userId]
+      ),
+
       // Reading Progress - from note_sessions and books
       client.query(
         `
@@ -200,6 +218,8 @@ export async function GET(request) {
     client.release();
 
     const responseData = {
+      userInfo: userInfo.rows[0],
+      wordsByDates: wordsByDates.rows,
       readingProgress: readingProgress.rows,
       dailyReading: dailyReading.rows,
       genres: genres.rows,
