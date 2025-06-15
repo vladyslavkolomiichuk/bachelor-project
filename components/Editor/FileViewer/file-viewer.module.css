@@ -78,7 +78,7 @@
 .viewerContainer {
   flex: 1;
   overflow-y: auto;
-  padding: 2rem;
+  /* padding: 2rem; */
 }
 
 .document {
@@ -93,7 +93,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
 
-  scroll-margin-top: 2rem;
+  /* scroll-margin-top: 2rem; */
   position: relative;
 }
 
@@ -153,4 +153,18 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
+}
+
+.bookmarkIndicator {
+  font-weight: 600;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bookmarkedPage {
+  border: 3px solid var(--error-color);
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
 }

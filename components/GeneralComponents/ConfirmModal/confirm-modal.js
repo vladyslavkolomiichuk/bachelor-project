@@ -34,7 +34,7 @@ export default function ConfirmModal({
       <div className={styles.modal}>
         <div className={styles.message}>
           <h2>{title}</h2>
-          <p>{message}</p>
+          <p dangerouslySetInnerHTML={{ __html: message }} />
         </div>
         <div className={styles.buttons}>
           <button className={styles.cancel} onClick={onCancel}>

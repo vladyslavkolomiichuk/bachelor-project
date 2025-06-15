@@ -2,6 +2,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import next from "next";
 import pool from "./lib/db/postgresDB.js"; // твій pg pool
+import { log } from "console";
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -34,6 +35,21 @@ app.prepare().then(() => {
         }
       }
       console.log("User disconnected:", socket.id);
+    });
+
+    socket.on("addUserToChat", async ({ newUserId, chatId, chat }) => {
+      try {
+        const userSocketId = userSocketMap.get(newUserId.toString());
+
+        if (userSocketId) {
+          io.to(userSocketId).emit("chatAdded", { chat });
+          console.log(`Chat ${chatId} added for user ${newUserId}`);
+        } else {
+          console.log(`User ${newUserId} is offline, chat update queued`);
+        }
+      } catch (error) {
+        console.error("Error in addUserToChat:", error);
+      }
     });
 
     socket.on(

@@ -10,7 +10,7 @@ import { useUser } from "@/context/UserContext";
 import styles from "./average-rating.module.css";
 import { useToast } from "@/context/ToastContext";
 
-export default function AverageRating({ bookId }) {
+export default function AverageRating({ bookId, bookIsbn }) {
   // const [ratingCounts, setRatingCounts] = useState({});
   const [formOpen, setFormOpen] = useState(false);
   const { user } = useUser();
@@ -23,7 +23,7 @@ export default function AverageRating({ bookId }) {
     const fetchData = async () => {
       try {
         const data = await getRatingCounts(bookId);
-        
+
         addRatingCounts(data);
       } catch {}
     };
@@ -56,6 +56,7 @@ export default function AverageRating({ bookId }) {
         onCancel={() => setFormOpen(false)}
         onDone={() => setFormOpen(false)}
         bookId={bookId}
+        bookIsbn={bookIsbn}
       />
     </div>
   );

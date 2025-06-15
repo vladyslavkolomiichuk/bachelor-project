@@ -2,6 +2,7 @@ import pool from "@/lib/db/postgresDB";
 import { verifyAuth } from "@/lib/auth";
 import { addNotificationForUser } from "@/lib/db/notification";
 import { sanitizeInputBack } from "@/lib/sanitize-text";
+import { io } from "socket.io-client";
 
 export async function GET(req, { params }) {
   const { user } = await verifyAuth();
@@ -99,6 +100,42 @@ export async function POST(req, { params }) {
   const message = `<span>${safeUsername}</span> added you to the chat <span>"${safeChatName}"</span>.`;
 
   await addNotificationForUser(newUserId, title, message, "review");
+
+  try {
+    const chatInfoRes = await client.query(
+      `SELECT c.*, 
+        (SELECT COUNT(*) FROM messages m 
+         LEFT JOIN message_reads mr ON m.id = mr.message_id AND mr.user_id = $1
+         WHERE m.chat_id = c.id AND (mr.read = false OR mr.read IS NULL)
+        ) as unread_count,
+        (SELECT m.text FROM messages m 
+         WHERE m.chat_id = c.id 
+         ORDER BY m.created_at DESC LIMIT 1
+        ) as last_message_text,
+        (SELECT m.created_at FROM messages m 
+         WHERE m.chat_id = c.id 
+         ORDER BY m.created_at DESC LIMIT 1
+        ) as last_message_time
+      FROM chats c 
+      WHERE c.id = $2`,
+      [newUserId, chatId]
+    );
+
+    const chatInfo = chatInfoRes.rows[0];
+
+    const socket = io("http://localhost:3002");
+    socket.emit("addUserToChat", {
+      newUserId,
+      chatId,
+      chat: chatInfo,
+    });
+    socket.disconnect();
+
+  } catch (error) {
+    client.release();
+    console.error("Error:", error);
+    return new Response("Internal Server Error", { status: 500 });
+  }
 
   client.release();
   return new Response(

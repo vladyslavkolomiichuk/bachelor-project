@@ -1,3 +1,6 @@
+"use client";
+
+import { sanitizeInputFront } from "@/lib/sanitize-text";
 import AIBookBlock from "../AIBookBlock/ai-book-block";
 import DescriptionSection from "../DescriptionSection/description-section";
 import AverageRating from "../ReviewsComponents/AverageRating/average-rating";
@@ -9,6 +12,7 @@ export default function FullBookDescription({ book }) {
   const {
     id,
     isbn13,
+    doi,
     title,
     title_long: longTitle,
     synopsis,
@@ -21,20 +25,23 @@ export default function FullBookDescription({ book }) {
     binding,
     dimensions,
   } = book;
+
+  const clearSynopsis = sanitizeInputFront(synopsis);
+
   return (
     <div>
       <div className={styles.fullBookDescription}>
         <div className={styles.part}>
-          {longTitle ? (
+          {longTitle && (
             <DescriptionSection title="Long Title">
               <p>{longTitle}</p>
             </DescriptionSection>
-          ) : (
-            ""
           )}
-          <DescriptionSection title="Synopsis">
-            <p>{synopsis}</p>
-          </DescriptionSection>
+          {clearSynopsis && (
+            <DescriptionSection title="Synopsis">
+              <p dangerouslySetInnerHTML={{ __html: clearSynopsis }} />
+            </DescriptionSection>
+          )}
           <DescriptionSection title="Subjects">
             <p>
               {Array.isArray(subjects) && subjects.length > 0
@@ -49,15 +56,16 @@ export default function FullBookDescription({ book }) {
           </DescriptionSection>
           <DescriptionSection title="Publication Details">
             <p>
-              ISBN {isbn13} {publishDate} {publisher}
+              {isbn13 ? "ISBN" : "DOI"} {isbn13 || doi} {publishDate}{" "}
+              {publisher}
             </p>
           </DescriptionSection>
           <DescriptionSection title="Book Details">
             <p>
-              Language: {language} Page count: {pages} {binding}:
+              Language: {language} Page count: {pages} {binding || ""}
               {dimensions
-                ? dimensions.toLowerCase().replace(/:/g, " ")
-                : "Dimensions not available"}
+                ? `: ${dimensions.toLowerCase().replace(/:/g, " ")}`
+                : ""}
             </p>
           </DescriptionSection>
         </div>
@@ -66,7 +74,7 @@ export default function FullBookDescription({ book }) {
       <div className={styles.reviewContainer}>
         <div className={styles.part}>
           <DescriptionSection title="Average Rating">
-            <AverageRating bookId={id} />
+            <AverageRating bookId={id} bookIsbn={isbn13} />
           </DescriptionSection>
         </div>
         <div className={styles.part}>

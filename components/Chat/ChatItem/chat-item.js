@@ -1,8 +1,23 @@
-import { X } from "lucide-react";
+import { LogOut, X } from "lucide-react";
 import styles from "./chat-item.module.css";
 
-export default function ChatItem({ chat, activeChatId, onSelect, onDelete }) {
-  const { id, name, last_message_text, last_message_time, unread_count } = chat;
+export default function ChatItem({
+  chat,
+  activeChatId,
+  onSelect,
+  onDelete,
+  userId,
+}) {
+  const {
+    id,
+    name,
+    creator_id,
+    last_message_text,
+    last_message_time,
+    unread_count,
+  } = chat;
+  const isCreator = userId === creator_id;
+
   return (
     <div
       className={`${styles.item} ${
@@ -25,11 +40,11 @@ export default function ChatItem({ chat, activeChatId, onSelect, onDelete }) {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onDelete(id);
+              onDelete(isCreator, id);
             }}
             className={styles.deleteButton}
           >
-            <X />
+            {isCreator ? <X /> : <LogOut />}
           </button>
         </div>
       </div>

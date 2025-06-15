@@ -14,6 +14,7 @@ export async function GET() {
       SELECT
         c.id,
         c.name,
+        c.creator_id,
         m.text AS last_message_text,
         m.created_at AS last_message_time,
         COUNT(mr.message_id) AS unread_count
@@ -60,8 +61,8 @@ export async function POST(req) {
       await client.query("BEGIN");
 
       const res = await client.query(
-        "INSERT INTO chats (name) VALUES ($1) RETURNING id, name",
-        [name]
+        "INSERT INTO chats (name, creator_id) VALUES ($1, $2) RETURNING id, name, creator_id",
+        [name, userId]
       );
       const chat = res.rows[0];
 

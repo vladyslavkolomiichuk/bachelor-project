@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import templates from "@/data/note_templates.json";
 
 import styles from "./template-selection.module.css";
+import { useToast } from "@/context/ToastContext";
 
 export default function TemplateModal({ isOpen, onCancel, setTemplate }) {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+
+  const { showToast } = useToast();
 
   const handleTemplateSelect = (template) => {
     setSelectedTemplate(template);
@@ -62,8 +65,12 @@ export default function TemplateModal({ isOpen, onCancel, setTemplate }) {
           <button
             className={styles.select}
             onClick={() => {
-              setTemplate(selectedTemplate);
-              onCancel();
+              if (selectedTemplate) {
+                setTemplate(selectedTemplate);
+                onCancel();
+              } else {
+                showToast("No template selected", "error");
+              }
             }}
           >
             Select

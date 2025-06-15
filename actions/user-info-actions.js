@@ -1,7 +1,8 @@
 "use server";
 
 import { verifyAuth } from "@/lib/auth";
-import { uploadImage } from "@/lib/cloudinary";
+import { deleteImage, uploadImage } from "@/lib/cloudinary";
+import pool from "@/lib/db/postgresDB";
 import {
   changeGeneralUserInfo,
   changeUserImage,
@@ -114,21 +115,37 @@ export async function userImageAction(prevState, formData) {
     };
   }
 
-  let imageUrl;
-
-  try {
-    imageUrl = await uploadImage(image, "nextjs-notbook/users-image");
-  } catch (error) {
-    console.log(error);
-    
-    throw new Error(
-      `Image upload failed, post was not created. Please try again later. ${error}`
-    );
-  }
-
   const result = await verifyAuth();
   const userId = result.user.id;
 
-  const username = await changeUserImage(userId, imageUrl);
-  redirect(`/user/${username}`);
+  const currentUser = await pool.connect();
+  try {
+    const userRes = await currentUser.query(
+      "SELECT image FROM users WHERE id = $1",
+      [userId]
+    );
+    const currentImageUrl = userRes.rows[0]?.image;
+
+    let imageUrl;
+    try {
+      imageUrl = await uploadImage(image, "nextjs-notbook/users-image");
+
+      if (imageUrl && currentImageUrl) {
+        await deleteImage(currentImageUrl);
+      }
+    } catch (error) {
+      console.error("Error during image upload:", error);
+      throw new Error(
+        `Image upload failed, please try again later. ${error.message}`
+      );
+    }
+
+    const username = await changeUserImage(userId, imageUrl);
+    redirect(`/user/${username}`);
+  } catch (error) {
+    console.error("Error updating user image:", error);
+    throw error;
+  } finally {
+    currentUser.release();
+  }
 }

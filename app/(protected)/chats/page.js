@@ -145,6 +145,27 @@ export default function ChatPage() {
     window.dispatchEvent(new Event("chats:updated"));
   };
 
+  const leaveChat = async (chatId) => {
+    const confirmed = await confirm({
+      title: "Are you sure you want to leave this chat?",
+      message: "You will no longer receive messages from this chat.",
+      buttonName: "Leave",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      await fetch(`/api/chats/${chatId}/leave`, { method: "POST" });
+      setChats((prev) => prev.filter((c) => c.id !== chatId));
+      if (activeChatId === chatId) setActiveChatId(null);
+      showToast("You have left the chat", "success");
+      window.dispatchEvent(new Event("chats:updated"));
+    } catch (error) {
+      console.error("Error leaving the chat:", error);
+      showToast("Failed to leave the chat", "error");
+    }
+  };
+
   const sendMessage = ({ text, bookId }) => {
     if (!text || !activeChatId || !userId) return;
 
@@ -167,8 +188,11 @@ export default function ChatPage() {
         <ChatList
           chats={chats}
           activeChatId={activeChatId}
+          userId={userId}
           onSelect={setActiveChatId}
-          onDelete={deleteChat}
+          onDelete={(isUserChatCreator, chatId) =>
+            isUserChatCreator ? deleteChat(chatId) : leaveChat(chatId)
+          }
           onCreate={createChat}
           loading={chatsLoading}
         />

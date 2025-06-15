@@ -9,6 +9,7 @@ export async function reviewCreateAction(prevState, formData) {
   const text = formData.get("text");
 
   const bookId = formData.get("bookId");
+  const bookIsbn = formData.get("bookIsbn");
   const rating = formData.get("rating");
 
   const validatedFields = ReviewFormSchema.safeParse({
@@ -36,7 +37,7 @@ export async function reviewCreateAction(prevState, formData) {
     } catch {}
 
     if (!bookInDb) {
-      const newBookId = await addBookToDbFromApi(bookId);
+      const newBookId = await addBookToDbFromApi(bookIsbn);
       await createReview(userId, newBookId, rating, text);
       return;
     }

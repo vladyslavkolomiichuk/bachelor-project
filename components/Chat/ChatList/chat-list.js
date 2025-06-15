@@ -9,6 +9,7 @@ import Loader from "@/components/GeneralComponents/SearchComponents/Loader/loade
 export default function ChatList({
   chats,
   activeChatId,
+  userId,
   onSelect,
   onDelete,
   onCreate,
@@ -61,6 +62,7 @@ export default function ChatList({
               <ChatItem
                 key={chat.id}
                 chat={chat}
+                userId={userId}
                 onDelete={onDelete}
                 onSelect={onSelect}
                 activeChatId={activeChatId}

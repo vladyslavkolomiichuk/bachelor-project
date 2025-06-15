@@ -187,7 +187,7 @@ export default function UserForm() {
           <>
             <form action={imageFormAction} className={styles.userImageForm}>
               <Image
-                src={user?.image || "/previews/user.png"}
+                src={user.image}
                 alt="User Image"
                 className={styles.userImage}
                 width={250}

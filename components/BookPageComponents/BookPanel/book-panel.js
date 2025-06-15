@@ -127,7 +127,21 @@ export default function BookPanel({
             </MainButton>
 
             {mode === "added" && (
-              <MainButton onClick={() => setIsFileUploadOpen(true)}>
+              <MainButton
+                onClick={async () => {
+                  const confirmed = await confirm({
+                    title: "Copyright warning",
+                    message:
+                      "By downloading a file, you confirm that you have the legal right to use it. If the file comes from an illegal or pirated source, you are fully responsible for possible copyright infringement.<br/><br/>The application administration is not responsible for the content uploaded by users.",
+                    buttonName: "Accept",
+                    type: "ok",
+                  });
+
+                  if (!confirmed) return;
+
+                  setIsFileUploadOpen(true);
+                }}
+              >
                 Add PDF Book
               </MainButton>
             )}

@@ -155,12 +155,12 @@
 
 .input {
   font-size: var(--font-size-medium);
-  color: var(--primary-color);
-  background-color: var(--table-color1);
+  color: var(--button-color1);
+  background-color: var(--primary-color);
   font-family: "Montserrat", sans-serif;
   border: none;
-  width: calc(100% - 0.5rem * 2);
-  padding: 0.5rem;
+  width: calc(100% - 1rem * 2);
+  padding: 1rem;
 }
 
 .input:focus {
@@ -172,7 +172,7 @@
   cursor: pointer;
   border: none;
   background-color: transparent;
-  color: var(--primary-color);
+  color: var(--button-color1);
   transition: all 0.2s ease;
 }
 
@@ -181,8 +181,8 @@
 }
 
 .buttonSend svg {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
 }
 
 .noItem {

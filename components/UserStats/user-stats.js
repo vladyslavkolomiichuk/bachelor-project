@@ -32,6 +32,8 @@ import {
   LabelList,
 } from "recharts";
 import MainLoading from "@/app/loading";
+import { useUser } from "@/context/UserContext";
+import { useRouter } from "next/navigation";
 
 const accent = "#a3a6ac";
 const gray = "#797d82";
@@ -43,10 +45,21 @@ export default function UserStats() {
 
   const [loading, setLoading] = useState(true);
 
+  const router = useRouter();
+
+  const result = useUser();
+  const userId = result?.user?.id;
+
+  useEffect(() => {
+    if (result?.user === null) {
+      router.push("/login");
+    }
+  }, [result, router]);
+
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("/api/user/stats?userId=1");
+        const res = await fetch(`/api/user/stats?userId=${userId}`);
         const json = await res.json();
         setData(json);
       } catch (err) {
@@ -56,8 +69,10 @@ export default function UserStats() {
       setLoading(false);
     }
 
-    fetchData();
-  }, []);
+    if (result?.user) {
+      fetchData();
+    }
+  }, [userId]);
 
   function formatTime(seconds) {
     const hrs = String(Math.floor(seconds / 3600)).padStart(2, "0");
@@ -378,7 +393,7 @@ export default function UserStats() {
         </ResponsiveContainer>
       </section>
 
-      <section className={styles.chartBlock}>
+      {/* <section className={styles.chartBlock}>
         <h2>User Activity</h2>
         <ResponsiveContainer width="100%" height={200}>
           <ComposedChart data={data.userStreak}>
@@ -400,7 +415,7 @@ export default function UserStats() {
             <Bar dataKey="active" barSize={20} fill={accent} />
           </ComposedChart>
         </ResponsiveContainer>
-      </section>
+      </section> */}
 
       <section className={styles.chartBlock}>
         <h2>Notes per Book</h2>
@@ -447,7 +462,7 @@ export default function UserStats() {
         </ResponsiveContainer>
       </section>
 
-      <section className={styles.chartBlock}>
+      {/* <section className={styles.chartBlock}>
         <h2>Reading Time Over the Week</h2>
         <ResponsiveContainer width="100%" height={200}>
           <LineChart data={data.weeklyTime}>
@@ -468,7 +483,7 @@ export default function UserStats() {
             />
           </LineChart>
         </ResponsiveContainer>
-      </section>
+      </section> */}
 
       <section className={styles.chartBlock}>
         <h2>Book Ratings</h2>

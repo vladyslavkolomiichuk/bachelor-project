@@ -63,9 +63,9 @@ export default function Header() {
           ))}
         </ul>
       </nav>
-      <Link href="/about" className={styles.button}>
+      {/* <Link href="/about" className={styles.button}>
         <Info />
-      </Link>
+      </Link> */}
     </header>
   );
 }

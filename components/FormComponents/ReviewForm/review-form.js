@@ -10,7 +10,7 @@ import { ReviewFormSchema } from "@/lib/definitions";
 import { reviewCreateAction } from "@/actions/review-actions";
 import FormError from "../FormError/form-error";
 
-export default function ReviewForm({ isOpen, onCancel, onDone, bookId }) {
+export default function ReviewForm({ isOpen, onCancel, onDone, bookId, bookIsbn }) {
   const [rating, setRating] = useState(0);
 
   const [formState, formAction, formPending] = useActionState(
@@ -29,6 +29,7 @@ export default function ReviewForm({ isOpen, onCancel, onDone, bookId }) {
     const formData = new FormData(event.currentTarget);
 
     formData.append("bookId", bookId);
+    formData.append("bookIsbn", bookIsbn);
     formData.append("rating", rating);
 
     startTransition(() => {

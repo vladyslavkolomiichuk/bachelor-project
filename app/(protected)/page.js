@@ -119,7 +119,7 @@ export default function HomePage() {
         const recommendedBySubject = await fetchRecommendedBooksByRandom(
           "subject",
           subjects,
-          24
+          30
         );
 
         const recommendedBySubjectWithRatings = await Promise.all(
@@ -134,7 +134,7 @@ export default function HomePage() {
         const recommendedByAuthor = await fetchRecommendedBooksByRandom(
           "author",
           authors,
-          36
+          30
         );
 
         const recommendedByAuthorWithRatings = await Promise.all(
@@ -173,7 +173,7 @@ export default function HomePage() {
         )}
       </Section>
       <div className="double-section">
-        <Section sectionName="Books For You" gridSlider slidesToShow={8}>
+        <Section sectionName="Books For You" gridSlider slidesToShow={10}>
           {!loading ? (
             recommendedBooksBySubject.map((book) => (
               <TransparentBookBlock key={book.isbn13} book={book} />
@@ -188,10 +188,12 @@ export default function HomePage() {
               <TransparentBookBlockSkeleton />
               <TransparentBookBlockSkeleton />
               <TransparentBookBlockSkeleton />
+              <TransparentBookBlockSkeleton />
+              <TransparentBookBlockSkeleton />
             </>
           )}
         </Section>
-        <Section sectionName="Our Lovely Genres"></Section>
+        {/* <Section sectionName="Our Lovely Subjects"></Section> */}
       </div>
       <Section
         sectionName="Your Lovely Authors' books"

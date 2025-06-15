@@ -11,7 +11,7 @@ export default async function BookPage({ params }) {
   const { user } = await verifyAuth();
   const userId = user?.id;
 
-  if (!userId || !bookISBN) {
+  if (!bookISBN) {
     notFoundFunction();
   }
 

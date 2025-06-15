@@ -4,7 +4,7 @@ import CoverImage from "@/components/GeneralComponents/CoverImage/cover-image";
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/context/ToastContext";
 import { EllipsisVertical } from "lucide-react";
-import { deleteBookFromDb } from "@/lib/db/book";
+import { deleteArticleFromDb, deleteBookFromDb } from "@/lib/db/book";
 import { useRouter } from "nextjs13-progress";
 import { updateUserBookCategory } from "@/lib/db/book";
 
@@ -80,7 +80,14 @@ export default function BookSmallPreview({
                     e.stopPropagation();
                     setIsMenuOpen(false);
                     try {
-                      await deleteBookFromDb(book.isbn13);
+                      if (book.doi) {
+                        await deleteArticleFromDb(book.doi);
+                      } else {
+                        await deleteBookFromDb(
+                          book.isbn13,
+                          book.person_share_id
+                        );
+                      }
                       showToast("Book deleted successfully");
                       setDeletedBook((prev) =>
                         prev.filter(

@@ -13,15 +13,17 @@
 
 .modal {
   width: 500px;
-  height: 225px;
+  height: fit-content;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  gap: 2rem;
   background-color: var(--primary-color);
 }
 
 .message {
+  width: calc(100% - 30px * 2);
   margin: 30px 30px 0 30px;
   display: flex;
   flex-direction: column;

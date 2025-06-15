@@ -16,7 +16,7 @@ export default function BookPreview({ book, ratingColor = "#F2F2F3" }) {
       />
       <div className={styles.info}>
         <h3>{title}</h3>
-        <p className={styles.authors}>{authors.join(", ")}</p>
+        <p className={styles.authors}>{authors?.join(", ")}</p>
         <Rating rating={rating} starColor={ratingColor} />
         <p className={styles.synopsis}>{synopsis}</p>
       </div>

@@ -37,7 +37,7 @@ export default function ChallengeForm({
     formData.append("actionType", formType);
 
     formData.append("challengeId", defaultChallenge.id);
-    formData.append("category", "Own");
+    formData.append("category", "own");
 
     const today = new Date();
     const start = new Date(formData.get("startDate"));

@@ -10,10 +10,10 @@ import { useRouter } from "nextjs13-progress";
 import { useUser } from "@/context/UserContext";
 
 export default function UserTest() {
-  const [phase, setPhase] = useState("blurred"); // "blurred", "reading", "questions"
+  const [phase, setPhase] = useState("blurred");
   const [selected, setSelected] = useState(1);
 
-  const [userAnswers, setUserAnswers] = useState({}); // { questionIndex: selectedAnswer }
+  const [userAnswers, setUserAnswers] = useState({});
   const [score, setScore] = useState(null);
   const [timeReading, setTimeReading] = useState(0);
 
@@ -120,7 +120,6 @@ export default function UserTest() {
               </li>
             </ol>
           </div>
-          {/* <p className={styles.description}>Timer: {timeReading} s.</p> */}
           <div className={styles.buttonContainer}>
             <button
               type="button"
@@ -153,7 +152,6 @@ export default function UserTest() {
 
       {phase === "questions" && (
         <>
-          {/* <p className={styles.description}>Description</p> */}
           <h2>Test your reading comprehension</h2>
           {texts[selected].questions.map((q, index) => (
             <div key={index} className={styles.questionBlock}>

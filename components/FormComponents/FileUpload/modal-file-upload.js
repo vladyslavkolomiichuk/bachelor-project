@@ -43,7 +43,7 @@ export default function FileUploadModal({
 
   const handleUpload = async (file, bookId) => {
     const fileExt = file.name.split(".").pop();
-    const folderPath = `books/${bookId}/`;
+    const folderPath = `books/${bookId}/${userId}/`;
     const filePath = `${folderPath}${Date.now()}.${fileExt}`;
 
     const { data: list, error: listError } = await supabase.storage
@@ -96,16 +96,27 @@ export default function FileUploadModal({
   const handleDelete = async () => {
     if (!existingPDFUrl) return;
 
-    const filePath = existingPDFUrl.split(
-      "/storage/v1/object/public/books-pdf/"
-    )[1];
-    const { error } = await supabase.storage
-      .from("books-pdf")
-      .remove([filePath]);
+    const folderPath = `books/${bookId}/${userId}/`;
 
-    if (error) {
-      console.error("Error deleting file:", error);
+    const { data: list, error: listError } = await supabase.storage
+      .from("books-pdf")
+      .list(folderPath, { limit: 100 });
+
+    if (listError) {
+      console.error("Error listing files:", listError);
       return;
+    }
+
+    if (list && list.length > 0) {
+      const filesToDelete = list.map((file) => `${folderPath}${file.name}`);
+      const { error: deleteError } = await supabase.storage
+        .from("books-pdf")
+        .remove(filesToDelete);
+
+      if (deleteError) {
+        console.error("Error deleting files:", deleteError);
+        return;
+      }
     }
 
     await removeBookPDFUrl(bookId, userId);
@@ -170,7 +181,17 @@ export default function FileUploadModal({
                 onSubmit={handleSubmit(onSubmit)}
                 className={styles.noteForm}
               >
-                <Input id="pdf" name="pdf" type="file" {...register("file")} />
+                <Input
+                  id="pdf"
+                  name="pdf"
+                  type="file"
+                  accept="application/pdf"
+                  {...register("file", {
+                    validate: (files) =>
+                      files[0]?.type === "application/pdf" ||
+                      "Тільки PDF-файли дозволені",
+                  })}
+                />
                 <MainButton type="submit" disabled={isSubmitting}>
                   Replace PDF
                 </MainButton>
@@ -184,7 +205,17 @@ export default function FileUploadModal({
                 onSubmit={handleSubmit(onSubmit)}
                 className={styles.noteForm}
               >
-                <Input id="pdf" name="pdf" type="file" {...register("file")} />
+                <Input
+                  id="pdf"
+                  name="pdf"
+                  type="file"
+                  accept="application/pdf"
+                  {...register("file", {
+                    validate: (files) =>
+                      files[0]?.type === "application/pdf" ||
+                      "Тільки PDF-файли дозволені",
+                  })}
+                />
                 <MainButton type="submit" disabled={isSubmitting}>
                   Upload PDF
                 </MainButton>
